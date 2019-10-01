@@ -1,0 +1,33 @@
+{
+  "name": "sequelize-sscce",
+  "description": "SSCCE repository for Sequelize",
+  "version": "0.0.0-development",
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "private": true,
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^2",
+    "cross-env": "^5",
+    "fs-jetpack": "^2",
+    "lodash": "^4",
+    "mariadb": "^2",
+    "mysql2": "^1",
+    "pg": "^7",
+    "pg-hstore": "^2",
+    "pg-types": "^2",
+    "sequelize": "^5",
+    "sqlite3": "^4",
+    "tedious": "^6"
+  },
+  "scripts": {
+    "start": "cross-env LOCAL_SSCCE=true DIALECT=sqlite node setup/runner.js",
+    "ci": "node setup/runner.js",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "eslint": "^6",
+    "eslint-plugin-node": "^10"
+  }
+}

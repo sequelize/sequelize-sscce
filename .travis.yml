@@ -1,0 +1,56 @@
+sudo: true
+dist: trusty
+
+language: node_js
+
+cache: npm
+
+install:
+  - npm install -g npm@latest
+  - npm install --production
+  - |-
+    if [ "$DIALECT" = "postgres-native" ]; then npm install pg-native; fi
+
+env:
+  global:
+    - SEQ_DB=sequelize_test
+    - SEQ_USER=sequelize_test
+    - SEQ_PW=sequelize_test
+    - SEQ_HOST=127.0.0.1
+
+before_script:
+  # setup docker
+  - "if [ $MARIADB_VER ]; then export MARIADB_ENTRYPOINT=$TRAVIS_BUILD_DIR/setup/mariadb; fi"
+  - "if [ $POSTGRES_VER ] || [ $MARIADB_VER ] || [ $MYSQL_VER ]; then docker-compose up -d ${POSTGRES_VER} ${MARIADB_VER} ${MYSQL_VER}; fi"
+  - "if [ $MARIADB_VER ]; then docker run --link ${MARIADB_VER}:db -e CHECK_PORT=3306 -e CHECK_HOST=db --net sequelizesscce_default giorgos/takis; fi"
+  - "if [ $MYSQL_VER ]; then docker run --link ${MYSQL_VER}:db -e CHECK_PORT=3306 -e CHECK_HOST=db --net sequelizesscce_default giorgos/takis; fi"
+  - "if [ $POSTGRES_VER ]; then docker run --link ${POSTGRES_VER}:db -e CHECK_PORT=5432 -e CHECK_HOST=db --net sequelizesscce_default giorgos/takis; fi"
+
+script:
+  - |-
+    npm run ci
+
+jobs:
+  include:
+    - stage: test
+      node_js: '10'
+      env: DIALECT=sqlite
+    - stage: test
+      node_js: '10'
+      sudo: required
+      env: MARIADB_VER=mariadb-103 SEQ_MARIADB_PORT=8960 DIALECT=mariadb
+    - stage: test
+      node_js: '10'
+      sudo: required
+      env: MYSQL_VER=mysql-57 SEQ_MYSQL_PORT=8980 DIALECT=mysql
+    - stage: test
+      node_js: '10'
+      sudo: required
+      env: POSTGRES_VER=postgres-10 SEQ_PG_PORT=8991 DIALECT=postgres
+    # - stage: test
+    #   node_js: '10'
+    #   sudo: required
+    #   env: POSTGRES_VER=postgres-95 SEQ_PG_PORT=8990 DIALECT=postgres-native
+
+stages:
+  - test
