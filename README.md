@@ -62,6 +62,19 @@ await sequelize.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 
 *Coming Soon!*
 
+## Running the SSCCE locally
+
+This repository also comes with built-in support for running your SSCCE locally on SQLite:
+
+* Clone this repository
+* `npm install`
+* Edit the `src/sscce.js` as you like
+* `npm start`
+
+The above will run your SSCCE locally on SQLite, with no need for any other extra setup.
+
+There is no local support for other dialects; this is harder because requires setting up local databases. It is doable, but out of scope for this repository. [Learn more](https://github.com/sequelize/sequelize/blob/master/CONTRIBUTING.md#3-database).
+
 ## License
 
 MIT (c) Pedro Augusto de Paula Barbosa
