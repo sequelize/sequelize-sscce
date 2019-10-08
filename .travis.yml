@@ -10,6 +10,8 @@ install:
   - npm install --production
   - |-
     if [ "$DIALECT" = "postgres-native" ]; then npm install pg-native; fi
+  - |-
+    if [ -f src/sscce.ts ]; then npm install typescript; fi
 
 env:
   global:
@@ -33,17 +35,21 @@ script:
 jobs:
   include:
     - stage: test
+      name: 'SQLite'
       node_js: '10'
       env: DIALECT=sqlite
     - stage: test
+      name: 'MariaDB'
       node_js: '10'
       sudo: required
       env: MARIADB_VER=mariadb-103 SEQ_MARIADB_PORT=8960 DIALECT=mariadb
     - stage: test
+      name: 'MySQL'
       node_js: '10'
       sudo: required
       env: MYSQL_VER=mysql-57 SEQ_MYSQL_PORT=8980 DIALECT=mysql
     - stage: test
+      name: 'PostgreSQL'
       node_js: '10'
       sudo: required
       env: POSTGRES_VER=postgres-10 SEQ_PG_PORT=8991 DIALECT=postgres
@@ -51,6 +57,10 @@ jobs:
     #   node_js: '10'
     #   sudo: required
     #   env: POSTGRES_VER=postgres-95 SEQ_PG_PORT=8990 DIALECT=postgres-native
+    - stage: test
+      name: 'TypeScript Typings'
+      node_js: '10'
+      script: if [ -f src/sscce.ts ]; then tsc src/sscce.ts; else echo 'Skipped!'; fi
 
 stages:
   - test
