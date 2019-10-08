@@ -11,7 +11,7 @@ install:
   - |-
     if [ "$DIALECT" = "postgres-native" ]; then npm install pg-native; fi
   - |-
-    if [ -f /src/sscce.ts ]; then npm install typescript; fi
+    if [ -f src/sscce.ts ]; then npm install typescript; fi
 
 env:
   global:
@@ -54,8 +54,9 @@ jobs:
     #   sudo: required
     #   env: POSTGRES_VER=postgres-95 SEQ_PG_PORT=8990 DIALECT=postgres-native
     - stage: test
+      name: 'Hmmm Some Name Here'
       node_js: '10'
-      script: if [ -f /src/sscce.ts ]; then tsc /src/sscce.ts; else echo 'Skipped!'; fi
+      script: if [ -f src/sscce.ts ]; then tsc /src/sscce.ts; else echo 'Skipped!'; fi
 
 stages:
   - test
