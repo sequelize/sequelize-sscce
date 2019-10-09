@@ -22,6 +22,8 @@
  * would use `console.log` unless you have a good reason not to do it.
  */
 module.exports = async function(createSequelizeInstance, log) {
+    if (process.env.DIALECT !== "postgres") return;
+  
     /**
      * Below is an example of SSCCE. Change it to your SSCCE.
      * Recall that SSCCEs should be minimal! Try to make the shortest
@@ -46,23 +48,18 @@ module.exports = async function(createSequelizeInstance, log) {
     // on your issue.
     const User = sequelize.define('User', {
         name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
     });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
 
     // Since you defined some models above, don't forget to sync them.
     // Using the `{ force: true }` option is not necessary because the
     // database is always created from scratch when the SSCCE is
     // executed after pushing to GitHub (by Travis CI and AppVeyor).
     await sequelize.sync();
+  
+    await User.upsert({ name: 'John Doe' });
+    log(await User.findAll()); 
+  
+    await User.upsert({ name: 'RETURNING *' });
+    log(await User.findAll()); 
 
-    // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
 };
