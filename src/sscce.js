@@ -17,11 +17,11 @@ module.exports = async function(createSequelizeInstance, log) {
     await sequelize.sync();
 
     const text = 'RETURNING *';
-    await User.upsert({ 
+    await MyModel.upsert({ 
         text, 
         // will throw exception:
         //json: '{"foo":"RETURNING *"}' 
     });
-    const models = await User.findAll();
+    const models = await MyModel.findAll();
     log(`${text} != ${models[0].text}`); 
 };
