@@ -1,68 +1,83 @@
 'use strict';
 
-/**
- * Your SSCCE goes inside this function.
- * 
- * Please do everything inside it, including requiring dependencies.
- * 
- * Two parameters, described below, are automatically passed to this
- * function for your convenience. You should use them in your SSCCE.
- * 
- * @param {function(options)} createSequelizeInstance This parameter
- * is a function that you should call to create the sequelize instance
- * for you. You should use this instead of `new Sequelize(...)` since
- * it will automatically setup every dialect in order to automatically
- * run it on all dialects once you push it to GitHub (by using Travis
- * CI and AppVeyor). You can pass options to this function, they will
- * be sent to the Sequelize constructor.
- * 
- * @param {function} log This is a convenience function to log results
- * from queries in a clean way, without all the clutter that you would
- * get from simply using `console.log`. You should use it whenever you
- * would use `console.log` unless you have a good reason not to do it.
- */
 module.exports = async function(createSequelizeInstance, log) {
-    /**
-     * Below is an example of SSCCE. Change it to your SSCCE.
-     * Recall that SSCCEs should be minimal! Try to make the shortest
-     * possible code to show your issue. The shorter your code, the
-     * more likely it is for you to get a fast response.
-     */
-
-    // Require necessary things from Sequelize
+    // SSCCE for #10943
     const { Sequelize, Op, Model, DataTypes } = require('sequelize');
-
-    // Create an instance, using the convenience function instead
-    // of the usual instantiation with `new Sequelize(...)`
     const sequelize = createSequelizeInstance({ benchmark: true });
-
-    // You can use await in your SSCCE!
     await sequelize.authenticate();
 
-    // Define some models and whatever you need for your SSCCE.
-    // Note: recall that SSCCEs should be minimal! Try to make the
-    // shortest possible code to show your issue. The shorter your
-    // code, the more likely it is for you to get a fast response
-    // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
+    const Picture = sequelize.define("picture", { name: Sequelize.STRING }, { timestamps: false });
+    const Tag = sequelize.define("tag", { name: Sequelize.STRING }, { timestamps: false });
+    Picture.belongsToMany(Tag, { through: 'fee_picture_tag' });
+    Tag.belongsToMany(Picture, { through: 'fee_picture_tag' });
 
-    // Since you defined some models above, don't forget to sync them.
-    // Using the `{ force: true }` option is not necessary because the
-    // database is always created from scratch when the SSCCE is
-    // executed after pushing to GitHub (by Travis CI and AppVeyor).
     await sequelize.sync();
 
-    // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+    async function prep() {
+        await Picture.create({ name: "pic1" });
+        await Tag.create({ name: "tag1" });
+    
+        await Picture.create({ name: "pic2" });
+        await Tag.create({ name: "tag2" });
+    
+        await Picture.create({ name: "pic3" });
+        await Tag.create({ name: "tag3" });
+    
+        await (await Picture.findByPk(1)).addTags([1, 2]);
+        await (await Picture.findByPk(2)).addTags([1, 2, 3]);
+        await (await Picture.findByPk(3)).addTags([2, 3]);
+    }
+
+    await prep();
+
+    console.log('(1) ' + '-'.repeat(50) + '\n');
+
+    log(await Picture.findAll({ include: Tag }));
+
+    console.log('(2) ' + '-'.repeat(50) + '\n');
+
+    log(await Picture.findAll({
+        distinct: true,
+        include: [{
+            model: Tag,
+            attributes: ['id', 'name'],
+        }],
+    }));
+
+    console.log('(3) ' + '-'.repeat(50) + '\n');
+
+    log(await Picture.findAll({
+        include: [{
+            model: Tag,
+            attributes: ['id', 'name'],
+            through: {
+                where: {
+                    tagId: 3,
+                },
+            },
+        }]
+    }));
+
+    console.log('(4) ' + '-'.repeat(50) + '\n');
+
+    log(await sequelize.query(`
+        SELECT
+            "picture"."id",
+            "picture"."name",
+            "tags"."id" AS "tags.id",
+            "tags"."name" AS "tags.name",
+            "tags->fee_picture_tag"."createdAt" AS "tags.fee_picture_tag.createdAt",
+            "tags->fee_picture_tag"."updatedAt" AS "tags.fee_picture_tag.updatedAt",
+            "tags->fee_picture_tag"."pictureId" AS "tags.fee_picture_tag.pictureId",
+            "tags->fee_picture_tag"."tagId" AS "tags.fee_picture_tag.tagId"
+        FROM "pictures" AS "picture"
+        LEFT OUTER JOIN (
+            "fee_picture_tag" AS "tags->fee_picture_tag"
+                INNER JOIN "tags" AS "tags"
+                    ON "tags"."id" = "tags->fee_picture_tag"."tagId"
+        )
+            ON "picture"."id" = "tags->fee_picture_tag"."pictureId"
+            WHERE "picture"."id" = 3
+        ;
+    `, { type: sequelize.QueryTypes.SELECT, model: Picture }));
 };
