@@ -39,5 +39,5 @@ module.exports = async function(createSequelizeInstance, log) {
   })
 });
 
-await sequelize.query('any query that triggers a notice or notification');
+ await client.query("DO language plpgsql $$ BEGIN RAISE NOTICE 'hello, world!'; END $$;");
 };
