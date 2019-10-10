@@ -39,5 +39,5 @@ module.exports = async function(createSequelizeInstance, log) {
   })
 });
 
- await client.query("DO language plpgsql $$ BEGIN RAISE NOTICE 'hello, world!'; END $$;");
+ await sequelize.query("DO language plpgsql $$ BEGIN RAISE NOTICE 'hello, world!'; END $$;");
 };
