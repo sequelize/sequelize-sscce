@@ -17,12 +17,12 @@ module.exports = async function(createSequelizeInstance, log) {
       name: '$user1'
     });
     const u2 = await User.create({
-      name: sequelize.fn('PGP_SYM_ENCRYPT', 'user2', 'my-key')
+      name: sequelize.fn('upper', 'user2')
     });
     let u3;
     try {
       u3 = await User.create({
-        name: sequelize.fn('PGP_SYM_ENCRYPT', 'user2', 'my-key')
+        name: sequelize.fn('upper', '$user3')
       });
     } catch (error) {
       log(error.message);
