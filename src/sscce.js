@@ -28,6 +28,6 @@ module.exports = async function(createSequelizeInstance, log) {
       log(error.message);
     }
 
-    const users = User.findAll({}, { plain: true });
+    const users = await User.findAll({}, { plain: true });
     log(users);
 };
