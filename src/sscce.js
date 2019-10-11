@@ -58,6 +58,9 @@ module.exports = async function(createSequelizeInstance, log) {
           allowNull: false,
           defaultValue: sequelize.fn('NOW',3)
         }
+    },{
+      createdAt: 'date_created',
+      updatedAt: 'date_modified',
     });
 
     // Since you defined some models above, don't forget to sync them.
