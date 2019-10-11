@@ -48,13 +48,11 @@ module.exports = async function(createSequelizeInstance, log) {
         name: DataTypes.TEXT,
         date_created: {
           type: DataTypes.DATE(3),
-          allowNull: false,
-          defaultValue: sequelize.fn('NOW',3)
+          allowNull: false
         },
         date_modified: {
           type: DataTypes.DATE(3),
-          allowNull: false,
-          defaultValue: sequelize.fn('NOW',3)
+          allowNull: false
         }
     },{
       createdAt: 'date_created',
