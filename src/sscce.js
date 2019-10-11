@@ -46,13 +46,17 @@ module.exports = async function(createSequelizeInstance, log) {
     // on your issue.
     const User = sequelize.define('User', {
         name: DataTypes.TEXT,
-        date_created: {
-          type: DataTypes.DATE(3),
-          allowNull: false
+        createdAt: {
+          field: 'date_created',
+          type: Sequelize.DATE(3),
+          allowNull: true,
+          defaultValue: Sequelize.fn('NOW', 3)
         },
-        date_modified: {
-          type: DataTypes.DATE(3),
-          allowNull: false
+        updatedAt: {
+          field: 'date_modified',
+          type: Sequelize.DATE(3),
+          allowNull: true,
+          defaultValue: Sequelize.fn('NOW', 3)
         }
     },{
       createdAt: 'date_created',
