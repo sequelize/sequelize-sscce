@@ -46,14 +46,22 @@ module.exports = async function(createSequelizeInstance, log) {
     // on your issue.
     const User = sequelize.define('User', {
         name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
+        createdAt: {
+          field: 'date_created',
+          type: Sequelize.DATE(3),
+          allowNull: true,
+          defaultValue: Sequelize.fn('NOW', 3)
+        },
+        updatedAt: {
+          field: 'date_modified',
+          type: Sequelize.DATE(3),
+          allowNull: true,
+          defaultValue: Sequelize.fn('NOW', 3)
+        }
+    },{
+      createdAt: 'date_created',
+      updatedAt: 'date_modified',
     });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
 
     // Since you defined some models above, don't forget to sync them.
     // Using the `{ force: true }` option is not necessary because the
@@ -62,6 +70,8 @@ module.exports = async function(createSequelizeInstance, log) {
     await sequelize.sync();
 
     // Call your stuff to show the problem...
+    await User.create({name: 'create, with milliseconds'})
+    await User.upsert({name: 'upsert, without milliseconds'});
     log(await User.findAll()); // The result is empty!! :O
     // Of course in this case it is not a bug, we didn't insert
     // anything!
