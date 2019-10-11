@@ -65,8 +65,8 @@ module.exports = async function(createSequelizeInstance, log) {
     await sequelize.sync();
 
     // Call your stuff to show the problem...
-    User.create({name: 'create, with milliseconds'})
-    User.upsert({name: 'upsert, without milliseconds'});
+    await User.create({name: 'create, with milliseconds'})
+    await User.upsert({name: 'upsert, without milliseconds'});
     log(await User.findAll()); // The result is empty!! :O
     // Of course in this case it is not a bug, we didn't insert
     // anything!
