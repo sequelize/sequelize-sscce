@@ -44,6 +44,8 @@ module.exports = async function(createSequelizeInstance, log) {
     // shortest possible code to show your issue. The shorter your
     // code, the more likely it is for you to get a fast response
     // on your issue.
+
+    // if using postgres, use BLOB type
     const Article = sequelize.define('Article', {
         id: {
             primaryKey: true,
