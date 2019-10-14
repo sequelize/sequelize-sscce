@@ -44,16 +44,26 @@ module.exports = async function(createSequelizeInstance, log) {
     // shortest possible code to show your issue. The shorter your
     // code, the more likely it is for you to get a fast response
     // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
+    const Article = sequelize.define('Article', {
+        id: {
+            primaryKey: true,
+            type: 'BINARY(16)',
+            defaultValue: Buffer.alloc(16)
+        }
     });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
+    const Tag = sequelize.define('Tag', {
+        id: {
+            primaryKey: true,
+            type: 'BINARY(16)',
+            defaultValue: Buffer.alloc(16)
+        }
     });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
+    Article.belongsToMany(Tag, {
+        through: 'ArticleTag'
+    });
+    Tag.belongsToMany(Article, {
+        through: 'ArticleTag'
+    });
 
     // Since you defined some models above, don't forget to sync them.
     // Using the `{ force: true }` option is not necessary because the
@@ -62,7 +72,11 @@ module.exports = async function(createSequelizeInstance, log) {
     await sequelize.sync();
 
     // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+    const tag = await Tag.create();
+    const article = await Article.create();
+    await article.addTag(tag);
+    await article.save();
+
+    const alreadyAssociated = await article.hasTag(tag);
+    console.log(alreadyAssociated);//expect is true, but actual is false
 };
