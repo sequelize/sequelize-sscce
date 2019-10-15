@@ -44,25 +44,25 @@ module.exports = async function(createSequelizeInstance, log) {
     // shortest possible code to show your issue. The shorter your
     // code, the more likely it is for you to get a fast response
     // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
+    const Person = sequelize.define('Person', {
+        name: DataTypes.TEXT
     });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
+  
+    person = Person.create({ name: 'Original Name'})
+    await Person.update({ updatedAt: new Date('02-26-1991')}, {where: { id: person.id }, silent: true})
+    // [ 0 ]
 
-    // Since you defined some models above, don't forget to sync them.
-    // Using the `{ force: true }` option is not necessary because the
-    // database is always created from scratch when the SSCCE is
-    // executed after pushing to GitHub (by Travis CI and AppVeyor).
-    await sequelize.sync();
+    await person.reload()
+    await person.updatedAt
+    
+    log(person.updatedAt);
 
-    // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+    await Person.update({ updatedAt: new Date('02-26-1991'), name: 'A New Name'}, {where: { id: person.id }, silent: true})
+    Executing (default): UPDATE "Person" SET "updatedAt"=$1,"name"=$2 WHERE "id" = $3
+    // [ 1 ]
+
+    await person.reload()
+    person.updatedAt
+    
+    log(person.updatedAt);
 };
