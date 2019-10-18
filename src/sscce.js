@@ -22,47 +22,50 @@
  * would use `console.log` unless you have a good reason not to do it.
  */
 module.exports = async function(createSequelizeInstance, log) {
-    /**
-     * Below is an example of SSCCE. Change it to your SSCCE.
-     * Recall that SSCCEs should be minimal! Try to make the shortest
-     * possible code to show your issue. The shorter your code, the
-     * more likely it is for you to get a fast response.
-     */
+  const { DataTypes } = require("sequelize");
+  const sequelize = createSequelizeInstance({
+    pool: { max: 2, acquire: 1000 },
+  });
 
-    // Require necessary things from Sequelize
-    const { Sequelize, Op, Model, DataTypes } = require('sequelize');
+  const define = table => {
+    return sequelize.define(table, {
+      id: { type: DataTypes.INTEGER, allowNull: false, primaryKey: true }
+    }, { freezeTableName: true, timestamps: false });
+  };
+  const doQuery = async (model, txn) => {
+    try {
+      await model.update({ id: Sequelize.col("id") }, { where: {}, transaction: txn });
+    } catch (e) {
+      console.log(`Query on ${model.name} failed: ${e.message}`);
+    }
+  };
+  const logPool = msg => {
+    const pool = sequelize.connectionManager.pool;
+    log(`${msg}: pool size=${pool.size} using=${pool.using} available=${pool.available}`);
+  }
 
-    // Create an instance, using the convenience function instead
-    // of the usual instantiation with `new Sequelize(...)`
-    const sequelize = createSequelizeInstance({ benchmark: true });
+  const test1 = define("test1");
+  const test2 = define("test2");
+  await sequelize.sync({ force: true });
+  await test1.create({ id: 1 });
+  await test2.create({ id: 1 });
+  logPool("Before transactions");
 
-    // You can use await in your SSCCE!
-    await sequelize.authenticate();
+  const t1 = await sequelize.transaction();
+  const t2 = await sequelize.transaction();
+  await doQuery(test1, t1);
+  await doQuery(test2, t2);
+  logPool("Before deadlock");
 
-    // Define some models and whatever you need for your SSCCE.
-    // Note: recall that SSCCEs should be minimal! Try to make the
-    // shortest possible code to show your issue. The shorter your
-    // code, the more likely it is for you to get a fast response
-    // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
+  /* One of these queries will fail. It's almost always the second one, but not 100% of the time */
+  await Promise.race([doQuery(test2, t1), doQuery(test1, t2)]);
+  logPool("After deadlock");
 
-    // Since you defined some models above, don't forget to sync them.
-    // Using the `{ force: true }` option is not necessary because the
-    // database is always created from scratch when the SSCCE is
-    // executed after pushing to GitHub (by Travis CI and AppVeyor).
-    await sequelize.sync();
-
-    // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+  /* This will time out */
+  try {
+    /*const t3 =*/ await sequelize.transaction();
+  } catch (e) {
+    log(e.stack);
+  }
+  logPool("At end");
 };
