@@ -22,7 +22,8 @@
  * would use `console.log` unless you have a good reason not to do it.
  */
 module.exports = async function(createSequelizeInstance, log) {
-  const { DataTypes } = require("sequelize");
+  if (process.env.DIALECT === "sqlite") return;
+  const { Sequelize, DataTypes } = require("sequelize");
   const sequelize = createSequelizeInstance({
     pool: { max: 2, acquire: 1000 },
   });
