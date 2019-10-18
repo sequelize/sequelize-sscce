@@ -37,7 +37,9 @@ module.exports = async function(createSequelizeInstance, log) {
     try {
       await model.update({ id: Sequelize.col("id") }, { where: {}, transaction: txn });
     } catch (e) {
-      console.log(`Query on ${model.name} failed: ${e.message}`);
+      log(`Query on ${model.name} failed: ${e.message}`);
+      log(`Transaction status: ${txn.finished}`);
+      if (!txn.finished) await txn.rollback();
     }
   };
   const logPool = msg => {
