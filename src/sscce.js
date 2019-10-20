@@ -4,10 +4,10 @@ module.exports = async function(createSequelizeInstance, log) {
     const sequelize = createSequelizeInstance();
 
     const Ship = sequelize.define('ship', {
-        name: { type: DataTypes.TEXT, unique: true }
+        name: { type: DataTypes.STRING, unique: true }
     }, { timestamps: false });
     const Captain = sequelize.define('captain', {
-        nickname: { type: DataTypes.TEXT, unique: true }
+        nickname: { type: DataTypes.STRING, unique: true }
     }, { timestamps: false });
     Ship.belongsToMany(Captain, { through: 'foobar', sourceKey: 'name', targetKey: 'nickname' });
     Captain.belongsToMany(Ship, { through: 'foobar', sourceKey: 'nickname', targetKey: 'name' });
