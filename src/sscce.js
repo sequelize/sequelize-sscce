@@ -141,9 +141,9 @@ module.exports = async function (createSequelizeInstance, log) {
     {id: '37a4cc31-5dac-4b8c-a9be-be129ffcd5be', companyName: 'PT Paragon Indonesia'}
   ];
 
-  companyPartnersData.forEach(async companyPartnerData => {
-    await companyPartner.create(companyPartnerData)
-  });
+  await Promise.all(companyPartnersData.map(companyPartnerData => {
+    return companyPartner.create(companyPartnerData)
+  }));
 
   const patientsData = [
     {id: '17657ff4-21a3-44d6-8b34-f83c5947d679', fullName: 'angga'},
@@ -208,9 +208,9 @@ module.exports = async function (createSequelizeInstance, log) {
     {id: 'ffe738a1-c7be-40f1-88a7-4640036bea8d', fullName: 'Yahya'}
   ];
 
-  patientsData.forEach(async patientData => {
-    await patient.create(patientData)
-  });
+  await Promise.all(patientsData.map(patientData => {
+    return patient.create(patientData)
+  }));
 
   const patientInsurersData = [
     {
@@ -545,9 +545,9 @@ module.exports = async function (createSequelizeInstance, log) {
     }
   ];
 
-  patientInsurersData.forEach(async patientInsurerData => {
-    await patientInsurer.create(patientInsurerData)
-  });
+  await Promise.all(patientInsurersData.map(patientInsurerData => {
+    return patientInsurer.create(patientInsurerData)
+  }));
 
   const unitsData = [
     {id: 'f2ec5dab-4dcb-4dd7-81a2-99c141dbf554', name: 'Parent'},
@@ -609,9 +609,9 @@ module.exports = async function (createSequelizeInstance, log) {
     {id: 'bb1a78a3-e6e8-4c89-a9bb-c7dccd2fc597', name: 'Poliklinik Anak'}
   ];
 
-  unitsData.forEach(async unitData => {
-    await unit.create(unitData)
-  });
+  await Promise.all(unitsData.map(unitData => {
+    return unit.create(unitData)
+  }));
 
   const inpatientsData = [
     {
@@ -874,9 +874,9 @@ module.exports = async function (createSequelizeInstance, log) {
     }
   ];
 
-  inpatientsData.forEach(async inpatientData => {
-    await inpatient.create(inpatientData)
-  });
+  await Promise.all(inpatientsData.map(inpatientData => {
+    return inpatient.create(inpatientData)
+  }));
 
   // non result option
   let nonResultOption = {
