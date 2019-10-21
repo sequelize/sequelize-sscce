@@ -28,41 +28,31 @@ module.exports = async function(createSequelizeInstance, log) {
      * possible code to show your issue. The shorter your code, the
      * more likely it is for you to get a fast response.
      */
+    const { DataTypes, Model } = require('sequelize');
+  
+    const sequelize = createSequelizeInstance({});
 
-    // Require necessary things from Sequelize
-    const { Sequelize, Op, Model, DataTypes } = require('sequelize');
+    class MyTable extends Model {
+    }
 
-    // Create an instance, using the convenience function instead
-    // of the usual instantiation with `new Sequelize(...)`
-    const sequelize = createSequelizeInstance({ benchmark: true });
+    MyTable.init({
+        parentId: {
+            type: DataTypes.INTEGER,
+            onDelete: 'RESTRICT',
+            references: {
+                model: MyTable,
+                key: 'id'
+            }
+        }
+    }, { sequelize, modelName: 'Alarms'});
 
-    // You can use await in your SSCCE!
-    await sequelize.authenticate();
+    log("Setting up...");
+    // Here the force: true isn't important, it just show that it works the first time
+    await sequelize.sync({force: true});
+  
+    const rootModel = await MyTable.build().save();
+    await MyTable.build({parentId: rootModel.id}).save();
 
-    // Define some models and whatever you need for your SSCCE.
-    // Note: recall that SSCCEs should be minimal! Try to make the
-    // shortest possible code to show your issue. The shorter your
-    // code, the more likely it is for you to get a fast response
-    // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
-
-    // Since you defined some models above, don't forget to sync them.
-    // Using the `{ force: true }` option is not necessary because the
-    // database is always created from scratch when the SSCCE is
-    // executed after pushing to GitHub (by Travis CI and AppVeyor).
-    await sequelize.sync();
-
-    // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+    log("Triggering the exception... (for sqlite, maybe other dialect as well)");
+    await sequelize.sync({force: true});
 };
