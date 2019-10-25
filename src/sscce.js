@@ -3,7 +3,7 @@ module.exports = async function(createSequelizeInstance, log) {
     const { Sequelize, DataTypes } = require('sequelize');
     const sequelize = createSequelizeInstance({ logQueryParameters: true });
 
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT }, { timestamps: false });
+    const Foo = sequelize.define('Foo', { name: DataTypes.STRING }, { timestamps: false });
     await sequelize.queryInterface.createTable('Foos', {
         id: { type: Sequelize.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
         name: {
@@ -16,7 +16,7 @@ module.exports = async function(createSequelizeInstance, log) {
     await Foo.create({ name: 'foo' });
     console.log('Unique constraint DID NOT work, otherwise an error would have been thrown above...\n');
 
-    const Bar = sequelize.define('Bar', { name: DataTypes.TEXT }, { timestamps: false });
+    const Bar = sequelize.define('Bar', { name: DataTypes.STRING }, { timestamps: false });
     await sequelize.queryInterface.createTable('Bars', {
         id: { type: Sequelize.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true },
         name: {
