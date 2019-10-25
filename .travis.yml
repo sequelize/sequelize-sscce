@@ -17,6 +17,7 @@ env:
     - SEQ_USER=sequelize_test
     - SEQ_PW=sequelize_test
     - SEQ_HOST=127.0.0.1
+    - NODE_ENV=development
 
 before_script:
   # setup docker
