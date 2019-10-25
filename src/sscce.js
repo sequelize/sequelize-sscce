@@ -47,6 +47,12 @@ module.exports = async function(createSequelizeInstance, log) {
     const User = sequelize.define('User', {
         name: DataTypes.TEXT,
         pass: DataTypes.TEXT
+    }, {
+        hooks: {
+            afterCreate: (user, options) => {
+                asynchronusReading()
+            }
+        }
     });
     const Foo = sequelize.define('Foo', {
         name: DataTypes.TEXT,
@@ -61,8 +67,34 @@ module.exports = async function(createSequelizeInstance, log) {
     // executed after pushing to GitHub (by Travis CI and AppVeyor).
     await sequelize.sync();
 
+    function readFoo() {
+        return Foo.findOne({
+            where: {
+                name: "sharker"
+            }
+        })
+    }
+
+    async function asynchronusReading() {
+        try {
+            readFoo()
+            .then(foo => {
+                console.log("Asynchronus reading completed")
+            })
+        } catch(err) {
+            console.log(err)
+        }
+    }
+
     // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+    try {
+        await User.create({
+            name: "Ratul",
+            pass: "secret"
+        })
+        console.log("Creation completed")
+    } catch(err) {
+        console.log(err)
+    }
+    
 };
