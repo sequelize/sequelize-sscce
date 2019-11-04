@@ -46,14 +46,20 @@ module.exports = async function(createSequelizeInstance, log) {
     // on your issue.
     const User = sequelize.define('User', {
         name: DataTypes.TEXT,
+        derivedName: {
+            type: DataTypes.VIRTUAL(DataTypes.STRING, ["name"]), 
+            get() {
+                return this.get("name") + " derived!";
+            },
+        },
         pass: DataTypes.TEXT
     });
     const Foo = sequelize.define('Foo', {
         name: DataTypes.TEXT,
         pass: DataTypes.TEXT
     });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
+    Foo.belongsTo(User);
+    User.hasMany(Foo);
 
     // Since you defined some models above, don't forget to sync them.
     // Using the `{ force: true }` option is not necessary because the
@@ -61,8 +67,25 @@ module.exports = async function(createSequelizeInstance, log) {
     // executed after pushing to GitHub (by Travis CI and AppVeyor).
     await sequelize.sync();
 
-    // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+    // Create sample data
+    const user = await User.create({
+        name: 'Test user',
+    });
+    const foo = await Foo.create({
+        name: 'Test foo',
+    });
+    await foo.setUser(user);
+
+    // I would expect to be able to access the `derivedName` property of
+    // the associated `User` here.
+    const users = await Foo.findAll({
+        include: [{
+            model: User,
+            attributes: ['derivedName'],
+        }],
+    });
+    log(users);
+    if (users[0].User.derivedName !== 'Test user derived!') {
+        throw new Error('Did not find expected derivedUser');
+    }
 };
