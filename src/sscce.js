@@ -96,6 +96,15 @@ module.exports = async function(createSequelizeInstance, log) {
       include: [{ model: Book, include: [{ model: Reader, where: { username: searchTerm } }] }]
     })
   )
+  
+  // This one works great without the "limit: 10"
+  // log(
+  //   await Author.findAll({
+  //     where: { [Op.or]: [{ name: searchTerm }, { nickname: searchTerm }, { '$Books.Readers.username$': searchTerm }] },
+  //     include: [{ model: Book, include: [{ model: Reader }] }],
+  //     limit: 10
+  //   })
+  // )
 }
 
 };
