@@ -39,30 +39,63 @@ module.exports = async function(createSequelizeInstance, log) {
     // You can use await in your SSCCE!
     await sequelize.authenticate();
 
-    // Define some models and whatever you need for your SSCCE.
-    // Note: recall that SSCCEs should be minimal! Try to make the
-    // shortest possible code to show your issue. The shorter your
-    // code, the more likely it is for you to get a fast response
-    // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
+    const Author = sequelize.define('Author', {
+    name: {
+      type: DataTypes.TEXT
+    },
+    nickname: {
+      type: DataTypes.TEXT
+    }
+  })
 
-    // Since you defined some models above, don't forget to sync them.
-    // Using the `{ force: true }` option is not necessary because the
-    // database is always created from scratch when the SSCCE is
-    // executed after pushing to GitHub (by Travis CI and AppVeyor).
-    await sequelize.sync();
+  const Book = sequelize.define('Book', {
+    title: {
+      type: DataTypes.TEXT
+    }
+  })
 
-    // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+  const Reader = sequelize.define('Reader', {
+    username: {
+      type: DataTypes.TEXT
+    }
+  })
+
+  Author.hasMany(Book)
+  Book.belongsTo(Author)
+  Book.hasMany(Reader)
+  Reader.belongsTo(Book)
+
+  // Since you defined some models above, don't forget to sync them.
+  // Using the `{ force: true }` option is not necessary because the
+  // database is always created from scratch when the SSCCE is
+  // executed after pushing to GitHub (by Travis CI and AppVeyor).
+  await sequelize.sync()
+
+  const searchTerm = 'Steve'
+
+  const anAuthor = await Author.create({ name: 'Jim', nickname: 'Jimbo' }).then(i => i.get({ plain: true }))
+  const aBook = await Book.create({ title: 'The Smallest Problems', AuthorId: anAuthor.id }).then(i => i.get({ plain: true }))
+  await Reader.create({ username: 'Steve', BookId: aBook.id }).then(i => i.get({ plain: true }))
+
+  /* 
+    The problem is I need to provide a result that will return the record
+    if author.name OR author.nickname OR reader.username is a match for the where clause
+
+    This only works if the search term is in Author.name or Author.nickname AND Reader.username
+
+    Changing name or nickname to Steve will return a result, but if i want to return a result
+    when only Reader.username is a match for the search term, it returns nothing. 
+
+    Proposition: allow for nested where clauses inside includes to be an OR relationship 
+    with where clause in parent where clause
+  */
+
+  log(
+    await Author.findAll({
+      where: { [Op.or]: [{ name: searchTerm }, { nickname: searchTerm }] },
+      include: [{ model: Book, include: [{ model: Reader, where: { username: searchTerm } }] }]
+    })
+  )
+}
+
 };
