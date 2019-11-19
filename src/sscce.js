@@ -44,16 +44,9 @@ module.exports = async function(createSequelizeInstance, log) {
     // shortest possible code to show your issue. The shorter your
     // code, the more likely it is for you to get a fast response
     // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
     const Foo = sequelize.define('Foo', {
         name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
     });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
 
     // Since you defined some models above, don't forget to sync them.
     // Using the `{ force: true }` option is not necessary because the
@@ -61,8 +54,15 @@ module.exports = async function(createSequelizeInstance, log) {
     // executed after pushing to GitHub (by Travis CI and AppVeyor).
     await sequelize.sync();
 
+    for (let i = 1; i < 10; ++i) {
+      await Foo.build({ name: 'Foo' + i }).save();
+    }
+    
     // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+    const { count, rows } = await User.findAndCountAll({
+      offset: 0,
+      limit: 100
+    });
+  
+    log(count + ' should be 9);
 };
