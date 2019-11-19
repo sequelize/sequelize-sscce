@@ -44,25 +44,45 @@ module.exports = async function(createSequelizeInstance, log) {
     // shortest possible code to show your issue. The shorter your
     // code, the more likely it is for you to get a fast response
     // on your issue.
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
+    const User = sequelize.define('tbl_user', {
+      name: Sequelize.STRING
     });
-
+    const Project = sequelize.define('tbl_pproject', {
+      name: Sequelize.STRING
+    });
+    const UserProject = sequelize.define('tbl_user_project', {
+      role: Sequelize.STRING
+    });
+    User.belongsToMany(Project, { as: 'projects', through: UserProject });
+    Project.belongsToMany(User, { as: 'users', through: UserProject });
+    // through is required!
+    
     // Since you defined some models above, don't forget to sync them.
     // Using the `{ force: true }` option is not necessary because the
     // database is always created from scratch when the SSCCE is
     // executed after pushing to GitHub (by Travis CI and AppVeyor).
     await sequelize.sync();
 
+    // create 9 users and 9 projects
     for (let i = 1; i < 10; ++i) {
-      await Foo.build({ name: 'Foo' + i }).save();
+        await Project.create({ name: 'Project ' + i });
+        await User.create({ name: 'Bob ' + i });
     }
+
+    // get 2 projects
+    const projects = await Project.findAll({ limit: 2 });
+    // ... and 1 user
+    const user = await User.findOne({});
     
+    // ... assign both projects with a role to that user
+    await user.setProjects(projects, { through: { role: 'manager' }})
+
     // Call your stuff to show the problem...
-    const { count, rows } = await Foo.findAndCountAll({
-      offset: 0,
-      limit: 100
+    const { count, rows } = await User.findAndCountAll({
+      include: {
+         model: Project, as: 'projects'
+      }
     });
   
-    log(count + ' should be 9');
+    log(count + ' should be ' + rows.length + '.... err... wait, what??');
 };
