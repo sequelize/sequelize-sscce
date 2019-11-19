@@ -59,7 +59,7 @@ module.exports = async function(createSequelizeInstance, log) {
     }
     
     // Call your stuff to show the problem...
-    const { count, rows } = await User.findAndCountAll({
+    const { count, rows } = await Foo.findAndCountAll({
       offset: 0,
       limit: 100
     });
