@@ -64,5 +64,5 @@ module.exports = async function(createSequelizeInstance, log) {
       limit: 100
     });
   
-    log(count + ' should be 9);
+    log(count + ' should be 9');
 };
