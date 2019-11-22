@@ -44,25 +44,61 @@ module.exports = async function(createSequelizeInstance, log) {
     // shortest possible code to show your issue. The shorter your
     // code, the more likely it is for you to get a fast response
     // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
+    const MyModel = sequelize.define('MyModel', {
+        futureUndefinedValue: { 
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        futureNewDateValue: { 
+            type: DataTypes.DATE,
+            allowNull: true
+        }
     });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
 
+   
     // Since you defined some models above, don't forget to sync them.
     // Using the `{ force: true }` option is not necessary because the
     // database is always created from scratch when the SSCCE is
     // executed after pushing to GitHub (by Travis CI and AppVeyor).
     await sequelize.sync();
 
+    // - Create a model with a value different than undefined so sequelize see the change and create the UPDATE statement
+    // - In my real case I did fetch an existing model
+    var myModel = await MyModel.create({ futureUndefinedValue: new Date(), futureNewDateValue: new Date() });
+
+    log(`Model field value before hook (in memory): futureUndefinedValue = ${myModel.futureUndefinedValue}; futureNewDateValue = ${myModel.futureNewDateValue}`);
+
+    const expectedUndefinedValue = undefined;
+    const expectedNewDateValue = new Date(2034, 10, 28, 0, 0, 0, 0);
+
+    // I setup the hook later only for the sscce so my create did push my value into database
+    MyModel.beforeSave((instance, options) => {
+        instance.futureUndefinedValue = expectedUndefinedValue;
+
+        // Just an exemple that change from hook are supported
+        instance.futureNewDateValue = expectedNewDateValue;
+        log("Hook beforeSave() called");
+    });
+
     // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
+    // Trigger my hook
+    log("Saving...");
+    await myModel.save();
+
+    log(`Model field value after hook (in memory): futureUndefinedValue = ${myModel.futureUndefinedValue}; futureNewDateValue = ${myModel.futureNewDateValue}`);
+
+    var myModelFromDatabase = await MyModel.findOne();
+    log(`Model field value from database: futureUndefinedValue = ${myModelFromDatabase.futureUndefinedValue}; futureNewDateValue = ${myModel.futureNewDateValue}`);
+   
+    // Will crash
+    if(myModelFromDatabase.futureUndefinedValue !== expectedUndefinedValue) {
+        throw new Error(`database value ${myModelFromDatabase.futureUndefinedValue} !== ${expectedUndefinedValue}`);
+    }
+
+    // Value has been persisted (won't raise the error)
+    if(myModelFromDatabase.futureNewDateValue.getTime() !== expectedNewDateValue.getTime()) {
+        throw new Error(`database value ${myModelFromDatabase.futureNewDateValue} !== ${expectedNewDateValue}`);
+    }
     // Of course in this case it is not a bug, we didn't insert
     // anything!
 };
