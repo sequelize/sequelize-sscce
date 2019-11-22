@@ -39,30 +39,174 @@ module.exports = async function(createSequelizeInstance, log) {
     // You can use await in your SSCCE!
     await sequelize.authenticate();
 
-    // Define some models and whatever you need for your SSCCE.
-    // Note: recall that SSCCEs should be minimal! Try to make the
-    // shortest possible code to show your issue. The shorter your
-    // code, the more likely it is for you to get a fast response
-    // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
+    
+    class Product extends Sequelize.Model {}
+    Product.init({
+      name: {
+         type: Sequelize.STRING(45),
+         validate: {
+            len: [1, 45]
+         }
+      },
+      sku: { 
+         type: Sequelize.STRING(16),
+         //unique: true,
+         validate: {
+            len: [3, 16]
+         }
+      },
+      categoryId: {
+         type: Sequelize.INTEGER,
+      },
+      productTypeId: {
+         type: Sequelize.INTEGER,
+      },
+   }, {
+      tableName: 'inv_products',
+      sequelize
+   });
+   
+   class ProductCategory extends Sequelize.Model {}
+   ProductCategory.init({
+      name: {
+         type: Sequelize.STRING(32),
+         validate: {
+            len: [3, 32]
+         }
+      }
+   }, {
+      freezeTableName: true,
+      tableName: 'inv_products_categories',
+      createdAt: false,
+      updatedAt: false,
+      deletedAt: false,
+      indexes: [
+         {
+           unique: true,
+           fields: ['name']
+         }
+      ],
 
-    // Since you defined some models above, don't forget to sync them.
-    // Using the `{ force: true }` option is not necessary because the
-    // database is always created from scratch when the SSCCE is
-    // executed after pushing to GitHub (by Travis CI and AppVeyor).
-    await sequelize.sync();
+      sequelize
+   }); 
 
-    // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+   class ProductType extends Sequelize.Model {}
+   ProductType.init({
+      name: {
+         type: Sequelize.STRING(32),
+         validate: {
+            len: [3, 32]
+         }
+      }
+   }, {
+      tableName: 'inv_products_types',
+      createdAt: false,
+      updatedAt: false,
+      deletedAt: false,
+      indexes: [
+         {
+           unique: true,
+           fields: ['name']
+         }
+      ],
+
+      sequelize
+   });
+
+   class ProductLocation extends Sequelize.Model {}
+   ProductLocation.init({
+      name: {
+         type: Sequelize.STRING(32),
+         validate: {
+            len: [3, 32]
+         }
+      }
+   }, {
+      tableName: 'inv_products_locations',
+      createdAt: false,
+      updatedAt: false,
+      deletedAt: false,
+      indexes: [
+         {
+           unique: true,
+           fields: ['name']
+         }
+      ],
+
+      sequelize
+   });
+
+   class ProductStock extends Sequelize.Model {}
+   ProductStock.init({
+      productId: {
+         type: Sequelize.INTEGER,
+         primaryKey: true,
+      },
+      locationId: {
+         type: Sequelize.INTEGER,
+         primaryKey: true,
+      },
+      qty: {
+         type: Sequelize.FLOAT,
+         defaultValue: 0
+      },
+   }, {
+      tableName: 'inv_products_stock',
+
+      createdAt: false,
+      //updatedAt: true,
+      deletedAt: false,
+
+      sequelize
+   });
+
+   await sequelize.sync();
+
+
+
+   // Product
+   Product.Category = Product.hasOne(ProductCategory, { foreignKey: 'id', sourceKey: 'categoryId' });
+   Product.Type = Product.hasOne(ProductType, { foreignKey: 'id', sourceKey: 'productTypeId' });
+   Product.Locations = Product.belongsToMany(ProductLocation, { through: ProductStock, foreignKey: 'productId', otherKey: 'locationId' });
+   Product.ALL = [ Product.Category, Product.Type, Product.Locations ];
+
+   // ProductLocation
+   ProductLocation.Product = ProductLocation.belongsToMany(Product, { through: ProductStock, foreignKey: 'locationId', otherKey: 'productId' });
+   ProductLocation.ALL = [ ProductLocation.Product ];
+
+   // ProductStock
+   ProductStock.hasOne(Product, { foreignKey: 'id', sourceKey: 'productId' });
+   ProductStock.hasOne(ProductLocation, { foreignKey: 'id', sourceKey: 'locationId' });
+
+   await sequelize.sync();
+
+
+   await ProductLocation.create({ name: 'Office' });
+   await ProductType.create({ name: 'Pencil' });
+   await ProductCategory.create({ name: 'Supply' });
+
+
+   const model = {
+      id: null,
+      sku: 'BLM-01',
+      name: 'Blue Marker',
+      ProductType: { id: 1, name: 'Pencil' },
+      productTypeId: 1,
+      ProductCategory: { id: 1, name: 'Supply' },
+      categoryId: 1,
+      ProductLocations: [ { id: 1, name: 'Office', ProductStock: { qty: 34 } } ]
+   };
+
+   try {
+      await Product.create(model, { include: [ Product.Locations ] });
+   } catch (e) {
+      log(e);
+   }
+
+   const product = await Product.findOne({ include: Product.ALL });
+
+   log(product.toJSON());
+  
+  
+  
 };
