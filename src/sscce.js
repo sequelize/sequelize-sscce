@@ -22,47 +22,26 @@
  * would use `console.log` unless you have a good reason not to do it.
  */
 module.exports = async function(createSequelizeInstance, log) {
-    /**
-     * Below is an example of SSCCE. Change it to your SSCCE.
-     * Recall that SSCCEs should be minimal! Try to make the shortest
-     * possible code to show your issue. The shorter your code, the
-     * more likely it is for you to get a fast response.
-     */
+    if (process.env.DIALECT !== "postgres") return;
 
-    // Require necessary things from Sequelize
-    const { Sequelize, Op, Model, DataTypes } = require('sequelize');
-
-    // Create an instance, using the convenience function instead
-    // of the usual instantiation with `new Sequelize(...)`
     const sequelize = createSequelizeInstance({ benchmark: true });
 
-    // You can use await in your SSCCE!
-    await sequelize.authenticate();
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-    // Define some models and whatever you need for your SSCCE.
-    // Note: recall that SSCCEs should be minimal! Try to make the
-    // shortest possible code to show your issue. The shorter your
-    // code, the more likely it is for you to get a fast response
-    // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
-
-    // Since you defined some models above, don't forget to sync them.
-    // Using the `{ force: true }` option is not necessary because the
-    // database is always created from scratch when the SSCCE is
-    // executed after pushing to GitHub (by Travis CI and AppVeyor).
-    await sequelize.sync();
-
-    // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
+    const transaction = await sequelize.transaction();
+    try {
+        // notice I did not use `await` here intentionally to show the issue
+        sequelize.query('Invalid sql code', { transaction });
+        // the line above will execute within our transaction because we allow enough time (1 second in this case)
+        await delay(1000);
+        // sequelize issues a `COMMIT` statement into PostgreSQL which results in `ROLLBACK` performed
+        await transaction.commit();
+        // but sequelize does not listen to the postgres result of `COMMIT` call and thus resolves the promise
+        // although the `.commit()` sequelize call should resulted in a rejected promise
+        log('success, although `COMMIT` postgres statement actually was rolled back');
+        log('we should have never seen these lines');
+    } catch (error) {
+        await transaction.commit();
+        log('if this message appears, Sequelize works correct');
+    }
 };
