@@ -22,47 +22,59 @@
  * would use `console.log` unless you have a good reason not to do it.
  */
 module.exports = async function(createSequelizeInstance, log) {
-    /**
-     * Below is an example of SSCCE. Change it to your SSCCE.
-     * Recall that SSCCEs should be minimal! Try to make the shortest
-     * possible code to show your issue. The shorter your code, the
-     * more likely it is for you to get a fast response.
-     */
+    if (process.env.DIALECT !== "sqlite") return;
 
     // Require necessary things from Sequelize
-    const { Sequelize, Op, Model, DataTypes } = require('sequelize');
+    const Sequelize = require('sequelize');
 
-    // Create an instance, using the convenience function instead
-    // of the usual instantiation with `new Sequelize(...)`
-    const sequelize = createSequelizeInstance({ benchmark: true });
+    class User extends Sequelize.Model {
+    }
 
-    // You can use await in your SSCCE!
-    await sequelize.authenticate();
+    class Group extends Sequelize.Model {
+    }
 
-    // Define some models and whatever you need for your SSCCE.
-    // Note: recall that SSCCEs should be minimal! Try to make the
-    // shortest possible code to show your issue. The shorter your
-    // code, the more likely it is for you to get a fast response
-    // on your issue.
-    const User = sequelize.define('User', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
+    async function doTest() {  
+        const sequelize = new Sequelize('database', 'username', 'password', {
+            dialect: 'sqlite',
+            storage: ':memory:',
+        });
 
-    // Since you defined some models above, don't forget to sync them.
-    // Using the `{ force: true }` option is not necessary because the
-    // database is always created from scratch when the SSCCE is
-    // executed after pushing to GitHub (by Travis CI and AppVeyor).
-    await sequelize.sync();
+        User.init({
+          id: {
+            type: Sequelize.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+          },
+          email: Sequelize.STRING,
+        }, { sequelize, modelName: 'users' });
 
-    // Call your stuff to show the problem...
-    log(await User.findAll()); // The result is empty!! :O
-    // Of course in this case it is not a bug, we didn't insert
-    // anything!
-};
+        Group.init({
+          id: {
+            type: Sequelize.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+          },
+          name: Sequelize.STRING,
+        }, { sequelize, modelName: 'groups' });
+
+        User.belongsToMany(Group, { through: 'userInGroups' });
+        Group.belongsToMany(User, { through: 'userInGroups' });
+
+        await sequelize.sync();
+
+        const user = await User.create({email: 'user@user.com'});
+        const group = await Group.create({name: 'userGroup'});
+
+        await user.addGroup(group);
+
+        // Note that following line prints differently between the two runs, in the first run
+        // the association is made, in the second run it's not.
+        // Changing to sequelize.define instead of User/Group.init makes both runs make the
+        // association.
+        log('userGroups', await user.getGroups().map(group => group.name));
+    }
+  
+    await doTest();
+    log('---------------------------------------');
+    await doTest();
+ };
