@@ -28,7 +28,7 @@ module.exports = async function(createSequelizeInstance, log) {
      * possible code to show your issue. The shorter your code, the
      * more likely it is for you to get a fast response.
      */
-
+    if (process.env.DIALECT !== "postgres") return;
     // Require necessary things from Sequelize
     const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
@@ -48,18 +48,29 @@ module.exports = async function(createSequelizeInstance, log) {
         name: DataTypes.TEXT,
         pass: DataTypes.TEXT
     });
-    const Foo = sequelize.define('Foo', {
-        name: DataTypes.TEXT,
-        pass: DataTypes.TEXT
-    });
-    User.belongsTo(Foo);
-    Foo.hasOne(User);
-
+    
     // Since you defined some models above, don't forget to sync them.
     // Using the `{ force: true }` option is not necessary because the
     // database is always created from scratch when the SSCCE is
     // executed after pushing to GitHub (by Travis CI and AppVeyor).
     await sequelize.sync();
+    await User.create({name: 'name', pass: 'pass'});
+    sequelize.addHook('beforeQuery', (a,b,c)=>{
+      // checking the params passed to callback
+                log(`a: ${a && Object.keys(a)}`)
+                log(`b: ${b && Object.keys(b)}`)
+                log(`c: ${c && Object.keys(c)}`)
+    
+    })
+    sequelize.addHook('afterQuery', (a,b,c)=>{
+          // checking the params passed to callback
+                log(`a: ${a && Object.keys(a)}`)
+                log(`b: ${b && Object.keys(b)}`)
+                log(`c: ${c && Object.keys(c)}`)
+    
+    })
+    let res = await sequelize.query(`update user set name = 'new name' where name = 'name' returning *`, { type: Sequelize.QueryTypes.UPDATE })
+    log(`result: ${res[0]}`)
 
     // Call your stuff to show the problem...
     log(await User.findAll()); // The result is empty!! :O
