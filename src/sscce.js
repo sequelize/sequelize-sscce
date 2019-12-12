@@ -28,7 +28,7 @@ module.exports = async function(createSequelizeInstance, log) {
      * possible code to show your issue. The shorter your code, the
      * more likely it is for you to get a fast response.
      */
-
+    if (process.env.DIALECT !== "postgres") return;
     // Require necessary things from Sequelize
     const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
