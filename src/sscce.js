@@ -54,7 +54,7 @@ module.exports = async function(createSequelizeInstance, log) {
     // database is always created from scratch when the SSCCE is
     // executed after pushing to GitHub (by Travis CI and AppVeyor).
     await sequelize.sync();
-    User.create({name: 'name', pass: 'pass'}
+    await User.create({name: 'name', pass: 'pass'});
     sequelize.addHook('beforeQuery', (a,b,c)=>{
       // checking the params passed to callback
                 log(`a: ${JSON.stringify(a)}`)
