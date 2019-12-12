@@ -58,15 +58,15 @@ module.exports = async function(createSequelizeInstance, log) {
     sequelize.addHook('beforeQuery', (a,b,c)=>{
       // checking the params passed to callback
                 log(`a: ${a && Object.keys(a)}`)
-                log(`b: ${b && Object.keys(b)}}`)
-                log(`c: ${c && Object.keys(c)}}`)
+                log(`b: ${b && Object.keys(b)}`)
+                log(`c: ${c && Object.keys(c)}`)
     
     })
     sequelize.addHook('afterQuery', (a,b,c)=>{
           // checking the params passed to callback
-                log(`a: ${a && Object.keys(a)}}`)
-                log(`b: ${b && Object.keys(b)}}`)
-                log(`c: ${c && Object.keys(c)}}`)
+                log(`a: ${a && Object.keys(a)}`)
+                log(`b: ${b && Object.keys(b)}`)
+                log(`c: ${c && Object.keys(c)}`)
     
     })
     let res = await sequelize.query(`update user set name = 'new name' where name = 'name' returning *`, { type: Sequelize.QueryTypes.UPDATE })
