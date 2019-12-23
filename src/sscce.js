@@ -11,5 +11,5 @@ module.exports = async function(createSequelizeInstance, log) {
     log(await sequelize.query(`SET TIMEZONE TO 'CET'`));
     log(await sequelize.query(`SELECT NOW()`));
     log(await Foo.create({ name: 'xyz' }));
-    log(await sequelize.query(`SELECT createdAt FROM Foos`));
+    log(await sequelize.query(`SELECT createdAt FROM "Foos"`));
 };
