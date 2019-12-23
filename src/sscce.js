@@ -1,7 +1,7 @@
 'use strict';
 
 const { tz } = require('moment-timezone');
-tz.setDefault('UTC'); // Or another timezone
+tz.setDefault('CAT'); // Or another timezone
 
 module.exports = async function(createSequelizeInstance, log) {
     const { Sequelize, Op, Model, DataTypes } = require('sequelize');
