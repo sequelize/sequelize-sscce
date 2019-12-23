@@ -29,12 +29,12 @@ module.exports = async function(createSequelizeInstance, log) {
      * more likely it is for you to get a fast response.
      */
 
-    // Require necessary things from Sequelize
+    // Require the necessary things from Sequelize
     const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
     // Create an instance, using the convenience function instead
     // of the usual instantiation with `new Sequelize(...)`
-    const sequelize = createSequelizeInstance({ benchmark: true });
+    const sequelize = createSequelizeInstance({ logQueryParameters: true, benchmark: true });
 
     // You can use await in your SSCCE!
     await sequelize.authenticate();

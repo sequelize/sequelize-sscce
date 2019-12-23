@@ -2,9 +2,11 @@
 
 require('./global-adjusts');
 
+const jsonStringifySafe = require('json-stringify-safe');
+
 function log(...args) {
     console.log.apply(console, args.map(arg => {
-        return JSON.stringify(arg, null, 2);
+        return jsonStringifySafe(arg, null, 2);
     }));
 }
 
