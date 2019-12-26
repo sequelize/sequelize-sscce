@@ -16,11 +16,13 @@ module.exports = async function(createSequelizeInstance, log) {
     });
 
     await queryInterface.addColumn('Person', 'petName', { type: DataTypes.STRING });
-    await queryInterface.changeColumn('Person', 'petName', { type: DataTypes.TEXT('medium') });
-    await queryInterface.changeColumn('Person', 'petName', { type: DataTypes.INTEGER });
-    await queryInterface.changeColumn('Person', 'foo', {
-        type: DataTypes.FLOAT,
-        defaultValue: 3.14,
-        allowNull: false
-    });
+    // await queryInterface.changeColumn('Person', 'petName', { type: DataTypes.TEXT('medium') });
+    // await queryInterface.changeColumn('Person', 'petName', { type: DataTypes.INTEGER });
+    // await queryInterface.changeColumn('Person', 'foo', {
+    //     type: DataTypes.FLOAT,
+    //     defaultValue: 3.14,
+    //     allowNull: false
+    // });
+    await queryInterface.removeColumn('Person', 'petName');
+
 };
