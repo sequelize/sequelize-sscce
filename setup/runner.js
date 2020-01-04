@@ -2,17 +2,7 @@
 
 require('./global-adjusts');
 
-const jsonStringifySafe = require('json-stringify-safe');
-
-function log(...args) {
-    console.log.apply(console, args.map(arg => {
-        return jsonStringifySafe(arg, null, 2);
-    }));
-}
-
 async function run() {
-    const createSequelizeInstance = require('./create-sequelize-instance');
-
     console.log('\n\n' + '-'.repeat(30) + '\n\n');
 
     if (process.env.LOCAL_SSCCE) {
@@ -23,7 +13,7 @@ async function run() {
 
     console.log('\n\n' + '-'.repeat(30) + '\n\n');
 
-    await require('./../src/sscce')(createSequelizeInstance, log);
+    await require('./../src/sscce')();
 }
 
 (async () => {
