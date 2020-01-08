@@ -14,7 +14,10 @@ const log = require('./utils/log');
 module.exports = async function() {
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
-        benchmark: true
+        benchmark: true,
+        define: {
+            timestamps: false // For less clutter in the SSCCE
+        }
     });
     const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
     await sequelize.sync();
