@@ -2,12 +2,12 @@
 
 /**
  * Your SSCCE goes inside this function.
- * 
+ *
  * Please do everything inside it, including requiring dependencies.
- * 
+ *
  * Two parameters, described below, are automatically passed to this
  * function for your convenience. You should use them in your SSCCE.
- * 
+ *
  * @param {function(options)} createSequelizeInstance This parameter
  * is a function that you should call to create the sequelize instance
  * for you. You should use this instead of `new Sequelize(...)` since
@@ -15,7 +15,7 @@
  * run it on all dialects once you push it to GitHub (by using Travis
  * CI and AppVeyor). You can pass options to this function, they will
  * be sent to the Sequelize constructor.
- * 
+ *
  * @param {function} log This is a convenience function to log results
  * from queries in a clean way, without all the clutter that you would
  * get from simply using `console.log`. You should use it whenever you
@@ -41,7 +41,6 @@ module.exports = async function(createSequelizeInstance, log) {
         log('success, although `COMMIT` postgres statement actually was rolled back');
         log('we should have never seen these lines');
     } catch (error) {
-        await transaction.commit();
         log('if this message appears, Sequelize works correct');
     }
 };

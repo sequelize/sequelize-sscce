@@ -17,7 +17,7 @@
     "pg": "^7",
     "pg-hstore": "^2",
     "pg-types": "^2",
-    "sequelize": "^5",
+    "sequelize": "^3",
     "sqlite3": "^4",
     "tedious": "^6"
   },
