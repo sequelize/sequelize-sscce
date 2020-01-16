@@ -11,6 +11,7 @@
     "chalk": "^2",
     "cross-env": "^5",
     "fs-jetpack": "^2",
+    "json-stringify-safe": "^5.0.1",
     "lodash": "^4",
     "mariadb": "^2",
     "mysql2": "^1",

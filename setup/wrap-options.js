@@ -1,16 +1,15 @@
 'use strict';
 
 const _ = require('lodash');
-const Sequelize = require('sequelize');
-const allConfigs = require('./all-configs');
+const CIDBConfigs = require('./ci-db-configs');
 const logging = require('./logging');
 
-module.exports = function createSequelizeInstance(options) {
+module.exports = function wrapOptions(options) {
   if (!process.env.DIALECT) throw new Error('Dialect is not defined! Aborting.');
   const isPostgresNative = process.env.DIALECT === 'postgres-native';
   const dialect = isPostgresNative ? 'postgres' : process.env.DIALECT;
 
-  const config = allConfigs[dialect];
+  const config = CIDBConfigs[dialect];
 
   options = options || {};
   options.dialect = dialect;
@@ -18,6 +17,9 @@ module.exports = function createSequelizeInstance(options) {
 
   _.defaults(options, {
     logging,
+    database: config.database,
+    username: config.username,
+    password: config.password,
     host: config.host,
     port: config.port,
     pool: config.pool,
@@ -27,5 +29,5 @@ module.exports = function createSequelizeInstance(options) {
 
   options.__isOptionsObject__ = true;
 
-  return new Sequelize(config.database, config.username, config.password, options);
+  return options;
 };
