@@ -19,7 +19,23 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const User = sequelize.define('User', {
+        // id (default)
+        username: DataTypes.STRING,
+        firstName: DataTypes.STRING,
+        lastName: DataTypes.STRING,
+        email: DataTypes.STRING
+    });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+    await User.create({
+        username: "s0me0ne",
+        firstName: "Some",
+        lastName: "One",
+        email: "user@whatever.com"
+    });
+    const u = await User.findOne({
+        attributes: ["id", "username", "firstName", "lastName", "email"],
+        where: { email: "user@whatever.com" }
+    });
+    await u.destroy();
 };
