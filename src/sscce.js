@@ -19,7 +19,27 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Category = sequelize.define('category', {
+        // id: {
+        //     type: Sequelize.INTEGER,
+        //     primaryKey: true,
+        //     allowNull: false,
+        //     unique: true,
+        //     autoIncrement: false
+        // },
+        name: {
+            type: DataTypes.STRING
+        },
+        type: {
+            type: DataTypes.ENUM,
+            values: [
+                'bundle',
+                'goals_bundle',
+                'shorts_bundle',
+                'singles_bundle',
+                'goal'
+            ]
+        }
+    }, { underscored: true });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
 };
