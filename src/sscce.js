@@ -13,67 +13,37 @@ const log = require('./utils/log');
 // Your SSCCE goes inside this function.
 module.exports = async function() {
     const sequelize = createSequelizeInstance({
-      logQueryParameters: true,
-      benchmark: true,
-      define: {
-          timestamps: false // For less clutter in the SSCCE
-      },
-      dialect: 'sqlite',
-      storage: ':memory:'
+        logQueryParameters: true,
+        benchmark: true,
+        define: {
+            timestamps: false // For less clutter in the SSCCE
+        }
     });
   
-    const User = sequelize.define('users', {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true
-      },
-      username: {
-        type: Sequelize.STRING
-      }
-    });
-
+    const User = sequelize.define('users', { username: DataTypes.STRING });
     const Task = sequelize.define('tasks', {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true
-      },
-      name: {
-        type: Sequelize.STRING,
-        defaultValue: 'Untitled Task',
-      },
-      description: {
-        type: Sequelize.STRING,
-        defaultValue: '',
-      }
+        name: {
+            type: DataTypes.STRING,
+            defaultValue: 'Untitled Task',
+        },
+        description: {
+            type: DataTypes.STRING,
+            defaultValue: '',
+        }
     });
+    const Participation = sequelize.define('participates', { role: DataTypes.STRING });
 
-    const Participation = sequelize.define('participates', {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-      },
-      role: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      }
-    })
-
-    User.belongsToMany(Task, {
-      through: Participation,
-      as: { singular: 'user', plural: 'users' },
-    });
-
-    Task.belongsToMany(User, {
-      through: Participation,
-      as: { singular: 'task', plural: 'tasks' },
-    });
+    User.belongsToMany(Task, { through: Participation });
+    Task.belongsToMany(User, { through: Participation });
 
     await sequelize.sync();
-    const result = await User.findAll({
-      include: [Task.associations.tasks],
-      through: {
-        attributes: ['role']
-      }
-    })
-    log(result);
+
+    const u = await User.create({ username: 'foo' });
+    const t = await Task.create({ description: 'bar' });
+    await u.setTasks([t.id]);
+
+    log(await User.findAll({
+        include: Task,
+        through: { attributes: ['role'] }
+    }));
 };
