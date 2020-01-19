@@ -50,7 +50,7 @@ module.exports = async function() {
           { model: sequelize.models.Exercise_Metrics, as: "metrics" },
           Sequelize.fn(
             "COALESCE",
-            Sequelize.fn("array_length", Sequelize.col("tags_ids"), 1),
+            Sequelize.fn("array_length", "tags_ids", 1),
             0
           ),
           "DESC"
