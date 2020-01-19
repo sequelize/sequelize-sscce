@@ -12,6 +12,7 @@ const log = require('./utils/log');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+    if (process.env.DIALECT !== "postgres") return;
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
@@ -19,7 +20,22 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    // models
+    const Exercise = sequelize.define('Exercise', { title: DataTypes.STRING });
+    const Exercise_Metrics = sequelize.define('Exercise_Metrics', { 
+      tags_ids: { 
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
+        allowNull: false,
+        defaultValue: []
+      }
+    });
+    
+    // associations
+    Exercise.hasOne(Exercise_Metrics, { as: "metrics", foreignKey: { name: "exercise_id", allowNull: false } });
+    Exercise_Metrics.belongsTo(Exercise, { as: "exercise", foreignKey: { name: "exercise_id", allowNull: false } });
+
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+    const aExercise = await Exercise.create({ title: 'Bugzilla-42' });
+    await Exercise_Metrics.create({ exercise_id: aExercise.get("id") })
+    //log();
 };
