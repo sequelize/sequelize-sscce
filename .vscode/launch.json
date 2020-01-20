@@ -8,13 +8,11 @@
             "type": "node",
             "request": "launch",
             "name": "Debug locally with SQLite",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
+            "skipFiles": ["<node_internals>/**"],
             "program": "${workspaceFolder}\\setup\\runner.js",
             "env": {
-                "LOCAL_SSCCE": "true",
-                "DIALECT": "sqlite"
+                "LOCAL_SSCCE": "false",
+                "DIALECT": "postgres"
             }
         }
     ]

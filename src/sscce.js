@@ -11,7 +11,7 @@ const createSequelizeInstance = require('./utils/create-sequelize-instance');
 const log = require('./utils/log');
 
 // Your SSCCE goes inside this function.
-module.exports = async function() {
+module.exports = async function () {
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
@@ -19,7 +19,49 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+
+    const User = sequelize.define('User', {
+        uid: {
+            type: DataTypes.STRING(20),
+            unique: true,
+            primaryKey: true,
+            unique: {
+                args: true,
+                msg: "Uid already exists"
+            },
+            field: "uid"
+        },
+    }, { timestamps: false });
+    const Student = sequelize.define('Student', { user_uid: DataTypes.STRING, specialities: DataTypes.ARRAY(DataTypes.STRING(20)) }, { timestamps: false });
+
+    Student.belongsTo(User, { foreignKey: "user_uid", targetKey: "uid" });
+    User.hasOne(Student, { foreignKey: "user_uid", sourceKey: "uid" });
+
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+
+    log(await Student.destroy({ where: { user_uid: 'usr_1' } }))
+    log(await User.destroy({ where: { uid: 'usr_1' } }))
+
+    log(await User.create({ uid: 'usr_1' }));
+    log(await Student.create({ user_uid: 'usr_1', specialities: ["spl_1", "spl_2"] }));
+
+    let options = {};
+    options["subQuery"] = false;
+    options["distinct"] = true;
+    options["include"] = [
+        {
+            model: Student,
+            required: true,
+            attributes: [["specialities", "user_uid"]]
+        }
+    ];
+
+    options["where"] = {
+        "$Student.specialities$": {
+            [Op.contained]: ["spl_1", "spl_2"]
+        }
+    };
+
+    log(await User.findAndCountAll(options))
 };
+
