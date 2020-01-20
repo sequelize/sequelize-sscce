@@ -24,6 +24,8 @@
   },
   "scripts": {
     "start": "cross-env LOCAL_SSCCE=true DIALECT=sqlite node setup/runner.js",
+    "do-replace": "node setup/lib-replacements.js --do",
+    "undo-replace": "node setup/lib-replacements.js --undo",
     "ci": "node setup/runner.js",
     "lint": "eslint ."
   },
