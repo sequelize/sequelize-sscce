@@ -23,7 +23,7 @@
     "tedious": "^6"
   },
   "scripts": {
-    "start": "cross-env LOCAL_SSCCE=true DIALECT=sqlite node setup/runner.js",
+    "start": "cross-env LOCAL_SSCCE=false DIALECT=postgres node setup/runner.js",
     "ci": "node setup/runner.js",
     "lint": "eslint ."
   },
