@@ -63,6 +63,10 @@ module.exports = async function () {
         }
     };
 
-    log(await User.findAndCountAll(options))
+    try {
+        log(await User.findAndCountAll(options))
+    } catch (e) {
+        log(e)
+    }
 };
 
