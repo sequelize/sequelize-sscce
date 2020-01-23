@@ -13,7 +13,7 @@ const log = require('./utils/log');
 // Your SSCCE goes inside this function.
 module.exports = async function() {
   if (process.env.DIALECT !== 'mysql') return;
-  
+
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
@@ -36,10 +36,6 @@ module.exports = async function() {
     originalName: DataTypes.STRING,
   });
 
-  File.associate = models => {
-    File.LOGS = File.hasMany(models.FileLog, { as: 'logs', foreignKey: 'fileId' });
-  };
-
   const FileLog = sequelize.define('FileLog', {
     id: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -47,14 +43,6 @@ module.exports = async function() {
       autoIncrement: true,
     },
   });
-
-  FileLog.associate = models => {
-    FileLog.STATUS = FileLog.belongsTo(models.FileStatus, {
-      as: 'status',
-      foreignKey: 'statusId',
-      targetKey: 'statusId',
-    });
-  };
 
   const FileStatus = sequelize.define(
     'FileStatus',
@@ -78,6 +66,14 @@ module.exports = async function() {
       timestamps: false,
     }
   );
+
+  File.LOGS = File.hasMany(FileLog, { as: 'logs', foreignKey: 'fileId' });
+  FileLog.STATUS = FileLog.belongsTo(FileStatus, {
+    as: 'status',
+    foreignKey: 'statusId',
+    targetKey: 'statusId',
+  });
+
   await sequelize.sync();
   
   const newFile = await File.create({
