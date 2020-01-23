@@ -1,7 +1,5 @@
 'use strict';
 
-if (process.env.DIALECT !== 'mysql') return;
-
 // Require the necessary things from Sequelize
 const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
@@ -14,6 +12,8 @@ const log = require('./utils/log');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+  if (process.env.DIALECT !== 'mysql') return;
+  
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
