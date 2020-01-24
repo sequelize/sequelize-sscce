@@ -21,5 +21,7 @@ module.exports = async function() {
     });
     const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+    await Foo.create({ name: 'foo' });
+    log('#### update', await Foo.update({ name: 'bar' }, { where: { name: 'foo' } }));
+    log('#### destroy', await Foo.destroy({ where: { name: 'bar' } }));
 };
