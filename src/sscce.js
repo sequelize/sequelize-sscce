@@ -1,25 +1,27 @@
 'use strict';
 
-// Require the necessary things from Sequelize
-const { Sequelize, Op, Model, DataTypes } = require('sequelize');
-
-// This function should be used instead of `new Sequelize()`.
-// It applies the config for your SSCCE to work on CI.
 const createSequelizeInstance = require('./utils/create-sequelize-instance');
 
-// This is a utility logger that should be preferred over `console.log()`.
-const log = require('./utils/log');
-
-// Your SSCCE goes inside this function.
 module.exports = async function() {
-    const sequelize = createSequelizeInstance({
-        logQueryParameters: true,
-        benchmark: true,
-        define: {
-            timestamps: false // For less clutter in the SSCCE
-        }
-    });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+    if (process.env.DIALECT !== "postgres") return;
+
+    const sequelize = createSequelizeInstance({ benchmark: true });
+
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    const transaction = await sequelize.transaction();
+    try {
+        // notice I did not use `await` here intentionally to show the issue
+        sequelize.query('Invalid sql code', { transaction });
+        // the line above will execute within our transaction because we allow enough time (1 second in this case)
+        await delay(1000);
+        // sequelize issues a `COMMIT` statement into PostgreSQL which results in `ROLLBACK` performed
+        await transaction.commit();
+        // but sequelize does not listen to the postgres result of `COMMIT` call and thus resolves the promise
+        // although the `.commit()` sequelize call should resulted in a rejected promise
+        log('success, although `COMMIT` postgres statement actually was rolled back');
+        log('we should have never seen these lines');
+    } catch (error) {
+        log('if this message appears, Sequelize works correct');
+    }
 };
