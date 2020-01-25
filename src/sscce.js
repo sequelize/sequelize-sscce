@@ -21,5 +21,10 @@ module.exports = async function() {
     });
     const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+    for (const i = 0; i < 5; i++ ) {
+        await Foo.create({ name: 'foo' });
+    }
+    await Foo.truncate({ restartIdentity: true });
+    log(await Foo.create({ name: 'bar' }));
+    log(await Foo.findOne());
 };
