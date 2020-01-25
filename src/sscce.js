@@ -19,7 +19,78 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    class User extends Sequelize.Model {
+      static init(sequelize, DataTypes) {
+        return super.init(
+          {
+            uuid: {
+              type: DataTypes.UUID,
+              defaultValue: DataTypes.UUIDV4,
+            },
+            firstName: DataTypes.STRING,
+            lastName: DataTypes.STRING,
+            phoneNumber: {
+              type: DataTypes.STRING,
+              unique: true,
+            },
+            email: {
+              type: DataTypes.STRING,
+              unique: true,
+            },
+            password: DataTypes.STRING,
+            isTestData: {
+              type: DataTypes.BOOLEAN,
+              defaultValue: false,
+            },
+          },
+          {
+            sequelize,
+            timestamps: true,
+            modelName: 'User',
+          },
+        );
+      }
+    }
+
+    class Location extends Sequelize.Model {
+      static init(sequelize, DataTypes) {
+        return super.init(
+          {
+            uuid: {
+              type: DataTypes.UUID,
+              defaultValue: DataTypes.UUIDV4,
+            },
+            alias: DataTypes.STRING,
+            name1: DataTypes.STRING,
+            name2: DataTypes.STRING,
+            address1: DataTypes.STRING,
+            address2: DataTypes.STRING,
+            address3: DataTypes.STRING,
+            address4: DataTypes.STRING,
+            city: DataTypes.STRING,
+            region: DataTypes.STRING,
+            postalCode: DataTypes.STRING,
+          },
+          {
+            sequelize,
+            modelName: 'Location',
+            timestamps: true,
+          },
+
+        );
+      }
+
+      static associate() {
+        Location.hasOne(
+          User,
+        );
+      }
+    }
+
+    User.init(sequelize, Sequelize);
+    Location.init(sequelize, Sequelize);
+
+    Location.associate();
+
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
 };
