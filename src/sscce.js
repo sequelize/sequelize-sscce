@@ -19,7 +19,21 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Foo = sequelize.define('Foo', { 
+      name: DataTypes.TEXT,
+      test: {
+         type: DataTypes.BOOLEAN,
+          defaultValue: false
+      },
+      somethingThatsNull: {
+        type: DataTypes.STRING,
+        allowNull: true
+      }
+    });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+    let foo = await Foo.create({ name: 'foo' },{raw:true});
+    let foundFoos = await Foo.findAll({where:{id:foo.id},raw:true})
+    log(foo);
+    log(foundFoos);
+  
 };
