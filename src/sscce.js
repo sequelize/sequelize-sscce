@@ -1,5 +1,7 @@
 'use strict';
 
+if (process.env.DIALECT !== 'mysql') return;
+
 // Require the necessary things from Sequelize
 const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
