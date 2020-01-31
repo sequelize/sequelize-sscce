@@ -128,7 +128,7 @@ module.exports = async function() {
       }
     }
   
-    async initialize () {
+    async function initialize () {
       const states = ['DRAFT', 'PENDING', 'WORKING', 'DONE']
       
       for (let i = 0; i < 20; i++) {
