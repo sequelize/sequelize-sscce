@@ -23,5 +23,5 @@ module.exports = async function() {
     await sequelize.sync();
     log(await Foo.create({ name: 'foo' }));
   
-    log(await Foo.findAndCountAll({distinct: true}))
+    log(await Foo.count({distinct: true}))
 };
