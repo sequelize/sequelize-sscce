@@ -19,7 +19,30 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Foo = sequelize.define('Foo', {
+        name: {
+            type: DataTypes.STRING,
+            primaryKey: true,
+            allowNull: false
+        },
+        current: {
+            type: DataTypes.BOOLEAN,
+            primaryKey: true,
+            allowNull: false
+        },
+        description: DataTypes.STRING
+    });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+
+    const upsert = async (data) => {
+        try {
+            await Foo.upsert(data);
+            log(`Upserting ${JSON.stringify(data)} succeeded`);
+        } catch (err) {
+            log(`Upserting ${JSON.stringify(data)} failed: ${err.message}`);
+        }
+    };
+
+    await upsert({ name: 'foo', current: true, description: 'This one works' });
+    await upsert({ name: 'foo', current: false, description: 'This one doesn\'t work' });
 };
