@@ -26,8 +26,8 @@ module.exports = async function() {
     class ModelB extends Model {}
   
     //Initialize them
-    ModelA.init({}, {sequelize: sequelizeA, name: "ModelA"});
-    ModelB.init({}, {sequelize: sequelizeA, name: "ModelB"});
+    ModelA.init({}, {sequelize: sequelizeA, modelName: "ModelA"});
+    ModelB.init({}, {sequelize: sequelizeA, modelName: "ModelB"});
     
     //Make association
     ModelA.belongsToMany(ModelB, {through: "Assoc"});
@@ -64,8 +64,8 @@ module.exports = async function() {
     //Model classes are already defined
   
     //Initialize them
-    ModelA.init({}, {sequelize: sequelizeB, name: "ModelA"});
-    ModelB.init({}, {sequelize: sequelizeB, name: "ModelB"});
+    ModelA.init({}, {sequelize: sequelizeB, modelName: "ModelA"});
+    ModelB.init({}, {sequelize: sequelizeB, modelName: "ModelB"});
     
     //Make association
     ModelA.belongsToMany(ModelB, {through: "Assoc"});
