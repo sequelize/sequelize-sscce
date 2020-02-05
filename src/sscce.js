@@ -47,6 +47,8 @@ module.exports = async function() {
   
     await sequelizeA.close();
   
+    log("******** STEP 1 FINISHED ********");
+  
     /*
      * For this example we're finished here. 
      * Now assume that we now want to connect to another database with the same structure.
@@ -79,6 +81,8 @@ module.exports = async function() {
   
     await bModelA.save();
     await bModelB.save();
+  
+    log("Error expected now");
   
     //Add assoc between models
     await bModelA.addModelB(bModelB);
