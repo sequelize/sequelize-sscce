@@ -19,7 +19,63 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+  
+  
+  function generateId() {
+   return  Math.floor(Math.random() * 1e9).toString(16)
+  }
+
+class User extends Model {}
+User.init(
+  {
+    id: {
+      type: DataTypes.STRING,
+      primaryKey: true,
+      allowNull: false
+    },
+    username: DataTypes.STRING,
+    birthday: DataTypes.DATE
+  },
+  { sequelize, modelName: "user" }
+);
+
+!(async () => {
+  await sequelize.sync({ force: true });
+
+  const id = shortid.generate();
+  const newUser = await User.create({
+    id,
+    username: "janedoe",
+    birthday: new Date(1980, 6, 20)
+  });
+
+  console.log(`Created user ${newUser.id} with username ${newUser.username}`);
+
+  // serialize into redis cache
+  const cachedUser = JSON.stringify(newUser);
+
+  // get it back from cache later
+  const fromCache = JSON.parse(cachedUser);
+  // Build a sequelize instance to interact with as if it didn't came from the cache
+  const builtUser = User.build(fromCache);
+
+  console.log(
+    `Retrieved user from cache: ${builtUser.id} with username ${builtUser.username}`
+  );
+
+  await builtUser.validate();
+
+  try {
+    await builtUser.update({ username: `foobar${shortid.generate()}` });
+  } catch (error) {
+    console.log(error.original);
+    const users = await User.findAll();
+
+    users.forEach(user =>
+      console.log(`Found user ${user.id} with username ${user.username}`)
+    );
+  }
+})();
+
+    
 };
