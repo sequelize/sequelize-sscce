@@ -1,10 +1,10 @@
 'use strict';
 
-const _ = require('lodash');
+const isPlainObject = require('is-plain-object');
 const chalk = require('chalk');
 
 function isOptionsObject(arg) {
-    return arg && _.isPlainObject(arg) && Object.prototype.hasOwnProperty.call(arg, 'logging');
+    return arg && isPlainObject(arg) && Object.prototype.hasOwnProperty.call(arg, 'logging');
 }
 
 module.exports = function(...args) {
