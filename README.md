@@ -58,9 +58,9 @@ await sequelize.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 // The rest of the SSCCE goes here...
 ```
 
-## Creating a SSCCE for the typescript typings
+## Creating a SSCCE with TypeScript
 
-*Coming Soon!*
+Just use the [src/sscce.ts](src/sscce.ts) file instead of the [src/sscce.js](src/sscce.js) file. That's it, super easy. Also works directly from GitHub.
 
 ## Running the SSCCE locally
 
@@ -74,6 +74,13 @@ This repository also comes with built-in support for running your SSCCE locally 
 The above will run your SSCCE locally on SQLite, with no need for any other extra setup.
 
 There is no local support for other dialects; this is harder because requires setting up local databases. It is doable, but out of scope for this repository. [Learn more](https://github.com/sequelize/sequelize/blob/master/CONTRIBUTING.md#3-database).
+
+### Running the SSCCE locally for TypeScript
+
+Do the same as above, except:
+
+* Edit the `src/sscce.ts` file instead of the `src/sscce.js` file
+* Run `npm run ts` instead of `npm start`
 
 ## License
 
