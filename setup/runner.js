@@ -9,11 +9,20 @@ async function run() {
         console.gold('Warning: running the SSCCE locally will use SQLite only. To run your SSCCE in all dialects, just configure Travis CI / AppVeyor in your GitHub repository.\n');
     }
 
-    console.blue(`===== Running SSCCE for ${process.env.DIALECT.toUpperCase()} =====`);
+    if (process.env.USE_TS) {
+        console.blue(`===== Running SSCCE for ${process.env.DIALECT.toUpperCase()} with TypeScript =====`);
+    } else {
+        console.blue(`===== Running SSCCE for ${process.env.DIALECT.toUpperCase()} =====`);
+    }
 
     console.log('\n' + '-'.repeat(30) + '\n');
 
-    await require('./../src/sscce')();
+    if (process.env.USE_TS) {
+        const { run } = require('./../ts-dist/sscce'); // eslint-disable-line
+        await run();
+    } else {
+        await require('./../src/sscce')();
+    }
 }
 
 (async () => {

@@ -1,6 +1,6 @@
 'use strict';
 
-const _ = require('lodash');
+const defaults = require('lodash.defaults');
 const CIDBConfigs = require('./ci-db-configs');
 const logging = require('./logging');
 
@@ -15,7 +15,7 @@ module.exports = function wrapOptions(options) {
   options.dialect = dialect;
   if (isPostgresNative) options.native = true;
 
-  _.defaults(options, {
+  defaults(options, {
     logging,
     database: config.database,
     username: config.username,

@@ -1,0 +1,9 @@
+{
+	"extends": "@sindresorhus/tsconfig",
+	"include": [
+		"src/sscce.ts"
+	],
+	"compilerOptions": {
+		"outDir": "ts-dist"
+	}
+}

@@ -1,3 +1,4 @@
 node_modules
 npm-debug.log
 setup/mssql.json
+ts-dist
