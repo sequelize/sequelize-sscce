@@ -26,7 +26,6 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@sindresorhus/tsconfig": "0.7.0",
     "@types/bluebird": "*",
     "@types/node": "^10",
     "@types/validator": "*",

@@ -1,9 +1,18 @@
 {
-	"extends": "@sindresorhus/tsconfig",
 	"include": [
 		"src/sscce.ts"
 	],
 	"compilerOptions": {
-		"outDir": "ts-dist"
+		"outDir": "ts-dist",
+		"target": "es2018", // Node.js 10
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"declaration": true,
+		"pretty": true,
+		"newLine": "lf",
+		"stripInternal": true,
+		"strict": true,
+		"skipLibCheck": true
 	}
 }
