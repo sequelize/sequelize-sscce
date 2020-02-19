@@ -1,7 +1,7 @@
 'use strict';
 
 // Require the necessary things from Sequelize
-const { Sequelize, Op, Model, DataTypes } = require('sequelize');
+const {Sequelize, Op, Model, DataTypes} = require('sequelize');
 
 // This function should be used instead of `new Sequelize()`.
 // It applies the config for your SSCCE to work on CI.
@@ -12,14 +12,16 @@ const log = require('./utils/log');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
-    const sequelize = createSequelizeInstance({
-        logQueryParameters: true,
-        benchmark: true,
-        define: {
-            timestamps: false // For less clutter in the SSCCE
-        }
-    });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+  const sequelize = createSequelizeInstance({
+    logQueryParameters: true,
+    benchmark: true,
+    define: {
+      timestamps: false // For less clutter in the SSCCE
+    }
+  });
+  const Bar = sequelize.define('Bar', {name: DataTypes.TEXT});
+  const Foo = sequelize.define('Foo', {name: DataTypes.TEXT});
+  Foo.hasMany(Bar)
+  await sequelize.sync();
+  log(await Foo.findAndCountAll({where: {'$Bars.name$': {[Op.eq]: 'bar'}}, include: {model: Bar}, limit: 10}));
 };
