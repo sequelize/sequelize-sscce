@@ -5,8 +5,11 @@ import { Model, DataTypes } from 'sequelize';
 // It applies the config for your SSCCE to work on CI.
 import createSequelizeInstance = require('./utils/create-sequelize-instance');
 
-// This is a utility logger that should be preferred over `console.log()`.
+// This is an utility logger that should be preferred over `console.log()`.
 import log = require('./utils/log');
+
+// You can use chai assertions directly in your SSCCE if you want.
+import { expect } from 'chai';
 
 // Your SSCCE goes inside this function.
 export async function run() {
@@ -29,4 +32,6 @@ export async function run() {
     await sequelize.sync();
 
     log(await Foo.create({ name: 'TS foo' }));
+
+    expect(await Foo.count()).to.equal(1);
 }

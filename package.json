@@ -8,6 +8,7 @@
   "private": true,
   "license": "MIT",
   "dependencies": {
+    "chai": "^4.2.0",
     "chalk": "^2",
     "cross-env": "^5",
     "fs-jetpack": "^2",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@types/bluebird": "*",
+    "@types/chai": "^4.2.9",
     "@types/node": "^10",
     "@types/validator": "*",
     "@typescript-eslint/eslint-plugin": "2.16.0",
