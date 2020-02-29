@@ -22,8 +22,22 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    class TestModel extends Sequelize.Model {}
+    TestModel.init(
+      {
+        id: {
+          type: Sequelize.INTEGER,
+          primaryKey: true,
+        },
+      },
+      { sequelize, paranoid: true }
+    )
+    await TestModel.sync()
+    const t = await TestModel.create({ id: 1 })
+    expect(await TestModel.count()).to.equal(1)
+    await t.destroy()
+    expect(await TestModel.count()).to.equal(0)
+    expect(await TestModel.count({ paranoid: false })).to.equal(1)
+    await TestModel.upsert({ id: 1 }, { logging: true })
+    expect(await TestModel.count()).to.equal(1)
 };
