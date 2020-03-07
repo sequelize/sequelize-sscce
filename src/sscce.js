@@ -22,8 +22,38 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  
+    const Main = sequelize.define('Main', { 
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      name: DataTypes.TEXT
+    });
+  
+    const Sub = sequelize.define('Sub', {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      field: DataTypes.TEXT
+    });
+  
+    Main.hasMany(Sub);
+  
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+  
+    log(await Main.create({ name: 'foo', Sub: { field: 'Bar' } }, {
+      include: {
+        model: Sub
+      }
+    }));
+    log(await Main.findAll({
+      include: {
+        model: Sub
+      },
+      limit: 1
+    }));
 };
