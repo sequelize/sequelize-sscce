@@ -27,7 +27,8 @@ module.exports = async function() {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        field: 'ID'
       },
       name: DataTypes.TEXT
     });
@@ -36,7 +37,8 @@ module.exports = async function() {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        field: 'ID'
       },
       field: DataTypes.TEXT
     });
