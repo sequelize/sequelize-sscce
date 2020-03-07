@@ -45,7 +45,7 @@ module.exports = async function() {
   
     await sequelize.sync();
   
-    log(await Main.create({ name: 'foo', Sub: { field: 'Bar' } }, {
+    log(await Main.create({ name: 'foo', Subs: [{ field: 'Bar' },{ field: 'baz' }] }, {
       include: {
         model: Sub
       }
