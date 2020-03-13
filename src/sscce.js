@@ -15,6 +15,9 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+  
+    if (process.env.DIALECT !== "postgres") return;
+
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
@@ -22,8 +25,20 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Foo = sequelize.define('Foo', { foo: DataTypes.JSONB });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+    log(await Foo.create({
+      foo: {
+        bar: [1, 2, 3],
+      },
+    }));
     expect(await Foo.count()).to.equal(1);
+    
+    expect(await Foo.findOne({
+      where: {
+        foo: {
+          bar: [1, 2, 3],
+        },
+      },
+    })).to.not.be.null;
 };
