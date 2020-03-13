@@ -15,15 +15,45 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
-    const sequelize = createSequelizeInstance({
-        logQueryParameters: true,
-        benchmark: true,
-        define: {
-            timestamps: false // For less clutter in the SSCCE
-        }
-    });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+	const sequelize = createSequelizeInstance({
+		logQueryParameters: true,
+		benchmark: true
+	});
+
+	const Project = sequelize.define('project', { name: Sequelize.STRING });
+	const ProjectStatusChanges = sequelize.define('projectStatusChange', { status: Sequelize.STRING });
+	
+	Project.hasMany(ProjectStatusChanges);
+	ProjectStatusChanges.belongsTo(Project);
+	
+	const wait = ms => new Promise(r => setTimeout(r, ms));
+
+	await sequelize.sync();
+
+	await Project.create({ name: 'cool project 1' });
+	await Project.create({ name: 'cool project 2' });
+	await Project.create({ name: 'cool project 3' });
+	await ProjectStatusChanges.create({ status: 'doing', projectId: 1 });
+	await ProjectStatusChanges.create({ status: 'doing', projectId: 2 });
+	await wait(500);
+	await ProjectStatusChanges.create({ status: 'done', projectId: 1 });
+	await wait(500);
+	await ProjectStatusChanges.create({ status: 'still doing', projectId: 2 });
+	await wait(500);
+	await ProjectStatusChanges.create({ status: 'done', projectId: 2 });
+
+	// I need to find all complete projects (the ones where latest projectStatusChange.status is 'done').
+	log(await Project.findAll({
+		include: {
+			model: ProjectStatusChanges,
+			// where: {
+			// 	status: 'done'
+			// },
+			order: [['createdAt', 'DESC']],
+			limit: 1
+		},
+		where: { '$project.projectStatusChange.status$': "done" },
+		// order: [[ { model: ProjectStatusChanges }, 'createdAt', 'DESC']],
+		// subQuery: false
+	}));
 };
