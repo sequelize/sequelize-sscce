@@ -22,8 +22,55 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  
+  
+    const User = sequelize.define('users', { 
+      user_id: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+      user_name: DataTypes.STRING,
+    });
+    const Playlist = sequelize.define('playlists', { 
+      playlist_id: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+      playlist_title: DataTypes.STRING,
+    });
+    const UserPlaylist = sequelize.define('userPlaylist', { 
+      user_id: {
+        type: DataTypes.STRING,
+        references: {
+          model: User,
+          key: 'user_id'
+        }
+      },
+      playlist_id: {
+        type: DataTypes.STRING,
+        references: {
+          model: Playlist,
+          key: 'playlist_id'
+        }
+      }
+    });
+    User.belongsToMany(Playlist, { through: UserPlaylist });
+    Playlist.belongsToMany(User, { through: UserPlaylist });
+  
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    log(await User.create({user_id: '1', user_name: 'Frank'}))
+    log(await Playlist.create({playlist_id: '1', playlist_title: 'Songs 1'}))
+    log(await Playlist.create({playlist_id: '2', playlist_title: 'Songs 2'}))
+    log(await Playlist.create({playlist_id: '3', playlist_title: 'Songs 3'}))
+    log(await UserPlaylist.create({userUserId: '1', playlistPlaylistId: '1'}))
+    log(await UserPlaylist.create({userUserId: '1', playlistPlaylistId: '3'}))
+    log(await User.findByPk('1', {
+        include: [
+          {
+            model: UserPlaylist,
+            where: {user_id: '1'},
+//             attributes: ['playlist_id', 'playlist_title'],
+          },
+        ],
+      }))
 };
