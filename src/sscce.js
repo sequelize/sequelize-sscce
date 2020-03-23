@@ -5,6 +5,7 @@ const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
 // This function should be used instead of `new Sequelize()`.
 // It applies the config for your SSCCE to work on CI.
+
 const createSequelizeInstance = require('./utils/create-sequelize-instance');
 
 // This is an utility logger that should be preferred over `console.log()`.
