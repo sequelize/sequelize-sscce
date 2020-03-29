@@ -24,6 +24,7 @@ module.exports = async function() {
   })
   const Service = sequelize.define('Service', { name : DataTypes.STRING })
   const Tariff = sequelize.define('Tariff', { name : DataTypes.STRING })
+  Service.hasMany(Tariff)
   await sequelize.sync()
   Service.findAll({
     attributes : [
