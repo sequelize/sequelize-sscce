@@ -24,6 +24,11 @@ module.exports = async function() {
     });
     const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    
+    const foobar = await Foo.create({ name: 'bar' });
+    const foobiz = await Foo.create({ name: 'biz' });
+  
+    await foobar.reload({ where: { name: 'biz' } });
+  
+    console.log(foobar.name); //  biz
 };
