@@ -56,17 +56,17 @@ module.exports = async function() {
     await Root.findAll({
         logging: log,
         include: [{
-            model: Model.RequiredMain,
+            model: RequiredMain,
             required: true,
             include: [{
-                model: Model.RootSub,
+                model: RootSub,
                 separate: true,
                 include: [{
-                    model: Model.BadJoinParent,
+                    model: BadJoinParent,
                     attributes: [],
                     required: true,
                     include: [{
-                        model: Model.BadJoinChild,
+                        model: BadJoinChild,
                     }],
                 }],
             }],
@@ -81,17 +81,17 @@ module.exports = async function() {
     await Root.findAll({
         logging: log,
         include: [{
-            model: Model.RequiredMain,
+            model: RequiredMain,
             // required: true,
             include: [{
-                model: Model.RootSub,
+                model: RootSub,
                 separate: true,
                 include: [{
-                    model: Model.BadJoinParent,
+                    model: BadJoinParent,
                     attributes: [],
                     required: true,
                     include: [{
-                        model: Model.BadJoinChild,
+                        model: BadJoinChild,
                     }],
                 }],
             }],
@@ -103,17 +103,17 @@ module.exports = async function() {
     await Root.findAll({
         logging: log,
         include: [{
-            model: Model.RequiredMain,
+            model: RequiredMain,
             required: true,
             include: [{
-                model: Model.RootSub,
+                model: RootSub,
                 // separate: true,
                 include: [{
-                    model: Model.BadJoinParent,
+                    model: BadJoinParent,
                     attributes: [],
                     required: true,
                     include: [{
-                        model: Model.BadJoinChild,
+                        model: BadJoinChild,
                     }],
                 }],
             }],
@@ -125,17 +125,17 @@ module.exports = async function() {
     await Root.findAll({
         logging: log,
         include: [{
-            model: Model.RequiredMain,
+            model: RequiredMain,
             required: true,
             include: [{
-                model: Model.RootSub,
+                model: RootSub,
                 separate: true,
                 include: [{
-                    model: Model.BadJoinParent,
+                    model: BadJoinParent,
                     // attributes: [],
                     required: true,
                     include: [{
-                        model: Model.BadJoinChild,
+                        model: BadJoinChild,
                     }],
                 }],
             }],
@@ -147,16 +147,16 @@ module.exports = async function() {
     await Root.findAll({
         logging: log,
         include: [{
-            model: Model.RequiredMain,
+            model: RequiredMain,
             required: true,
             include: [{
-                model: Model.RootSub,
+                model: RootSub,
                 separate: true,
                 include: [{
-                    model: Model.BadJoinParent,
+                    model: BadJoinParent,
                     attributes: [],
                     required: true,
-                    // include: [{ model: Model.BadJoinChild }],
+                    // include: [{ model: BadJoinChild }],
                 }],
             }],
         }],
@@ -167,17 +167,17 @@ module.exports = async function() {
     await Root.findAll({
         logging: log,
         include: [{
-            model: Model.RequiredMain,
+            model: RequiredMain,
             required: true,
             include: [{
-                model: Model.RootSub,
+                model: RootSub,
                 separate: true,
                 include: [{
-                    model: Model.BadJoinParent,
+                    model: BadJoinParent,
                     attributes: [],
                     // required: true,
                     include: [{
-                        model: Model.BadJoinChild,
+                        model: BadJoinChild,
                     }],
                 }],
             }],
