@@ -35,7 +35,7 @@ export async function run() {
 
     await sequelize.sync();
   
-    await sequelize.query('ALTER TABLE Foos ADD CONSTRAINT uq_idx_causesintersection_metadata UNIQUE (causesintersection, metadata);');
+    await sequelize.query('ALTER TABLE "Foos" ADD CONSTRAINT uq_idx_causesintersection_metadata UNIQUE (causesintersection, metadata);');
 
     log(await Promise.all([
       Foo.findOrCreate({ where: { causesintersection: 'bar', metadata: { meta: 'data' } }, defaults: { name: 'foo 1' } }),
