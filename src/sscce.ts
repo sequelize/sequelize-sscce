@@ -13,6 +13,8 @@ import { expect } from 'chai';
 
 // Your SSCCE goes inside this function.
 export async function run() {
+    if (process.env.DIALECT !== "postgres") return;
+  
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
@@ -23,7 +25,8 @@ export async function run() {
 
     class Foo extends Model {};
     Foo.init({
-        name: DataTypes.TEXT
+        name: DataTypes.TEXT,
+        metadata: DataTypes.JSONB,
     }, {
         sequelize,
         modelName: 'Foo'
@@ -31,7 +34,9 @@ export async function run() {
 
     await sequelize.sync();
 
-    log(await Foo.create({ name: 'TS foo' }));
+    log(await Foo.create({ name: 'foo 1', metadata: { meta: 'data' }));
+                          
+    log(await Foo.create({ name: 'foo 1', metadata: { meta: 'data' }));
 
     expect(await Foo.count()).to.equal(1);
 }
