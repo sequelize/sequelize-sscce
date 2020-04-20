@@ -35,9 +35,10 @@ export async function run() {
 
     await sequelize.sync();
 
-    log(await Foo.create({ name: 'foo 1', causesIntersection: 'bar', metadata: { meta: 'data' } }));
-                          
-    log(await Foo.findOrCreate({ where: { causesIntersection: 'bar', metadata: { meta: 'data' } }, defaults: { name: 'foo 2' } }));
+    log(await Promise.all([
+      Foo.findOrCreate({ where: { causesIntersection: 'bar', metadata: { meta: 'data' } }, defaults: { name: 'foo 1' } }),
+      Foo.findOrCreate({ where: { causesIntersection: 'bar', metadata: { meta: 'data' } }, defaults: { name: 'foo 2' } }),
+    ]));
 
     expect(await Foo.count()).to.equal(1);
 }
