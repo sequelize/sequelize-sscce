@@ -34,9 +34,9 @@ export async function run() {
 
     await sequelize.sync();
 
-    log(await Foo.create({ name: 'foo 1', metadata: { meta: 'data' }));
+    log(await Foo.create({ name: 'foo 1', metadata: { meta: 'data' } }));
                           
-    log(await Foo.create({ name: 'foo 1', metadata: { meta: 'data' }));
+    log(await Foo.create({ name: 'foo 1', metadata: { meta: 'data' } }));
 
     expect(await Foo.count()).to.equal(1);
 }
