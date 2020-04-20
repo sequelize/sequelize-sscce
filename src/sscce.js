@@ -22,8 +22,165 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+
+    // Instantiate classes
+    class Root extends Sequelize.Model {};
+    Root.init({}, { sequelize, underscored: true });
+
+    class RequiredMain extends Sequelize.Model {};
+    RequiredMain.init({}, { sequelize, underscored: true });
+
+    class RootSub extends Sequelize.Model {};
+    RootSub.init({}, { sequelize, underscored: true });
+
+    class BadJoinParent extends Sequelize.Model {};
+    BadJoinParent.init({}, { sequelize, underscored: true });
+
+    class BadJoinChild extends Sequelize.Model {};
+    BadJoinChild.init({}, { sequelize, underscored: true });
+
+    // Create foreign keys
+    Root.belongsTo(RequiredMain);
+    RequiredMain.hasMany(RootSub);
+    RootSub.belongsTo(BadJoinParent);
+    BadJoinParent.belongsTo(BadJoinChild);
+
+    // Apply model to database
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+
+    // Create models (so "separate" sub query will be triggered)
+    const main = await RequiredMain.create({});
+    await main.createRoot({});
+
+    log('This query will fail! "Separate" subQuery tries to reference subQuery column that does not exist')
+    await Root.findAll({
+        logging: log,
+        include: [{
+            model: Model.RequiredMain,
+            required: true,
+            include: [{
+                model: Model.RootSub,
+                separate: true,
+                include: [{
+                    model: Model.BadJoinParent,
+                    attributes: [],
+                    required: true,
+                    include: [{
+                        model: Model.BadJoinChild,
+                    }],
+                }],
+            }],
+        }],
+    }).catch(log);
+
+    // Just to show that all parts of query work on their own
+    log('Following queries are valid and have valid results');
+
+    // success
+    log('Parent of Separate is not required');
+    await Root.findAll({
+        logging: log,
+        include: [{
+            model: Model.RequiredMain,
+            // required: true,
+            include: [{
+                model: Model.RootSub,
+                separate: true,
+                include: [{
+                    model: Model.BadJoinParent,
+                    attributes: [],
+                    required: true,
+                    include: [{
+                        model: Model.BadJoinChild,
+                    }],
+                }],
+            }],
+        }],
+    });
+
+    // success
+    log('Separate is not used');
+    await Root.findAll({
+        logging: log,
+        include: [{
+            model: Model.RequiredMain,
+            required: true,
+            include: [{
+                model: Model.RootSub,
+                // separate: true,
+                include: [{
+                    model: Model.BadJoinParent,
+                    attributes: [],
+                    required: true,
+                    include: [{
+                        model: Model.BadJoinChild,
+                    }],
+                }],
+            }],
+        }],
+    });
+
+    // success
+    log('Bad Join Parent uses default attributes (all, includes foreign key)');
+    await Root.findAll({
+        logging: log,
+        include: [{
+            model: Model.RequiredMain,
+            required: true,
+            include: [{
+                model: Model.RootSub,
+                separate: true,
+                include: [{
+                    model: Model.BadJoinParent,
+                    // attributes: [],
+                    required: true,
+                    include: [{
+                        model: Model.BadJoinChild,
+                    }],
+                }],
+            }],
+        }],
+    });
+
+    // success
+    log('Bad Join Parent does not have an included child');
+    await Root.findAll({
+        logging: log,
+        include: [{
+            model: Model.RequiredMain,
+            required: true,
+            include: [{
+                model: Model.RootSub,
+                separate: true,
+                include: [{
+                    model: Model.BadJoinParent,
+                    attributes: [],
+                    required: true,
+                    // include: [{ model: Model.BadJoinChild }],
+                }],
+            }],
+        }],
+    });
+
+    // success
+    log('Bad Join Parent is not required');
+    await Root.findAll({
+        logging: log,
+        include: [{
+            model: Model.RequiredMain,
+            required: true,
+            include: [{
+                model: Model.RootSub,
+                separate: true,
+                include: [{
+                    model: Model.BadJoinParent,
+                    attributes: [],
+                    // required: true,
+                    include: [{
+                        model: Model.BadJoinChild,
+                    }],
+                }],
+            }],
+        }],
+    });
 };
