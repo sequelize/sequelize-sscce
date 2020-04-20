@@ -52,26 +52,33 @@ module.exports = async function() {
     const root = await Root.create({});
     await root.createRequiredMain({});
 
+    const logSql = sql => log(sql);
+
     log('This query will fail! "Separate" subQuery tries to reference subQuery column that does not exist')
-    await Root.findAll({
-        logging: log,
-        include: [{
-            model: RequiredMain,
-            required: true,
+    try {
+        await Root.findAll({
+            logging: logSql,
             include: [{
-                model: RootSub,
-                separate: true,
+                model: RequiredMain,
+                required: true,
                 include: [{
-                    model: BadJoinParent,
-                    attributes: [],
-                    required: true,
+                    model: RootSub,
+                    separate: true,
                     include: [{
-                        model: BadJoinChild,
+                        model: BadJoinParent,
+                        attributes: [],
+                        required: true,
+                        include: [{
+                            model: BadJoinChild,
+                        }],
                     }],
                 }],
             }],
-        }],
-    }).catch(err => log(err.original));
+        });
+    } catch (err) {
+        log('SQL FAILED');
+        log(err.original);
+    }
 
     // Just to show that all parts of query work on their own
     log('Following queries are valid and have valid results');
@@ -79,7 +86,7 @@ module.exports = async function() {
     // success
     log('Parent of Separate is not required');
     await Root.findAll({
-        logging: log,
+        logging: logSql,
         include: [{
             model: RequiredMain,
             // required: true,
@@ -101,7 +108,7 @@ module.exports = async function() {
     // success
     log('Separate is not used');
     await Root.findAll({
-        logging: log,
+        logging: logSql,
         include: [{
             model: RequiredMain,
             required: true,
@@ -123,7 +130,7 @@ module.exports = async function() {
     // success
     log('Bad Join Parent uses default attributes (all, includes foreign key)');
     await Root.findAll({
-        logging: log,
+        logging: logSql,
         include: [{
             model: RequiredMain,
             required: true,
@@ -145,7 +152,7 @@ module.exports = async function() {
     // success
     log('Bad Join Parent does not have an included child');
     await Root.findAll({
-        logging: log,
+        logging: logSql,
         include: [{
             model: RequiredMain,
             required: true,
@@ -165,7 +172,7 @@ module.exports = async function() {
     // success
     log('Bad Join Parent is not required');
     await Root.findAll({
-        logging: log,
+        logging: logSql,
         include: [{
             model: RequiredMain,
             required: true,
