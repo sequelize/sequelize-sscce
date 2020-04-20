@@ -71,7 +71,7 @@ module.exports = async function() {
                 }],
             }],
         }],
-    }).catch(log);
+    }).catch(err => log(err.original));
 
     // Just to show that all parts of query work on their own
     log('Following queries are valid and have valid results');
