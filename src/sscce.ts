@@ -36,7 +36,7 @@ export async function run() {
 
     log(await Foo.create({ name: 'foo 1', metadata: { meta: 'data' } }));
                           
-    log(await Foo.create({ name: 'foo 1', metadata: { meta: 'data' } }));
+    log(await Foo.findOrCreate({ where: { metadata: { meta: 'data' } }, defaults: { name: 'foo 2' } }));
 
     expect(await Foo.count()).to.equal(1);
 }
