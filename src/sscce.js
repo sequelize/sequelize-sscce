@@ -49,8 +49,8 @@ module.exports = async function() {
     await sequelize.sync();
 
     // Create models (so "separate" sub query will be triggered)
-    const main = await RequiredMain.create({});
-    await main.createRoot({});
+    const root = await Root.create({});
+    await root.createRequiredMain({});
 
     log('This query will fail! "Separate" subQuery tries to reference subQuery column that does not exist')
     await Root.findAll({
