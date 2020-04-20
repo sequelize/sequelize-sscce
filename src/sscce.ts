@@ -26,7 +26,7 @@ export async function run() {
     class Foo extends Model {};
     Foo.init({
         name: DataTypes.TEXT,
-        causesIntersection: DataTypes.TEXT,
+        causesintersection: DataTypes.TEXT,
         metadata: DataTypes.JSONB,
     }, {
         sequelize,
@@ -34,10 +34,12 @@ export async function run() {
     });
 
     await sequelize.sync();
+  
+    await sequelize.query('ALTER TABLE Foo ADD CONSTRAINT uq_idx_causesintersection_metadata UNIQUE (causesintersection, metadata);');
 
     log(await Promise.all([
-      Foo.findOrCreate({ where: { causesIntersection: 'bar', metadata: { meta: 'data' } }, defaults: { name: 'foo 1' } }),
-      Foo.findOrCreate({ where: { causesIntersection: 'bar', metadata: { meta: 'data' } }, defaults: { name: 'foo 2' } }),
+      Foo.findOrCreate({ where: { causesintersection: 'bar', metadata: { meta: 'data' } }, defaults: { name: 'foo 1' } }),
+      Foo.findOrCreate({ where: { causesintersection: 'bar', metadata: { meta: 'data' } }, defaults: { name: 'foo 2' } }),
     ]));
 
     expect(await Foo.count()).to.equal(1);
