@@ -93,7 +93,7 @@ module.exports = async function() {
                     model: RootSub,
                     // ideally this foreign key wouldn't be necessary (used to re-join "separate" query)
                     // but could be added internally rather explicitly provided, but that is a different issue
-                    attributes: ['requiredMainId'],
+                    attributes: ['RequiredMainId'],
                     separate: true,
                     include: [{
                         model: BadJoinParent,
