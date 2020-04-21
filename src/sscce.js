@@ -83,6 +83,38 @@ module.exports = async function() {
     log('~~~~~~~~~~~~~~~~~~~~~~~');
     log('~~~~~~~~~~~~~~~~~~~~~~~');
 
+    // This seems like it is just re-using the previous failing case, but
+    // it will fail when RequiredMain's `required` is programmatically omitted in _findSeparate
+    // while the previous case will pass, showing that it is not enough of a solution
+    log('This query will also fail! "Separate" subQuery tries to reference (different) subQuery column that does not exist')
+    try {
+        await Root.findAll({
+            include: [{
+                model: RequiredMain,
+                required: true,
+                include: [{
+                    model: RootSub,
+                    attributes: ['requiredMainId'],
+                    separate: true,
+                    include: [{
+                        model: BadJoinParent,
+                        attributes: [],
+                        required: true,
+                        include: [{
+                            model: BadJoinChild,
+                        }],
+                    }],
+                }],
+            }],
+        });
+    } catch (err) {
+        log('SQL FAILED');
+        log(err.original);
+    }
+
+    log('~~~~~~~~~~~~~~~~~~~~~~~');
+    log('~~~~~~~~~~~~~~~~~~~~~~~');
+
     // Just to show that all parts of query work on their own
     log('Following queries are valid and have valid results');
 
@@ -203,4 +235,29 @@ module.exports = async function() {
             }],
         }],
     });
+
+    // success
+    log('Root of Separate query defines attributes but BadJoinParent does not');
+    await Root.findAll({
+        include: [{
+            model: RequiredMain,
+            required: true,
+            include: [{
+                model: RootSub,
+                attributes: ['requiredMainId'],
+                separate: true,
+                include: [{
+                    model: BadJoinParent,
+                    // attributes: [],
+                    required: true,
+                    include: [{
+                        model: BadJoinChild,
+                    }],
+                }],
+            }],
+        }],
+    });
+
+    log('~~~~~~~~~~~~~~~~~~~~~~~');
+    log('~~~~~~~~~~~~~~~~~~~~~~~');
 };
