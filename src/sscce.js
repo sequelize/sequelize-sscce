@@ -83,9 +83,6 @@ module.exports = async function() {
     log('~~~~~~~~~~~~~~~~~~~~~~~');
     log('~~~~~~~~~~~~~~~~~~~~~~~');
 
-    // This seems like it is just re-using the previous failing case, but
-    // it will fail when RequiredMain's `required` is programmatically omitted in _findSeparate
-    // while the previous case will pass, showing that it is not enough of a solution
     log('This query will also fail! "Separate" subQuery tries to reference (different) subQuery column that does not exist')
     try {
         await Root.findAll({
@@ -94,11 +91,12 @@ module.exports = async function() {
                 required: true,
                 include: [{
                     model: RootSub,
+                    // ideally this foreign key wouldn't be necessary (used to re-join "separate" query)
+                    // but could be added internally rather explicitly provided, but that is a different issue
                     attributes: ['requiredMainId'],
                     separate: true,
                     include: [{
                         model: BadJoinParent,
-                        attributes: [],
                         required: true,
                         include: [{
                             model: BadJoinChild,
@@ -235,29 +233,4 @@ module.exports = async function() {
             }],
         }],
     });
-
-    // success
-    log('Root of Separate query defines attributes but BadJoinParent does not');
-    await Root.findAll({
-        include: [{
-            model: RequiredMain,
-            required: true,
-            include: [{
-                model: RootSub,
-                attributes: ['requiredMainId'],
-                separate: true,
-                include: [{
-                    model: BadJoinParent,
-                    // attributes: [],
-                    required: true,
-                    include: [{
-                        model: BadJoinChild,
-                    }],
-                }],
-            }],
-        }],
-    });
-
-    log('~~~~~~~~~~~~~~~~~~~~~~~');
-    log('~~~~~~~~~~~~~~~~~~~~~~~');
 };
