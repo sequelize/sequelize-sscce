@@ -15,7 +15,7 @@
     "is-plain-object": "^3",
     "json-stringify-safe": "^5",
     "lodash.defaults": "^4",
-    "sequelize": "git+ssh://git@github.com:JacobLey/sequelize.git#9fa083ed0d818d1ec0a004b159a736b5e87111fe"
+    "sequelize": "git+https://github.com/JacobLey/sequelize.git#9fa083ed0d818d1ec0a004b159a736b5e87111fe"
   },
   "scripts": {
     "start": "cross-env LOCAL_SSCCE=true DIALECT=sqlite node setup/runner.js",
