@@ -26,4 +26,6 @@ module.exports = async function() {
     await sequelize.sync();
     log(await Foo.create({ name: 'foo' }));
     expect(await Foo.count()).to.equal(1);
+    const count = await Foo.destroy({ where: {}, truncate: true, cascade: true })
+    expect(count).to.equal(1);
 };
