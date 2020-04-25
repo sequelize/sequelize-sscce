@@ -39,7 +39,7 @@ export async function run() {
     // myFoo is typed as `Foo` here, while it should be `{ name: string }`
     const myFoo = await Foo.findOne({raw: true, attributes: ['name']})
     
-    expect(myFoo.name).to.equal(name)
+    expect(myFoo?.name).to.equal(name)
 
     expect(await Foo.count()).to.equal(1);
 }
