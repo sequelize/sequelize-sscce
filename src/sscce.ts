@@ -3,13 +3,13 @@ import { Model, DataTypes } from "sequelize";
 
 // This function should be used instead of `new Sequelize()`.
 // It applies the config for your SSCCE to work on CI.
-import createSequelizeInstance = require('./utils/create-sequelize-instance');
+import createSequelizeInstance = require("./utils/create-sequelize-instance");
 
 // This is an utility logger that should be preferred over `console.log()`.
-import log = require('./utils/log');
+import log = require("./utils/log");
 
 // You can use chai assertions directly in your SSCCE if you want.
-import { expect } from 'chai';
+import { expect } from "chai";
 
 // Your SSCCE goes inside this function.
 export async function run() {
@@ -17,13 +17,13 @@ export async function run() {
         logQueryParameters: true,
         benchmark: true,
         define: {
-            timestamps: false // For less clutter in the SSCCE
-        }
+            timestamps: false, // For less clutter in the SSCCE
+        },
     });
 
     class Foo extends Model {
-        name = "";
-        otherField = "";
+        name: string | undefined;
+        otherField: string | undefined;
     }
     Foo.init(
         {
@@ -32,18 +32,18 @@ export async function run() {
         },
         {
             sequelize,
-            modelName: 'Foo'
+            modelName: "Foo",
         }
     );
 
     await sequelize.sync();
 
-    const name = 'TS foo'
+    const name = "TS foo";
 
-    log(await Foo.create({name, otherField: 'whatever'}));
+    log(await Foo.create({ name, otherField: "whatever" }));
 
     // myFoo is typed as `Foo` here, while it should be `{ name: string }`
-    const myFoo = await Foo.findOne({ raw: true, attributes: ['name'] });
+    const myFoo = await Foo.findOne({ raw: true, attributes: ["name"] });
 
     expect(myFoo?.name).to.equal(name);
 
