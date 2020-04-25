@@ -6,11 +6,9 @@
   "parserOptions": {
     "ecmaVersion": 10
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:node/recommended"
-  ],
+  "extends": ["eslint:recommended", "plugin:node/recommended"],
   "rules": {
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "comma-style": "off"
   }
 }

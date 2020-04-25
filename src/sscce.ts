@@ -1,5 +1,5 @@
 // Require the necessary things from Sequelize
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes } from "sequelize";
 
 // This function should be used instead of `new Sequelize()`.
 // It applies the config for your SSCCE to work on CI.
@@ -22,27 +22,30 @@ export async function run() {
     });
 
     class Foo extends Model {
-        name: string,
-        otherField: string
-    };
-    Foo.init({
-        name: DataTypes.TEXT,
-        otherField: DataTypes.TEXT
-    }, {
-        sequelize,
-        modelName: 'Foo'
-    });
+        name = "";
+        otherField = "";
+    }
+    Foo.init(
+        {
+            name: DataTypes.TEXT,
+            otherField: DataTypes.TEXT,
+        },
+        {
+            sequelize,
+            modelName: 'Foo'
+        }
+    );
 
     await sequelize.sync();
-  
+
     const name = 'TS foo'
 
     log(await Foo.create({name, otherField: 'whatever'}));
-  
+
     // myFoo is typed as `Foo` here, while it should be `{ name: string }`
-    const myFoo = await Foo.findOne({raw: true, attributes: ['name']})
-    
-    expect(myFoo?.name).to.equal(name)
+    const myFoo = await Foo.findOne({ raw: true, attributes: ['name'] });
+
+    expect(myFoo?.name).to.equal(name);
 
     expect(await Foo.count()).to.equal(1);
 }
