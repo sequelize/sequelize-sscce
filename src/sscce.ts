@@ -23,7 +23,8 @@ export async function run() {
 
     class Foo extends Model {};
     Foo.init({
-        name: DataTypes.TEXT
+        name: DataTypes.TEXT,
+        otherField: DataTypes.TEXT
     }, {
         sequelize,
         modelName: 'Foo'
@@ -33,10 +34,10 @@ export async function run() {
   
     const name = 'TS foo'
 
-    log(await Foo.create({name}));
+    log(await Foo.create({name, otherField: 'whatever'}));
   
     // myFoo is typed as `Foo` here, while it should be `{ name: string }`
-    const myFoo = Foo.findOne({raw: true})
+    const myFoo = await Foo.findOne({raw: true, attributes: ['name']})
     
     expect(myFoo.name).to.equal(name)
 
