@@ -21,7 +21,10 @@ export async function run() {
         }
     });
 
-    class Foo extends Model {};
+    class Foo extends Model {
+        name: string,
+        otherField: string
+    };
     Foo.init({
         name: DataTypes.TEXT,
         otherField: DataTypes.TEXT
