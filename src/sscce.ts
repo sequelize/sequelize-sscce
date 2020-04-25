@@ -30,8 +30,15 @@ export async function run() {
     });
 
     await sequelize.sync();
+  
+    const name = 'TS foo'
 
-    log(await Foo.create({ name: 'TS foo' }));
+    log(await Foo.create({name}));
+  
+    // myFoo is typed as `Foo` here, while it should be `{ name: string }`
+    const myFoo = Foo.findOne({raw: true})
+    
+    expect(myFoo.name).to.equal(name)
 
     expect(await Foo.count()).to.equal(1);
 }
