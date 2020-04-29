@@ -15,6 +15,8 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+    if (process.env.DIALECT !== 'mssql') { return; }
+
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
@@ -22,8 +24,29 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Employee = sequelize.define('Employee', {
+        id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        badgeNumber: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            unique: 'Key_BadgeCompany'
+        },
+        companyNumber: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            unique: 'Key_BadgeCompany'
+        }
+    });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+
+    // upsert employee that may already exist
+    log(await Employee.upsert({ badgeNumber: 1, companyNumber: 1 }));
+
+    // fails because the upsert generates invalid SQL
+    expect(await Employee.count()).to.equal(1);
 };
