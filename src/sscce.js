@@ -130,21 +130,19 @@ module.exports = async function () {
   );
 
   // associations
-  User.associate = (models) => {
-    User.hasMany(models.Post, { onDelete: "CASCADE" });
-    User.hasMany(models.Like, { onDelete: "CASCADE" });
-    User.hasMany(models.Relationship, {
-      as: "followedUsers",
-      foreignKey: "followed_user_id",
-      onDelete: "CASCADE",
-    });
-    User.hasMany(models.Relationship, {
-      as: "followingUsers",
-      foreignKey: "following_user_id",
-      onDelete: "CASCADE",
-    });
-    User.hasMany(models.Comment, { onDelete: "CASCADE" });
-  };
+  User.hasMany(Post, { onDelete: "CASCADE" });
+  User.hasMany(Like, { onDelete: "CASCADE" });
+  User.hasMany(Relationship, {
+    as: "followedUsers",
+    foreignKey: "followed_user_id",
+    onDelete: "CASCADE",
+  });
+  User.hasMany(Relationship, {
+    as: "followingUsers",
+    foreignKey: "following_user_id",
+    onDelete: "CASCADE",
+  });
+  User.hasMany(Comment, { onDelete: "CASCADE" });
 
   Post.init(
     {
@@ -218,11 +216,9 @@ module.exports = async function () {
   );
 
   // association
-  Post.associate = (models) => {
-    Post.belongsTo(models.User);
-    Post.hasMany(models.Like, { onDelete: "CASCADE" });
-    Post.hasMany(models.Comment, { onDelete: "CASCADE" });
-  };
+  Post.belongsTo(User);
+  Post.hasMany(Like, { onDelete: "CASCADE" });
+  Post.hasMany(Comment, { onDelete: "CASCADE" });
 
   Comment.init(
     {
@@ -251,9 +247,7 @@ module.exports = async function () {
   );
 
   // association
-  Comment.associate = (models) => {
-    Comment.belongsTo(models.User);
-  };
+  Comment.belongsTo(User);
 
   Relationship.init(
     {
@@ -272,16 +266,14 @@ module.exports = async function () {
     }
   );
 
-  Relationship.associate = models => {
-    Relationship.belongsTo(models.User, {
-      as: "followedUsers",
-      foreignKey: "followed_user_id",
-    });
-    Relationship.belongsTo(models.User, {
-      as: "followingUsers",
-      foreignKey: "following_user_id",
-    });
-  };
+  Relationship.belongsTo(User, {
+    as: "followedUsers",
+    foreignKey: "followed_user_id",
+  });
+  Relationship.belongsTo(User, {
+    as: "followingUsers",
+    foreignKey: "following_user_id",
+  });
 
   Like.init(
     {
