@@ -223,6 +223,12 @@ module.exports = async function () {
 
   Comment.init(
     {
+      post_id: {
+        type: DataTypes.INTEGER,
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+      },
       text: {
         type: DataTypes.TEXT,
         allowNull: false,
