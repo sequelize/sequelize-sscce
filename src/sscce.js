@@ -275,7 +275,14 @@ module.exports = async function () {
   };
 
   Like.init(
-    {},
+    {
+      post_id: {
+        type: DataTypes.INTEGER,
+      },
+      user_id: {
+        type: DataTypes.INTEGER,
+      }
+    },
     {
       sequelize,
       modelName: "like",
