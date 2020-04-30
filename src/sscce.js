@@ -311,7 +311,7 @@ module.exports = async function () {
 
   //   the query
   const posts_1 = await Post.findAll({
-    where: { user_id: userIds },
+    where: { user_id: [1] },
     limit: 9,
     offset: 0,
     attributes: {
@@ -355,7 +355,7 @@ module.exports = async function () {
 
   log('------running second query-------')
   const posts_2 = await Post.findAll({
-    where: { user_id: userIds },
+    where: { user_id: [1] },
     limit: 9,
     offset: 9,
     attributes: {
