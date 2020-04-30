@@ -279,7 +279,7 @@ module.exports = async function () {
   await sequelize.sync();
 
   const user = await models.User.create({ fullName: "John Doe", email: "john@gmail.com", username: "johndoe", password: "super_password" });
-  const postObjects = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((item, index) => { mediaUrl: 'string', slug: `slug-${index}` })
+  const postObjects = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((item, index) => ({ mediaUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Eiffel_Tower_24_December_2011.jpg', slug: `slug-${index}` }))
   const bulkPosts = await models.Post.bulkCreate(postsObject);
   await user.setPosts(bulkPosts);
   await models.Like.create({ userId: user.id, postId: 1 });
