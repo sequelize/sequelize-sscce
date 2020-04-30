@@ -302,7 +302,7 @@ module.exports = async function () {
 
   const user = await User.create({ fullName: "John Doe", email: "john@gmail.com", username: "johndoe", password: "super_password" });
   const postObjects = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((item, index) => ({ mediaUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Eiffel_Tower_24_December_2011.jpg', slug: `slug-${index}` }))
-  const bulkPosts = await Post.bulkCreate(postsObject);
+  const bulkPosts = await Post.bulkCreate(postObjects);
   await user.setPosts(bulkPosts);
   await Like.create({ userId: user.id, postId: 1 });
   await Comment.create({ text: 'Lorem seqsum', postId: 1, userId: user.id });
