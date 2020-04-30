@@ -300,15 +300,15 @@ module.exports = async function () {
   //   ====
   await sequelize.sync();
 
-  const user = await models.User.create({ fullName: "John Doe", email: "john@gmail.com", username: "johndoe", password: "super_password" });
+  const user = await User.create({ fullName: "John Doe", email: "john@gmail.com", username: "johndoe", password: "super_password" });
   const postObjects = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((item, index) => ({ mediaUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Eiffel_Tower_24_December_2011.jpg', slug: `slug-${index}` }))
-  const bulkPosts = await models.Post.bulkCreate(postsObject);
+  const bulkPosts = await Post.bulkCreate(postsObject);
   await user.setPosts(bulkPosts);
-  await models.Like.create({ userId: user.id, postId: 1 });
-  await models.Comment.create({ text: 'Lorem seqsum', postId: 1, userId: user.id });
+  await Like.create({ userId: user.id, postId: 1 });
+  await Comment.create({ text: 'Lorem seqsum', postId: 1, userId: user.id });
 
   //   the query
-  const posts_1 = await models.Post.findAll({
+  const posts_1 = await Post.findAll({
     where: { user_id: userIds },
     limit: 9,
     offset: 0,
@@ -330,20 +330,20 @@ module.exports = async function () {
     ],
     include: [
       {
-        model: models.User,
+        model: User,
         attributes: ["id", "username", "avatarUrl"],
       },
       {
-        model: models.Like,
+        model: Like,
         attributes: [],
         duplicating: false,
       },
       {
-        model: models.Comment,
+        model: Comment,
         attributes: ["id", "text"],
         duplicating: false,
         include: {
-          model: models.User,
+          model: User,
           attributes: ["id", "username"],
         },
       },
@@ -352,7 +352,7 @@ module.exports = async function () {
   });
 
   log('------running second query-------')
-  const posts_2 = await models.Post.findAll({
+  const posts_2 = await Post.findAll({
     where: { user_id: userIds },
     limit: 9,
     offset: 9,
@@ -374,20 +374,20 @@ module.exports = async function () {
     ],
     include: [
       {
-        model: models.User,
+        model: User,
         attributes: ["id", "username", "avatarUrl"],
       },
       {
-        model: models.Like,
+        model: Like,
         attributes: [],
         duplicating: false,
       },
       {
-        model: models.Comment,
+        model: Comment,
         attributes: ["id", "text"],
         duplicating: false,
         include: {
-          model: models.User,
+          model: User,
           attributes: ["id", "username"],
         },
       },
