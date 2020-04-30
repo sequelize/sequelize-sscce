@@ -15,6 +15,8 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function () {
+  if (process.env.DIALECT !== "postgres") return;
+
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
@@ -245,7 +247,14 @@ module.exports = async function () {
   };
 
   Relationship.init(
-    {},
+    {
+      followed_user_id: {
+        type: DataTypes.INTEGER,
+      },
+      following_user_id: {
+        type: DataTypes.INTEGER,
+      }
+    },
     {
       sequelize,
       modelName: "relationship",
