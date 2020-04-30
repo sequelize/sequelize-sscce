@@ -125,21 +125,6 @@ module.exports = async function () {
       ],
     });
 
-  // associations
-  User.hasMany(Post, { onDelete: "CASCADE" });
-  User.hasMany(Like, { onDelete: "CASCADE" });
-  User.hasMany(Relationship, {
-    as: "followedUsers",
-    foreignKey: "followed_user_id",
-    onDelete: "CASCADE",
-  });
-  User.hasMany(Relationship, {
-    as: "followingUsers",
-    foreignKey: "following_user_id",
-    onDelete: "CASCADE",
-  });
-  User.hasMany(Comment, { onDelete: "CASCADE" });
-
   // ==========
   Post.init({
     mediaUrl: {
@@ -208,11 +193,6 @@ module.exports = async function () {
     sequelize.query("CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;")
   );
 
-  // association
-  Post.belongsTo(User);
-  Post.hasMany(Like, { onDelete: "CASCADE" });
-  Post.hasMany(Comment, { onDelete: "CASCADE" });
-
   // ==========
   Relationship.init({},
     {
@@ -222,15 +202,6 @@ module.exports = async function () {
       indexes: [{ unique: true, fields: ["followed_user_id", "following_user_id"] }]
     }
   );
-
-  Relationship.belongsTo(User, {
-    as: "followedUsers",
-    foreignKey: "followed_user_id",
-  });
-  Relationship.belongsTo(User, {
-    as: "followingUsers",
-    foreignKey: "following_user_id",
-  });
 
   // ==========
   Like.init({},
@@ -261,7 +232,31 @@ module.exports = async function () {
       underscored: true,
     });
 
-  // association
+  // associations
+  User.hasMany(Post, { onDelete: "CASCADE" });
+  User.hasMany(Like, { onDelete: "CASCADE" });
+  User.hasMany(Relationship, {
+    as: "followedUsers",
+    foreignKey: "followed_user_id",
+    onDelete: "CASCADE",
+  });
+  User.hasMany(Relationship, {
+    as: "followingUsers",
+    foreignKey: "following_user_id",
+    onDelete: "CASCADE",
+  });
+  User.hasMany(Comment, { onDelete: "CASCADE" });
+  Post.belongsTo(User);
+  Post.hasMany(Like, { onDelete: "CASCADE" });
+  Post.hasMany(Comment, { onDelete: "CASCADE" });
+  Relationship.belongsTo(User, {
+    as: "followedUsers",
+    foreignKey: "followed_user_id",
+  });
+  Relationship.belongsTo(User, {
+    as: "followingUsers",
+    foreignKey: "following_user_id",
+  });
   Comment.belongsTo(User);
 
 
