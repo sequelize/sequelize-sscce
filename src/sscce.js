@@ -15,6 +15,7 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+    if (process.env.DIALECT !== "postgres") return;
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
@@ -22,8 +23,76 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    await sequelize.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
+    const Foo = sequelize.define('Foo', {
+      id: {
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.UUID
+      },
+      name: DataTypes.TEXT
+    }, {
+      timestamps: true,
+      createdAt: 'CreatedAt',
+      updatedAt: 'UpdatedAt',
+    });
+    const Bar = sequelize.define('Bar', {
+      id: {
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+        type: DataTypes.UUID
+      },
+      name: DataTypes.TEXT
+    }, {
+      timestamps: true,
+      createdAt: 'CreatedAt',
+      updatedAt: 'UpdatedAt',
+    });
+    const FooBar = sequelize.define('FooBar', {
+      FooId: {
+        primaryKey: true,
+        type: DataTypes.UUID,
+        references: {
+          model: 'Foos',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+      BarId: {
+        primaryKey: true,
+        type: DataTypes.UUID,
+        references: {
+          model: 'Bars',
+          key: 'id',
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      },
+    }, {
+      timestamps: true,
+      createdAt: 'CreatedAt',
+      updatedAt: 'UpdatedAt',
+    });
+    Foo.belongsToMany(Bar, {
+      through: FooBar,
+    });
+    Bar.belongsToMany(Foo, {
+      through: FooBar,
+    });
+    FooBar.belongsTo(Foo);
+    FooBar.belongsTo(Bar);
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    const foosData = [{ name: 'foo1' }, { name: 'foo2' }];
+    const barsData = [{name: 'bar1'}, {name: 'bar2'}];
+    const foos = await Foo.bulkCreate(foosData);
+    const bars = await Bar.bulkCreate(barsData);
+    const fooBarsData = foos.flatMap(foo => bars.map(bar => ({
+      FooId: foo.id,
+      BarId: bar.id,
+    })));
+    const fooBars = log(await fooBarsData.bulkCreate(fooBarsData, {
+      updateOnDuplicate: ['UpdatedAt'],
+    }));
+    expect(fooBars.count()).toEqual(4);
 };
