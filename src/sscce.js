@@ -89,7 +89,7 @@ module.exports = async function() {
       Room.create({ description: 'for discussion' })
     ]);
   
-    let resSubscription await Subscription.create([{ userId: resAll[0].id, roomId: resAll[1].id, lastSeen: new Date() }]);
+    let resSubscription = await Subscription.create([{ userId: resAll[0].id, roomId: resAll[1].id, lastSeen: new Date() }]);
   
     log(await Subscription.bulkCreate([{ id: resSubscription.id, userId: resAll[0].id, roomId: resAll[1].id, lastSeen: new Date()  }], { updateOnDuplicate: ['lastSeen'] }));
     //expect(await Foo.count()).to.equal(1);
