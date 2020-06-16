@@ -14,6 +14,7 @@ const log = require('./utils/log');
 const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
+
 module.exports = async function() {
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
