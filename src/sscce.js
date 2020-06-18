@@ -11,19 +11,29 @@ const createSequelizeInstance = require('./utils/create-sequelize-instance');
 const log = require('./utils/log');
 
 // You can use chai assertions directly in your SSCCE if you want.
-const { expect } = require('chai');
+const { assert } = require('chai');
 
 // Your SSCCE goes inside this function.
-module.exports = async function() {
-    const sequelize = createSequelizeInstance({
-        logQueryParameters: true,
-        benchmark: true,
-        define: {
-            timestamps: false // For less clutter in the SSCCE
-        }
-    });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+module.exports = async function () {
+  const sequelize = createSequelizeInstance({
+    logQueryParameters: true,
+    benchmark: true,
+  });
+
+  const Foo = sequelize.define('Foo', {name: DataTypes.TEXT});
+
+  await sequelize.sync();
+
+  const foo = await Foo.create({name: 'foo'});
+
+  assert.equal(foo.createdAt, foo.updatedAt);
+
+  await foo.update({name: 'foo2'})
+  assert.isAbove(foo.updatedAt, foo.createdAt);
+
+  const previousUpdatedAt = foo.updatedAt;
+  const newUpdatedAt = new Date()
+  foo.update({updatedAt: newUpdatedAt})
+
+  assert.isAbove(foo.updatedAt, previousUpdatedAt);
 };
