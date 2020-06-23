@@ -22,8 +22,16 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Foo = sequelize.define('Foo', {
+      name: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: true,
+      }
+    });
     await sequelize.sync();
+    log(await Foo.create({ name: null }));
     log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    log(await Foo.create({ name: 'foo' }));
+    expect(await Foo.count()).to.equal(2);
 };
