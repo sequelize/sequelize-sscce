@@ -68,31 +68,31 @@ module.exports = async function() {
   
   // Here, the unique constraint on email gets removed
   let queryInterface = sequelize.getQueryInterface();
-  await queryInterface.addColumn('Users', 'discordId', {
+  await queryInterface.addColumn('Foo', 'discordId', {
     type: Sequelize.STRING,
     defaultValue: null,
     allowNull: true,
   });
-  await queryInterface.changeColumn('Users', 'email', {
+  await queryInterface.changeColumn('Foo', 'email', {
     type: Sequelize.STRING,
     allowNull: true,
   });
-  await queryInterface.changeColumn('Users', 'hash', {
+  await queryInterface.changeColumn('Foo', 'hash', {
     type: Sequelize.BLOB,
     allowNull: true,
   });
-  await queryInterface.changeColumn('Users', 'salt', {
+  await queryInterface.changeColumn('Foo', 'salt', {
     type: Sequelize.BLOB,
     allowNull: true,
   });
   
   // attempting to readd unique constraints
-  await queryInterface.changeColumn('Users', 'username', {
+  await queryInterface.changeColumn('Foo', 'username', {
     type: Sequelize.STRING,
     allowNull: false,
     unique: true,
   });
-  await queryInterface.changeColumn('Users', 'email', {
+  await queryInterface.changeColumn('Foo', 'email', {
     type: Sequelize.STRING,
     allowNull: true,
     unique: true,
