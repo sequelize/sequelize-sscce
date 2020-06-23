@@ -50,14 +50,6 @@ module.exports = async function() {
       allowNull: false,
       type: Sequelize.BLOB,
     },
-    createdAt: {
-      allowNull: false,
-      type: Sequelize.DATE,
-    },
-    updatedAt: {
-      allowNull: false,
-      type: Sequelize.DATE,
-    },
   });
   
   // Here, the unique constraint on email gets removed
@@ -143,6 +135,7 @@ module.exports = async function() {
   });
 
   // test expected behavior
+  console.log("Checking for correct bahavior");
   log(await Foo.create({ email: "test@localhost", salt: Buffer.from([0]), hash: Buffer.from([0]), name: 'foo' }));
   log(await Foo.create({ discordId: "12341234", name: 'foo2' }));
   expect(await Foo.count()).to.equal(2);
