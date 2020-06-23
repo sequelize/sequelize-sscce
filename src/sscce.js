@@ -22,14 +22,16 @@ module.exports = async function() {
           timestamps: false // For less clutter in the SSCCE
       }
   });
-  const Foo = sequelize.define('Foo', {
+  
+  let queryInterface = sequelize.getQueryInterface();
+  await queryInterface.createTable('Users', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER,
     },
-    username: {
+    name: {
       allowNull: false,
       unique: true,
       type: Sequelize.STRING,
@@ -55,19 +57,9 @@ module.exports = async function() {
       allowNull: false,
       type: Sequelize.DATE,
     },
-  }, {
-    validate: {
-      ensureCredentials() {
-        if ((!this.email || !this.hash || !this.salt) && !this.discordId) {
-          throw new Error('Incomplete login credentials. Requires social login or email/password.');
-        }
-      },
-    },
   });
-  await sequelize.sync();
   
   // Here, the unique constraint on email gets removed
-  let queryInterface = sequelize.getQueryInterface();
   await queryInterface.addColumn('Foo', 'discordId', {
     type: Sequelize.STRING,
     defaultValue: null,
@@ -86,8 +78,8 @@ module.exports = async function() {
     allowNull: true,
   });
   
-  // attempting to readd unique constraints
-  await queryInterface.changeColumn('Foo', 'username', {
+  // attempting to re add unique constraints
+  await queryInterface.changeColumn('Foo', 'name', {
     type: Sequelize.STRING,
     allowNull: false,
     unique: true,
@@ -96,6 +88,55 @@ module.exports = async function() {
     type: Sequelize.STRING,
     allowNull: true,
     unique: true,
+  });
+  
+  // load model
+  const Foo = sequelize.define('Foo', {
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        len: [1, 255],
+      },
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+      validate: {
+        isEmail: {
+          args: [
+            {
+              require_tld: process.env.NODE_ENV === 'production',
+            },
+          ],
+        },
+      },
+    },
+    salt: {
+      type: DataTypes.BLOB,
+      allowNull: true,
+      validate: {
+        len: [1, 256],
+      },
+    },
+    hash: {
+      type: DataTypes.BLOB,
+      allowNull: true,
+    },
+    discordId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  }, {
+    validate: {
+      ensureCredentials() {
+        if ((!this.email || !this.hash || !this.salt) && !this.discordId) {
+          throw new Error('Incomplete login credentials. Requires social login or email/password.');
+        }
+      },
+    },
   });
 
   // test expected behavior
