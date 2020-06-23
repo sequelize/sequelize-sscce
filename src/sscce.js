@@ -24,7 +24,8 @@ module.exports = async function() {
   });
   
   let queryInterface = sequelize.getQueryInterface();
-  await queryInterface.createTable('Users', {
+  console.log("Creating table...");
+  await queryInterface.createTable('Foo', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -60,6 +61,7 @@ module.exports = async function() {
   });
   
   // Here, the unique constraint on email gets removed
+  console.log("Performing migration 1...");
   await queryInterface.addColumn('Foo', 'discordId', {
     type: Sequelize.STRING,
     defaultValue: null,
@@ -79,6 +81,7 @@ module.exports = async function() {
   });
   
   // attempting to re add unique constraints
+  console.log("Performing migration 2...");
   await queryInterface.changeColumn('Foo', 'name', {
     type: Sequelize.STRING,
     allowNull: false,
