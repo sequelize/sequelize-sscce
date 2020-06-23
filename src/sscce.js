@@ -122,7 +122,7 @@ module.exports = async function() {
     expect(e.name).to.equal("SequelizeUniqueConstraintError");
   }
   if (success) {
-    assert.fail();
+    assert.fail("Successfully created user violating unique constraint on name");
   }
   
   success = false;
@@ -134,6 +134,6 @@ module.exports = async function() {
     expect(e.name).to.equal("SequelizeUniqueConstraintError");
   }
   if (success) {
-    assert.fail();
+    assert.fail("Successfully created user violating unique constraint on email");
   }
 };
