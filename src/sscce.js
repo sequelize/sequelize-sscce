@@ -42,14 +42,6 @@ module.exports = async function() {
       unique: true,
       type: Sequelize.STRING,
     },
-    salt: {
-      allowNull: false,
-      type: Sequelize.BLOB,
-    },
-    hash: {
-      allowNull: false,
-      type: Sequelize.BLOB,
-    },
   });
   
   // Here, the unique constraint on email gets removed
@@ -61,14 +53,6 @@ module.exports = async function() {
   });
   await queryInterface.changeColumn('Foos', 'email', {
     type: Sequelize.STRING,
-    allowNull: true,
-  });
-  await queryInterface.changeColumn('Foos', 'hash', {
-    type: Sequelize.BLOB,
-    allowNull: true,
-  });
-  await queryInterface.changeColumn('Foos', 'salt', {
-    type: Sequelize.BLOB,
     allowNull: true,
   });
   
@@ -109,17 +93,6 @@ module.exports = async function() {
         },
       },
     },
-    salt: {
-      type: DataTypes.BLOB,
-      allowNull: true,
-      validate: {
-        len: [1, 256],
-      },
-    },
-    hash: {
-      type: DataTypes.BLOB,
-      allowNull: true,
-    },
     discordId: {
       type: DataTypes.STRING,
       allowNull: true,
@@ -127,7 +100,7 @@ module.exports = async function() {
   }, {
     validate: {
       ensureCredentials() {
-        if ((!this.email || !this.hash || !this.salt) && !this.discordId) {
+        if (!this.email && !this.discordId) {
           throw new Error('Incomplete login credentials. Requires social login or email/password.');
         }
       },
@@ -136,21 +109,31 @@ module.exports = async function() {
 
   // test expected behavior
   console.log("Checking for correct bahavior");
-  log(await Foo.create({ email: "test@localhost", salt: Buffer.from([0]), hash: Buffer.from([0]), name: 'foo' }));
+  log(await Foo.create({ email: "test@localhost", name: 'foo' }));
   log(await Foo.create({ discordId: "12341234", name: 'foo2' }));
   expect(await Foo.count()).to.equal(2);
+  
+  let success = false;
   try {
-    log(await Foo.create({ discordId: "12341234", name: 'foo' }));
-    assert.fail();
+    log(await Foo.create({ discordId: "9834123434", name: 'foo' }));
+    success = true;
   }
   catch (e) {
     expect(e.name).to.equal("SequelizeUniqueConstraintError");
   }
-  try {
-    log(await Foo.create({ email: "test@localhost", salt: Buffer.from([0]), hash: Buffer.from([0]), name: 'foo3' }));
+  if (success) {
     assert.fail();
+  }
+  
+  success = false;
+  try {
+    log(await Foo.create({ email: "test@localhost", name: 'foo3' }));
+    success = true;
   }
   catch (e) {
     expect(e.name).to.equal("SequelizeUniqueConstraintError");
+  }
+  if (success) {
+    assert.fail();
   }
 };
