@@ -95,7 +95,7 @@ module.exports = async function() {
   
   // load model
   const Foo = sequelize.define('Foo', {
-    username: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
