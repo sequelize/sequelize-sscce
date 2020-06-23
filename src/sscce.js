@@ -25,7 +25,7 @@ module.exports = async function() {
   
   let queryInterface = sequelize.getQueryInterface();
   console.log("Creating table...");
-  await queryInterface.createTable('Foo', {
+  await queryInterface.createTable('Foos', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -62,32 +62,32 @@ module.exports = async function() {
   
   // Here, the unique constraint on email gets removed
   console.log("Performing migration 1...");
-  await queryInterface.addColumn('Foo', 'discordId', {
+  await queryInterface.addColumn('Foos', 'discordId', {
     type: Sequelize.STRING,
     defaultValue: null,
     allowNull: true,
   });
-  await queryInterface.changeColumn('Foo', 'email', {
+  await queryInterface.changeColumn('Foos', 'email', {
     type: Sequelize.STRING,
     allowNull: true,
   });
-  await queryInterface.changeColumn('Foo', 'hash', {
+  await queryInterface.changeColumn('Foos', 'hash', {
     type: Sequelize.BLOB,
     allowNull: true,
   });
-  await queryInterface.changeColumn('Foo', 'salt', {
+  await queryInterface.changeColumn('Foos', 'salt', {
     type: Sequelize.BLOB,
     allowNull: true,
   });
   
   // attempting to re add unique constraints
   console.log("Performing migration 2...");
-  await queryInterface.changeColumn('Foo', 'name', {
+  await queryInterface.changeColumn('Foos', 'name', {
     type: Sequelize.STRING,
     allowNull: false,
     unique: true,
   });
-  await queryInterface.changeColumn('Foo', 'email', {
+  await queryInterface.changeColumn('Foos', 'email', {
     type: Sequelize.STRING,
     allowNull: true,
     unique: true,
