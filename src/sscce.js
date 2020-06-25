@@ -14,16 +14,29 @@ const log = require('./utils/log');
 const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
-module.exports = async function() {
+module.exports = async function () {
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
         define: {
-            timestamps: false // For less clutter in the SSCCE
-        }
+            timestamps: false, // For less clutter in the SSCCE
+        },
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+
+    const Foo = sequelize.define('Foo', {
+        id: { type: DT.UUID, defaultValue: DT.UUIDV4, primaryKey: true },
+        name: { type: DT.STRING, allowNull: false, unique: true }
+    });
+
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
+  
+    // upsert the initial data, with a unique "name" 
+    const [f1] = await Foo.upsert({ name: 'foo' }, { returning: true });
     expect(await Foo.count()).to.equal(1);
+  
+    // upsert the same data as before, which should result in matching the "name" 
+    // and returning the original record & "id"    
+    const [f2] = await Foo.upsert({ name: 'foo' }, { returning: true });
+    expect(await Foo.count()).to.equal(1);
+    expect(f1.id).to.equal(f2.id);
 };
