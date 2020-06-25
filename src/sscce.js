@@ -24,8 +24,8 @@ module.exports = async function () {
     });
 
     const Foo = sequelize.define('Foo', {
-        id: { type: DT.UUID, defaultValue: DT.UUIDV4, primaryKey: true },
-        name: { type: DT.STRING, allowNull: false, unique: true }
+        id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+        name: { type: DataTypes.STRING, allowNull: false, unique: true }
     });
 
     await sequelize.sync();
