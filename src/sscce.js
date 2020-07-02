@@ -14,7 +14,7 @@ const log = require('./utils/log');
 const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
-export async function run() {
+module.exports = async function() {
   if (process.env.DIALECT !== "mssql") return;
 
   const sequelize = createSequelizeInstance({
