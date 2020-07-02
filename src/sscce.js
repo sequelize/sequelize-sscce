@@ -14,16 +14,38 @@ const log = require('./utils/log');
 const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
-module.exports = async function() {
-    const sequelize = createSequelizeInstance({
-        logQueryParameters: true,
-        benchmark: true,
-        define: {
-            timestamps: false // For less clutter in the SSCCE
-        }
-    });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+export async function run() {
+  if (process.env.DIALECT !== "mssql") return;
+
+  const sequelize = createSequelizeInstance({
+    dialect: 'mssql',
+    logQueryParameters: true,
+    benchmark: true,
+    define: {
+      timestamps: false // For less clutter in the SSCCE
+    }
+  });
+  
+  var testTable = sequelize.define("test_table", {
+      Name: {
+          type: DataTypes.STRING,
+          primaryKey: true
+      },
+      Age: {
+          type: DataTypes.INTEGER
+      },
+      IsOnline: {
+          type: DataTypes.BOOLEAN,
+          primaryKey: true
+      }
+  }, {
+      freezeTableName: true,
+      timestamps : false
+  });
+ 
+  await testTable.upsert({
+    "Name": "Charlie",
+    "Age": 24,
+    "IsOnline": false   
+  });
 };
