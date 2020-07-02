@@ -32,6 +32,7 @@ export async function run() {
     await sequelize.sync();
 
     log(await Foo.create({ name: 'TS foo' }));
+    log(await Foo.create({ name: 'Shumake' }));
 
-    expect(await Foo.count()).to.equal(1);
+    expect(await Foo.count()).to.equal(2);
 }
