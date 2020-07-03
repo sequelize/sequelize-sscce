@@ -15,6 +15,8 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+  if (process.env.DIALECT === "sqlite") return;
+
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
@@ -43,8 +45,35 @@ module.exports = async function() {
 
   await sequelize.sync();
 
-  await sequelize.transaction(async (transaction) => {
-    log(await Foo.findOrCreate({
+
+  const newSequelize = createSequelizeInstance({
+    logQueryParameters: true,
+    benchmark: true,
+    define: {
+      timestamps: false, // For less clutter in the SSCCE
+    },
+  });
+  const newFoo = sequelize.define('Foo', {
+    name: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        notEmpty: true,
+      },
+    },
+    code: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        notEmpty: true,
+      },
+    },
+  });
+
+  await newSequelize.transaction(async (transaction) => {
+    log(await newFoo.findOrCreate({
       where: {
         code: 'TEST',
       },
