@@ -40,7 +40,7 @@ module.exports = async function () {
     { returning: true }
   );
 
-  log(record1[0].toString());
-  log(record2[0].toString());
-  expect(record1[0].toString()).to.not.equal(record2[0].toString());
+  log(JSON.stringify(record1[0].dataValues));
+  log(JSON.stringify(record2[0].dataValues));
+  expect(record1[0].dataValues.data).to.not.equal(record2[0].dataValues.data);
 };
