@@ -110,5 +110,52 @@ module.exports = async function () {
   //     }
   //   ]
 
-  expect(true);
+  // Unfortunately not sure how to clean up after this
+  for (const index of indexes) {
+    // This doesn't work
+    // await queryInterface.removeConstraint("foo", index.name);
+    //
+    // It throws:
+    //     UnknownConstraintError [SequelizeUnknownConstraintError]: Constraint sqlite_autoindex_foo_1 on table foo does not exist
+    //     at SQLiteQueryInterface.removeConstraint (C:\Users\rickb\code\sequelize-sscce\node_modules\sequelize\lib\dialects\sqlite\query-interface.js:82:13)
+    //     at processTicksAndRejections (internal/process/task_queues.js:97:5)
+    //     at async module.exports (C:\Users\rickb\code\sequelize-sscce\src\sscce.js:114:12)
+    //     at async run (C:\Users\rickb\code\sequelize-sscce\setup\runner.js:24:9)
+    //     at async C:\Users\rickb\code\sequelize-sscce\setup\runner.js:30:9 {
+    //   name: 'SequelizeUnknownConstraintError',
+    //   parent: { sql: '' },
+    //   original: { sql: '' },
+    //   sql: '',
+    //   parameters: undefined,
+    //   message: 'Constraint sqlite_autoindex_foo_1 on table foo does not exist',
+    //   constraint: 'sqlite_autoindex_foo_1',
+    //   fields: undefined,
+    //   table: 'foo'
+    // }
+    //
+    //
+    // Can't remove the index either
+    // await queryInterface.removeIndex("foo", index.name);
+    // This throws an error saying indexes associated with unique constraints cannot be dropped
+    //
+    // DatabaseError [SequelizeDatabaseError]: SQLITE_ERROR: index associated with UNIQUE or PRIMARY KEY constraint cannot be dropped
+    // at Query.formatError (C:\Users\rickb\code\sequelize-sscce\node_modules\sequelize\lib\dialects\sqlite\query.js:415:16)
+    // at Query._handleQueryResponse (C:\Users\rickb\code\sequelize-sscce\node_modules\sequelize\lib\dialects\sqlite\query.js:72:18)
+    // at afterExecute (C:\Users\rickb\code\sequelize-sscce\node_modules\sequelize\lib\dialects\sqlite\query.js:246:27)
+    // at Statement.errBack (C:\Users\rickb\code\sequelize-sscce\node_modules\sqlite3\lib\sqlite3.js:14:21) {
+    // name: 'SequelizeDatabaseError',
+    // parent: [Error: SQLITE_ERROR: index associated with UNIQUE or PRIMARY KEY constraint cannot be dropped] {
+    // errno: 1,
+    // code: 'SQLITE_ERROR',
+    // sql: 'DROP INDEX IF EXISTS `sqlite_autoindex_foo_1`'
+    // },
+    // original: [Error: SQLITE_ERROR: index associated with UNIQUE or PRIMARY KEY constraint cannot be dropped] {
+    // errno: 1,
+    // code: 'SQLITE_ERROR',
+    // sql: 'DROP INDEX IF EXISTS `sqlite_autoindex_foo_1`'
+    // },
+    // sql: 'DROP INDEX IF EXISTS `sqlite_autoindex_foo_1`',
+    // parameters: undefined
+    // }
+  }
 };
