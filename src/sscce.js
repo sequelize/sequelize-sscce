@@ -23,7 +23,17 @@ module.exports = async function() {
         }
     });
     const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Bar = sequelize.define('Bar', { name: DataTypes.TEXT });
+    Foo.belongsTo(Bar, {
+      foreignKey: {
+        allowNull: false,
+        defaultValue: 1
+      }
+    });
+    Bar.hasMany(Foo)
     await sequelize.sync();
     log(await Foo.create({ name: 'foo' }));
+    log(await Bar.create({ name: 'bar' }));
     expect(await Foo.count()).to.equal(1);
+    expect(await Bar.count()).to.equal(1);
 };
