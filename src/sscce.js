@@ -24,6 +24,19 @@ module.exports = async function() {
     });
     const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+  
+    await Foo.create({ name: 'foo' });
+    await Foo.create({ name: 'boo' });
+  
+    for(const f of await Foo.findAll()) {
+      if(f.name === 'boo'){
+        f.name = 'zoo';
+        await f.save();
+      }
+    }
+
+    expect(await Foo.findAll().map(f => f.toJson())).to.eql([
+      { name: 'foo' },
+      { name: 'zoo' }
+    ]);
 };
