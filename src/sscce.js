@@ -35,7 +35,7 @@ module.exports = async function() {
       }
     }
 
-    expect(await Foo.findAll().map(f => f.toJson())).to.eql([
+    expect(await Foo.findAll().map(f => f.toJSON())).to.eql([
       { name: 'foo' },
       { name: 'zoo' }
     ]);
