@@ -22,8 +22,10 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Foo = sequelize.define('Foo', { id: DataTypes.TEXT, primaryKey: true });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    const instance = await Foo.build({ id: 'foo' });
+    await Foo.create({ id: 'foo' });
+    await instance.reload();
+    await instance.save(); // throws sequelize validation error due to duplicate PKs
 };
