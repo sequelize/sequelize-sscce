@@ -19,11 +19,14 @@ module.exports = async function() {
         logQueryParameters: true,
         benchmark: true,
         define: {
-            timestamps: false // For less clutter in the SSCCE
+            timestamps: false,// For less clutter in the SSCCE
+            "freezeTableName": true
         }
     });
     const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Nyan = sequelize.define('Nyan', { meow: DataTypes.TEXT });
+    Foo.hasMany(Nyan);
+    Nyan.belongsTo(Foo);
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    Foo.findOne({include: [Nyan]});
 };
