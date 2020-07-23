@@ -9,11 +9,11 @@ const log = require('./utils/log');
 // const { expect } = require('chai');
 
 async function up(queryInterface, Sequelize) {
-  await queryInterface.changeColumn('tasks', 'status', { status: Sequelize.ENUM, values: ['new','in_progress','done'], allowNull: false, defaultValue: 'new' });
+  await queryInterface.changeColumn('tasks', 'status', { type: Sequelize.ENUM, values: ['new','in_progress','done'], allowNull: false, defaultValue: 'new' });
 }
 
 async function down(queryInterface, Sequelize) {
-  await queryInterface.changeColumn('tasks', 'status', { status: Sequelize.STRING, allowNull: false, defaultValue: '' });
+  await queryInterface.changeColumn('tasks', 'status', { type: Sequelize.STRING, allowNull: false, defaultValue: '' });
 }
 
 module.exports = async function() {
@@ -23,7 +23,7 @@ module.exports = async function() {
         define: { timestamps: false }
     });
 
-    const Task = sequelize.define('Task', { status: DataTypes.STRING, allowNull: false, defaultValue: '' }, { tableName: 'tasks' });
+    const Task = sequelize.define('Task', { status: { type: DataTypes.STRING, allowNull: false, defaultValue: '' } }, { tableName: 'tasks' });
     await sequelize.sync();
     
     // The problem is with a migration
