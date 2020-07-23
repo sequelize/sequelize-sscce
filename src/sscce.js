@@ -1,5 +1,7 @@
 'use strict';
 
+if (process.env.DIALECT !== 'postgres') return;
+
 const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
 const createSequelizeInstance = require('./utils/create-sequelize-instance');
