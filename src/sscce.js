@@ -32,7 +32,7 @@ module.exports = async function() {
     const request = `SELECT count (*) FROM information_schema.table_constraints AS tc 
 			JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name
 			JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name
-			WHERE constraint_type = 'FOREIGN KEY' AND tc.table_schema = '${schema}' AND tc.table_name = 'Bar'`;
+			WHERE constraint_type = 'FOREIGN KEY' AND tc.table_schema = '${schema}' AND tc.table_name = 'Bars'`;
 
     await sequelize.sync({alter: true});
     expect((await sequelize.query(request))[0][0].count == 1);
