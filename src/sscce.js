@@ -22,8 +22,33 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+     const somemodel = sequelize.define('somemodel', {
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true,
+    },  
+  }); 
+  await sequelize.sync();
+  const queryInterface = sequelize.getQueryInterface();
+  await queryInterface.createTable('somemodel', {
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true,
+    },  
+  }); 
+  await queryInterface.addColumn(
+    'somemodel',
+    'some_date',
+    {   
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+      defaultValue: '', 
+    },  
+  );  
+  await somemodel.create();
+  expect(await somemodel.count()).to.equal(1);
 };
