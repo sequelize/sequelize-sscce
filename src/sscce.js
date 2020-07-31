@@ -26,7 +26,11 @@ module.exports = async function() {
     await sequelize.sync();
     const x = await Foo.create({ value: {type: "Point", coordinates: [45, 45] }});
     const y = await Foo.create({ value: {type: "Point", coordinates: [45, 45] }});
+    log(x);
+    log(y);
   
     Object.assign(x, y);
+    log(x);
+  
     expect(x.changed().length.to.equal(0));
 };
