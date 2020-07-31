@@ -22,8 +22,11 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Foo = sequelize.define('Foo', { value: DataTypes.GEOGRAPHY });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    const x = await Foo.create({ value: {type: "Point", coordinates: [45, 45] }}));
+    const y = await Foo.create({ value: {type: "Point", coordinates: [45, 45] }}));
+  
+    const z = Object.assign(x, y);
+    expect(x.changed().to.be(false));
 };
