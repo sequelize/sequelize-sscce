@@ -28,5 +28,5 @@ module.exports = async function() {
     const y = await Foo.create({ value: {type: "Point", coordinates: [45, 45] }});
   
     const z = Object.assign(x, y);
-    expect(x.changed().to.equal(false));
+    expect(x.changed().length.to.equal(0));
 };
