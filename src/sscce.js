@@ -30,7 +30,7 @@ module.exports = async function() {
     log(y);
   
     Object.assign(x, y);
-    log(x);
+    log(x.changed());
   
-    expect(x.changed().length.to.equal(0));
+    expect(x.changed().to.equal(0));
 };
