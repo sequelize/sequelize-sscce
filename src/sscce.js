@@ -24,8 +24,8 @@ module.exports = async function() {
     });
     const Foo = sequelize.define('Foo', { value: DataTypes.GEOGRAPHY });
     await sequelize.sync();
-    const x = await Foo.create({ value: {type: "Point", coordinates: [45, 45] }}));
-    const y = await Foo.create({ value: {type: "Point", coordinates: [45, 45] }}));
+    const x = await Foo.create({ value: {type: "Point", coordinates: [45, 45] }});
+    const y = await Foo.create({ value: {type: "Point", coordinates: [45, 45] }});
   
     const z = Object.assign(x, y);
     expect(x.changed().to.be(false));
