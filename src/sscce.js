@@ -21,6 +21,18 @@ module.exports = async function() {
         define: {
             timestamps: false // For less clutter in the SSCCE
         }
+    ////////////const sequelize = new Sequelize('sqlite::memory:');
+      const User = sequelize.define('User', {
+        // Model attributes are defined here
+        firstName: {
+          type: DataTypes.STRING,
+          allowNull: false
+        },
+        lastName: {
+          type: DataTypes.STRING
+          // allowNull defaults to true
+        }
+      }
     });
     const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
     await sequelize.sync();
