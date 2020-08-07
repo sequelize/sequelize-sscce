@@ -14,16 +14,38 @@ const log = require('./utils/log');
 const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
-module.exports = async function() {
-    const sequelize = createSequelizeInstance({
-        logQueryParameters: true,
-        benchmark: true,
-        define: {
-            timestamps: false // For less clutter in the SSCCE
-        }
-    });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+module.exports = async function () {
+  const sequelize = createSequelizeInstance({
+    logQueryParameters: true,
+    benchmark: true,
+    define: {
+      timestamps: false // For less clutter in the SSCCE
+    },
+    //"url": "postgres://postgres@localhost:5432/dbname",
+    "keepDefaultTimezone": false,
+    "dialect": "postgres",
+    // no option to set timezone in dialectOptions for postgres in sequelize?
+    "timezone": '+00:00',
+    "operatorsAliases": '0'
+  });
+  class Bookings extends Model {
+    static associate(models) {
+    }
+  }
+  Bookings.init(
+    {
+      time: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Bookings",
+    }
+  );
+
+  await sequelize.sync();
+  log(await Bookings.create({ time: '2020-08-06T12:30:00+05:30' }));
+  expect(await Bookings.count()).to.equal(1);
 };
