@@ -1,5 +1,5 @@
 'use strict';
-
+//my own fork
 // Require the necessary things from Sequelize
 const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
