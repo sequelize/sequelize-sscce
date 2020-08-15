@@ -22,8 +22,11 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  
+    const myIndexes = [{ fields: ['age'] }];
+  
+    sequelize.define('table1', {age: DataTypes.INTEGER }, { indexes: myIndexes.slice() });
+    sequelize.define('table2', {age: DataTypes.INTEGER }, { indexes: myIndexes.slice() });
+  
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
 };
