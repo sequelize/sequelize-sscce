@@ -22,8 +22,14 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+
+    // first get the database name
+    const dbName = sequelize.config.database;
+    // change the collation
+    await sequelize.query('ALTER DATABASE ' + dbName + ' COLLATE SQL_Latin1_General_CP1_CS_AS');
+    
+    // const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    // await sequelize.sync();
+    log(await sequelize.createSchema('foo'));
+    expect(1).to.equal(1);
 };
