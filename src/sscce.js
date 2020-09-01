@@ -54,5 +54,5 @@ module.exports = async function () {
   }
   expect(err).to.exist;
   expect(err).to.be.instanceOf(Sequelize.ValidationError);
-  expect(err.message).to.equal(errorMessage);
+  expect(err.message).to.equal(`ValidationError: ${errorMessage}`);
 };
