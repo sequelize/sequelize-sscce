@@ -13,6 +13,8 @@ import { expect } from 'chai';
 
 // Your SSCCE goes inside this function.
 export async function run() {
+    if (process.env.DIALECT !== "sqlite") return;
+
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
@@ -21,17 +23,34 @@ export async function run() {
         }
     });
 
-    class Foo extends Model {};
-    Foo.init({
-        name: DataTypes.TEXT
-    }, {
-        sequelize,
-        modelName: 'Foo'
-    });
+    class User extends Model {
+        public id!: number;
+        public ssn!: string;
+        public username!: string;
+        public birthday!: Date;
+    }
+
+    User.init({
+        id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+        },
+        ssn: {
+            type: DataTypes.STRING,
+            unique: true,
+        },
+        username: DataTypes.STRING,
+        birthday: DataTypes.DATE
+    }, { sequelize, modelName: 'user' });
 
     await sequelize.sync();
+    const [jane] = await User.upsert({
+        ssn: '123456-XXX',
+        username: 'janedoe',
+        birthday: new Date(1980, 6, 20)
+    }, { returning: true });
 
-    log(await Foo.create({ name: 'TS foo' }));
-
-    expect(await Foo.count()).to.equal(1);
+    log('jane', jane);
+    expect(jane.id).to.not.be.null;
 }
