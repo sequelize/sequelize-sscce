@@ -1,5 +1,5 @@
 // Require the necessary things from Sequelize
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, Op, and, or } from 'sequelize';
 
 // This function should be used instead of `new Sequelize()`.
 // It applies the config for your SSCCE to work on CI.
@@ -34,4 +34,17 @@ export async function run() {
     log(await Foo.create({ name: 'TS foo' }));
 
     expect(await Foo.count()).to.equal(1);
+  
+    await Foo.findAll({
+      where: and(
+        {
+          name: 'TS foo',
+        },
+        or(
+          {
+            name: 'TS foo',
+          },
+        ),
+      ),
+    });
 }
