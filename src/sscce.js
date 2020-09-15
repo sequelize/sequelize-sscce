@@ -1,7 +1,5 @@
 'use strict';
 
-if (process.env.DIALECT !== "sqlite") return;
-
 const { Sequelize, DataTypes } = require('sequelize');
 
 const createSequelizeInstance = require('./utils/create-sequelize-instance');
