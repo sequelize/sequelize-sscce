@@ -15,7 +15,7 @@
     "is-plain-object": "^3",
     "json-stringify-safe": "^5",
     "lodash.defaults": "^4",
-    "sequelize": "^5"
+    "sequelize": "^6.3.5"
   },
   "scripts": {
     "start": "cross-env LOCAL_SSCCE=true DIALECT=sqlite node setup/runner.js",
