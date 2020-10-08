@@ -8,30 +8,64 @@ import createSequelizeInstance = require('./utils/create-sequelize-instance');
 // This is an utility logger that should be preferred over `console.log()`.
 import log = require('./utils/log');
 
-// You can use chai assertions directly in your SSCCE if you want.
-import { expect } from 'chai';
-
 // Your SSCCE goes inside this function.
 export async function run() {
-    const sequelize = createSequelizeInstance({
-        logQueryParameters: true,
-        benchmark: true,
-        define: {
-            timestamps: false // For less clutter in the SSCCE
-        }
-    });
+  const sequelize = createSequelizeInstance({
+    logQueryParameters: true,
+    benchmark: true,
+    define: {
+      timestamps: false // For less clutter in the SSCCE
+    }
+  });
 
-    class Foo extends Model {};
-    Foo.init({
-        name: DataTypes.TEXT
-    }, {
-        sequelize,
-        modelName: 'Foo'
-    });
+  class User extends Model {
+    public firstName: string;
+    public id: number;
+    public lastName: string;
+    public password?: string;
+    public username: string;
+  }
 
-    await sequelize.sync();
+  User.init({
+    firstName: {
+      allowNull: false,
+      field: `first_name`,
+      type: DataTypes.STRING,
+    },
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      field: `id`,
+      primaryKey: true,
+      type: DataTypes.INTEGER,
+    },
+    lastName: {
+      allowNull: false,
+      field: `last_name`,
+      type: DataTypes.STRING,
+    },
+    username: {
+      allowNull: false,
+      field: `username`,
+      type: DataTypes.STRING,
+    },
+  }, {
+    modelName: `user`,
+    sequelize,
+    tableName: `users`,
+    underscored: true,
+  });
 
-    log(await Foo.create({ name: 'TS foo' }));
+  await sequelize.sync();
 
-    expect(await Foo.count()).to.equal(1);
+  const user = User.build({
+    username: `foo`,
+    firstName: `John`,
+    lastName: `Doe`
+  })
+
+  const users = [ user, user ];
+
+  log(await User.create(user));
+  log(await User.bulkCreate(users));
 }

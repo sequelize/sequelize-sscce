@@ -12,7 +12,7 @@
 		"pretty": true,
 		"newLine": "lf",
 		"stripInternal": true,
-		"strict": true,
+		"strict": false,
 		"skipLibCheck": true
 	}
 }
