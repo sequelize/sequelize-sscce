@@ -1,7 +1,9 @@
 'use strict';
 
+if (process.env.DIALECT !== "postgres") return;
+
 // Require the necessary things from Sequelize
-const { Sequelize, Op, Model, DataTypes } = require('sequelize');
+const { Sequelize, Op, Model, DataTypes, QueryTypes } = require('sequelize');
 
 // This function should be used instead of `new Sequelize()`.
 // It applies the config for your SSCCE to work on CI.
@@ -22,8 +24,9 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const users = sequelize.define('users', {id: DataTypes.INTEGER, name: DataTypes.TEXT });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    const result = await sequelize.query("INSERT INTO users (id, name) VALUES (1, 'bob') RETURNING *", {type: QueryTypes.INSERT})
+    log(result);
+    expect(result[0]).to.equal([{id: 1, name: 'bob'}]);
 };
