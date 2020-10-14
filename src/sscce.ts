@@ -66,6 +66,6 @@ export async function run() {
 
   const users = [ user, user ];
 
-  log(await User.create(user, { isNewRecord: false }));
-  log(await User.bulkCreate(users, { isNewRecord: false }));
+  log(await User.create(user));
+  log(await User.bulkCreate(users));
 }
