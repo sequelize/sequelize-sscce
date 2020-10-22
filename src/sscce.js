@@ -16,6 +16,8 @@ const { expect } = require('chai');
 // Your SSCCE goes inside this function.
 module.exports = async function() {
   
+    if (process.env.DIALECT !== "mysql") return;
+
     // ORIGINAL ENVIRONMENT OPTIONS
     // 
     // dialect: 'mysql', // MySQL 5.7
