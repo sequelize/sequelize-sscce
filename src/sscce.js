@@ -15,6 +15,8 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+    if (process.env.DIALECT !== "postgres") return;
+
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
@@ -22,8 +24,21 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    
+    sequelize.addHook('afterConnect', (client) => {
+      log('afterConnect executed');
+      log('client', client);
+
+      //never fired
+      client.on('notice', msg => {
+        log('notice:', msg);
+      });
+      //never fired
+      client.on('notification', msg => {
+        log(msg.channel);
+        log(msg.payload);
+      });
+    });
+
+    await sequelize.query("DO language plpgsql $$ BEGIN RAISE NOTICE 'hello, world!'; END $$;");
 };
