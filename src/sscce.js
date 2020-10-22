@@ -58,6 +58,17 @@ module.exports = async function() {
     is_active: true 
   }));
   
+  expect(await Push.count({ where: { is_active: true } })).to.equal(1);
+
+  log(await Push.findOne({ 
+    where: { 
+      identifier: Sequelize.fn(
+      'unhex', 
+      '46070d4bf934fb0d4b06d9e2c46e346944e322444900a435d7d9a95e6d7435f5'
+      )
+    }
+  }));
+  
   log(await Push.update({ is_active: false }, { 
     where: { 
       identifier: Sequelize.fn(
