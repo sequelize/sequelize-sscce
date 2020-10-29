@@ -22,8 +22,54 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  
+    const Parent = sequelize.define('Parent', {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      field: {
+        type: DataTypes.STRING,
+        unique: true,
+      },
+    });
+  
+    const Item = sequelize.define('Item', {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
+      field: {
+        type: DataTypes.STRING,
+      },
+    });
+  
+    Parent.hasMany(Item, { foreignKey: 'parentId', as: 'items' });
+    Item.belongsTo(Parent, { foreignKey: 'parentId', as: 'parent' });
+  
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+  
+    let parent = await Parent.create({ field: 'parent 1' });
+    await parent.createItem({ field: 'child item 1' });
+    await parent.createItem({ field: 'child item 2' });
+    
+    // Has child elements
+    log(parent);
+    expect(parent.items.length).to.equal(2);
+    
+    // Upsert parent with same field
+    [parent] = await Parent.upsert({ field: 'parent 1' });
+  
+    // Get child elements
+    await parent.getItems();
+  
+    // Items is undefined
+    log(parent);
+    expect(parent.items).to.equal(undefined);
+  
+    // Works if you call reload instead
+    await parent.reload({ include: 'items' });
+    expect(parent.items.length).to.equal(2);
 };
