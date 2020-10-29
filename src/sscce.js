@@ -60,7 +60,7 @@ module.exports = async function() {
     await _parent.createItem({ field: 'child item 2' });
     
     // Upsert parent with same field
-    const res = await Parent.upsert({ field: 'parent 1' });
+    const res = await Parent.upsert({ field: 'parent 1' }, { returning: true });
     log(res)
     const [parent] = res;
   
