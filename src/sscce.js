@@ -41,6 +41,10 @@ module.exports = async function() {
         autoIncrement: true,
         primaryKey: true,
       },
+      parentId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       field: {
         type: DataTypes.STRING,
       },
@@ -51,16 +55,12 @@ module.exports = async function() {
   
     await sequelize.sync();
   
-    let parent = await Parent.create({ field: 'parent 1' });
-    await parent.createItem({ field: 'child item 1' });
-    await parent.createItem({ field: 'child item 2' });
-    
-    // Has child elements
-    log(parent);
-    expect(parent.items.length).to.equal(2);
+    const _parent = await Parent.create({ field: 'parent 1' });
+    await _parent.createItem({ field: 'child item 1' });
+    await _parent.createItem({ field: 'child item 2' });
     
     // Upsert parent with same field
-    [parent] = await Parent.upsert({ field: 'parent 1' });
+    const [parent] = await Parent.upsert({ field: 'parent 1' });
   
     // Get child elements
     await parent.getItems();
