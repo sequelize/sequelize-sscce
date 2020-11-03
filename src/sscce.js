@@ -1,17 +1,17 @@
-'use strict'
+"use strict";
 
 // Require the necessary things from Sequelize
-const { Sequelize, Op, Model, DataTypes } = require('sequelize')
+const { Sequelize, Op, Model, DataTypes } = require("sequelize");
 
 // This function should be used instead of `new Sequelize()`.
 // It applies the config for your SSCCE to work on CI.
-const createSequelizeInstance = require('./utils/create-sequelize-instance')
+const createSequelizeInstance = require("./utils/create-sequelize-instance");
 
 // This is an utility logger that should be preferred over `console.log()`.
-const log = require('./utils/log')
+const log = require("./utils/log");
 
 // You can use chai assertions directly in your SSCCE if you want.
-const { expect } = require('chai')
+const { expect } = require("chai");
 
 // Your SSCCE goes inside this function.
 module.exports = async function () {
@@ -21,9 +21,9 @@ module.exports = async function () {
     define: {
       timestamps: false, // For less clutter in the SSCCE
     },
-  })
+  });
   const NoteFollow = sequelize.define(
-    'noteFollows',
+    "noteFollows",
     {
       createdAt: {
         type: DataTypes.DATE,
@@ -47,26 +47,31 @@ module.exports = async function () {
       freezeTableName: true,
       indexes: [{ unique: true, fields: [`noteId`, `userId`] }],
     }
-  )
-  await sequelize.sync()
+  );
+  await sequelize.sync();
 
-  const userId = 'foo'
-  const noteId = 'bar'
+  const userId = "foo";
+  const noteId = "bar";
 
-  const result = await NoteFollow.upsert({
-    userId,
-    noteId,
-    isFollowing: true,
-    reason: 'foo',
-  })
-  const result2 = await NoteFollow.upsert({
-    userId,
-    noteId,
-    isFollowing: true,
-    reason: 'foo',
-  })
+  const result = await NoteFollow.upsert(
+    {
+      userId,
+      noteId,
+      isFollowing: true,
+      reason: "foo",
+    },
+    { returning: true }
+  );
+  const result2 = await NoteFollow.upsert(
+    {
+      userId,
+      noteId,
+      isFollowing: true,
+      reason: "foo",
+    },
+    { returning: true }
+  );
 
-  log(result)
-  log(result2)
-
-}
+  log(result);
+  log(result2);
+};
