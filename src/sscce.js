@@ -22,8 +22,65 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  
+    const UserModel = sequelize.define('user', {
+      id: {
+        type: Sequelize.INTEGER(10).UNSIGNED,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+    });
+
+    const HangModel = sequelize.define('user', {
+      id: {
+        type: Sequelize.INTEGER(10).UNSIGNED,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+    });
+
+    const HangUsers = sequelize.define('HangUsers', {
+      id: {
+        type: Sequelize.INTEGER(10).UNSIGNED,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      hangId: {
+        type: Sequelize.INTEGER(10).UNSIGNED,
+        references: {
+          model: HangModel,
+          key: 'id',
+        },
+      },
+      userId: {
+        type: Sequelize.INTEGER(10).UNSIGNED,
+        references: {
+          model: UserModel,
+          key: 'id',
+        },
+      },
+      rsvp: {
+        type: Sequelize.STRING,
+        allowNull: false,
+        validate: {
+          isIn: {
+            args: [ 'pending', 'joined' ],
+            msg: 'The rsvp provided is invalid',
+          },
+        },
+      },
+    });
+
+    UserModel.hasMany(HangUsers, { as: 'invitations' });
+    HangModel.hasMany(HangUsers, { as: 'invites' });
+
+    UserModel.belongsToMany(HangModel, { through: HangUsers });
+    HangModel.belongsToMany(UserModel, { through: HangUsers });
+  
+    const user = await UserModel.create();
+    const hang = await HangModel.create();
+    await hang.addUser(user, { through: { rvsp: 'joined' } });
+  
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    log(await hang.addUser(user, { through: { rvsp: 'joined' } }));
 };
