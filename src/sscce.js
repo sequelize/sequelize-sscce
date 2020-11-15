@@ -22,8 +22,36 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const User = sequelize.define('user', { 
+        password: {
+            type: DataTypes.STRING,
+            allowNull: false, 
+            validate: {
+              len: [5,25]
+            }
+        }
+    },
+    { 
+        hooks: {
+          beforeSave: (user) => { //encrypt the password before saving it to database
+            user.password = "myHashedPasswordLongerThan25Characters";
+          },
+
+        }
+      }
+    );
+
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    // creates, validates, encrypts, save password
+    let u = await User.create({ password: 'validpassword' })
+    log(u);
+    
+    // updates, validates
+    u.password = '123456';
+    log(u);
+    // encrypts, validates ?, saves password
+    await u.save();
+
+    log(u);
+    expect(await User.count()).to.equal(1);
 };

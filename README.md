@@ -1,4 +1,4 @@
-# Sequelize Quick SSCCE Base Repository
+# Sequelize Quick SSCCE Base Repository 
 
 Use this repository to quickly create an [SSCCE](http://www.sscce.org/) for your issue! This way your issue will be much easier to investigate.
 
