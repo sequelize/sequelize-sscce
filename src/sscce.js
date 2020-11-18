@@ -25,5 +25,7 @@ module.exports = async function() {
     const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
     await sequelize.sync();
     log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    log(await Foo.create({ name: 'foo2' }));
+    log(await Foo.create({ name: 'foo3' }));
+    expect(await Foo.count()).to.equal(3);
 };
