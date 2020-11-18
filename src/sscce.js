@@ -27,5 +27,5 @@ module.exports = async function() {
     log(await Foo.create({ name: 'foo' }));
     log(await Foo.create({ name: 'foo2' }));
     log(await Foo.create({ name: 'foo3' }));
-    expect(await Foo.count()).to.equal(1);
+    expect(await Foo.count()).to.equal(3);
 };
