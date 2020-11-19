@@ -31,10 +31,11 @@ module.exports = async function() {
   
     await sequelize.sync();
     
-    let bar = Bar.create({ label: 'test bar', isDeleted: false });
-    let baz = Baz.create({ tag: 'test baz' });
+    let bar = await Bar.create({ label: 'test bar', isDeleted: false });
+    let baz = await Baz.create({ tag: 'test baz' });
   
     log(await Foo.create({ name: 'foo', barId: bar.id, bazId: baz.id }));
+    expect(await Foo.count()).to.equal(1); // this is ok
     expect(await Foo.findAll({
       include: [{ model: Bar, where: [{ isDeleted: false }]}, { model: Baz }]
     })).to.have.lengthOf(1);
