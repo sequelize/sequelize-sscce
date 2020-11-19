@@ -37,6 +37,9 @@ module.exports = async function() {
     log(await Foo.create({ name: 'foo', BarId: bar.id, BazId: baz.id }));
     expect(await Foo.count()).to.equal(1); // this is ok
     expect(await Foo.findAll({
+      limit: 100,
+      offset: 0,
+      order: [['name', 'DESC']],
       include: [{ model: Bar, where: [{ isDeleted: false }]}, { model: Baz }]
     })).to.have.lengthOf(1);
 };
