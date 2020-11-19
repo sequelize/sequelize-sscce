@@ -19,7 +19,7 @@ module.exports = async function() {
     await sequelize.sync();
   
     const id = undefined;  
-    const result = Foo.update({ id }, { where: { id }, returning: true });
+    const result = await Foo.update({ id }, { where: { id }, returning: true });
   
     log('result: ', result);
   
