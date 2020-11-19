@@ -18,16 +18,10 @@ module.exports = async function() {
   
     await sequelize.sync();
   
-    let threwError = false, returnedEmptyArray = false;
-    try {
-      const id = undefined;
-      
-      const [,updated] = Foo.update({ id }, { where: { id }, returning: true });
-      
-      returnedEmptyArray = Array.isArray(updated) && updated.length === 0;
-    } catch (error) {
-       threwError = true;
-    }
+    const id = undefined;  
+    const result = Foo.update({ id }, { where: { id }, returning: true });
   
-    strictEqual(threwError || returnedEmptyArray, true);
+    log('result: ', result);
+  
+    strictEqual(Array.isArray(result[1]), false);
 };
