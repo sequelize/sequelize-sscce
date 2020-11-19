@@ -8,17 +8,13 @@ const log = require('./utils/log');
 
 const { strictEqual } = require('assert');
 
-function test(Model) {
-  return () => Model.update({ id: undefined }, { where: { id: undefined }, returning: true });
-}
-
 module.exports = async function() {
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
     });
   
-    const Foo = sequelize.define('Foo', { id: DataTypes.INTEGER, name: DataTypes.TEXT });
+    const Foo = sequelize.define('Foo', { id: { type: DataTypes.INTEGER, primaryKey: true }, name: DataTypes.TEXT });
   
     await sequelize.sync();
   
