@@ -22,7 +22,7 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT, barId: DataTypes.INTEGER, bazId: DataTypes.INTEGER });
+    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
     const Bar = sequelize.define('Bar', { label: DataTypes.STRING, isDeleted: DataTypes.BOOLEAN });
     const Baz = sequelize.define('Baz', { tag: DataTypes.STRING });
   
@@ -34,7 +34,7 @@ module.exports = async function() {
     let bar = await Bar.create({ label: 'test bar', isDeleted: false });
     let baz = await Baz.create({ tag: 'test baz' });
   
-    log(await Foo.create({ name: 'foo', barId: bar.id, bazId: baz.id }));
+    log(await Foo.create({ name: 'foo', BarId: bar.id, BazId: baz.id }));
     expect(await Foo.count()).to.equal(1); // this is ok
     expect(await Foo.findAll({
       include: [{ model: Bar, where: [{ isDeleted: false }]}, { model: Baz }]
