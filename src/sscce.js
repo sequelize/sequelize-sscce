@@ -22,8 +22,18 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Foo = sequelize.define('Foo', { 
+      name: DataTypes.TEXT, 
+      description: { 
+        type : DataTypes.TEXT,
+        set( value ) {
+          this.setDataValue( 'description', `${this.name}-${value}` )
+        }
+      }, 
+    });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    await Foo.create({ name: 'foo' });
+    await Foo.update({ description: 'bar' }, { where: { name: 'foo' } });
+    const f = await Foo.findOne( { where: { name : 'foo' } } )
+    expect(f.description).to.equal('foo-bar');
 };
