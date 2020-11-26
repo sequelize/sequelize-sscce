@@ -21,17 +21,19 @@ export async function run() {
         }
     });
 
-    class Foo extends Model {};
-    Foo.init({
+    class Bar extends Model {};
+    Bar.init({
+        bar: DataTypes.TEXT,
         name: DataTypes.TEXT
     }, {
         sequelize,
         modelName: 'Foo'
     });
 
-    class Bar extends Model {};
-    Bar.init({
-        bar: DataTypes.TEXT,
+    class Foo extends Model {
+      addBar: any;
+    };
+    Foo.init({
         name: DataTypes.TEXT
     }, {
         sequelize,
@@ -42,10 +44,11 @@ export async function run() {
   
     await sequelize.sync();
     const bar = await Bar.create({ name: 'bar' });
+    const foo = await Foo.create({ name: 'foo' });
 
     log(bar);
-    log(await Foo.create({ name: 'foo' }));
-    log(await Foo.addBar(bar))
+    log(foo);
+    log(await foo.addBar(bar))
 
     expect(await Foo.count()).to.equal(1);
 }
