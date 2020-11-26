@@ -29,9 +29,23 @@ export async function run() {
         modelName: 'Foo'
     });
 
+    class Bar extends Model {};
+    Bar.init({
+        bar: DataTypes.TEXT,
+        name: DataTypes.TEXT
+    }, {
+        sequelize,
+        modelName: 'Foo'
+    });
+  
+    Foo.associations.Bar = Foo.hasMany(Bar, { scope: { bar: 'foo' } })
+  
     await sequelize.sync();
+    const bar = await Bar.create({ name: 'bar' });
 
-    log(await Foo.create({ name: 'TS foo' }));
+    log(bar);
+    log(await Foo.create({ name: 'foo' }));
+    log(await Foo.addBar(bar))
 
     expect(await Foo.count()).to.equal(1);
 }
