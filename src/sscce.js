@@ -15,7 +15,7 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
-  if (process.env.DIALECT !== "postgres") return
+  //if (process.env.DIALECT !== "postgres") return
   
   const opts = {
     define: {
