@@ -22,8 +22,24 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT, total: DataTypes.INTEGER });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    log(await Foo.create({ name: 'foo', total: 10 }));
+    log(await Foo.increment('total', { 
+      where: {
+        [Op.or]: [
+          {
+            total: {
+              [Op.eq]: 0
+            },
+          },
+          {
+            total: {
+              [Op.lt]: 10
+            }
+          },
+        ],
+      },
+    }));
+    expect(await Foo.findOne().then(f => f.total)).to.equal(10);
 };
