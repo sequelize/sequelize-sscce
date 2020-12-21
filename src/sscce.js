@@ -42,7 +42,7 @@ module.exports = async function() {
     }
   });
   
-  await sequalize.sync();
+  await sequelize.sync();
   log(await Client.create({name: 'Arturo', lastname: 'Tenorio'}));
   expect(await Client.count()).to.equal(1);
 };
