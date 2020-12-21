@@ -26,4 +26,23 @@ module.exports = async function() {
     await sequelize.sync();
     log(await Foo.create({ name: 'foo' }));
     expect(await Foo.count()).to.equal(1);
+  
+  const Client = sequelize.define('Client', {
+    name: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    lastname:  {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    createdAt:  {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    }
+  });
+  
+  await sequelize.sync();
+  log(await Client.create({name: 'Arturo', lastname: 'Tenorio'}));
+  expect(await Client.count()).to.equal(1);
 };
