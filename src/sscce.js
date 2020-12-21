@@ -15,6 +15,7 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+  if(proccess.env.DIALECT != 'mysql') retunr;
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
@@ -26,4 +27,23 @@ module.exports = async function() {
     await sequelize.sync();
     log(await Foo.create({ name: 'foo' }));
     expect(await Foo.count()).to.equal(1);
+  
+  const Client = sequelize.create('Client', {
+    name: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    lastname:  {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    createdAt:  {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
+    }
+  });
+  
+  await sequalize.sync();
+  log(await Client.create({name: 'Arturo', lastname: 'Tenorio'}));
+  expect(await Client.count()).to.equal(1);
 };
