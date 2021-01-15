@@ -24,26 +24,26 @@ module.exports = async function() {
         }
     });
     const identity = (arg) => arg;
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT, id: DataTypes.INTEGER }, {
+    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT, number: DataTypes.INTEGER }, {
       scopes: {
         identityScope: identity,
         altIdentityScope: identity,
       }
     });
     await sequelize.sync();
-    log(await Foo.create({ name: 'foo', id: 10 }));
-    log(await Foo.create({ name: 'bar', id: 100 }));
-    log(await Foo.create({ name: 'bar', id: 2 }));
-    log(await Foo.create({ name: 'foo', id: 1 }));
+    log(await Foo.create({ name: 'foo', number: 10 }));
+    log(await Foo.create({ name: 'bar', number: 100 }));
+    log(await Foo.create({ name: 'bar', number: 2 }));
+    log(await Foo.create({ name: 'foo', number: 1 }));
     const scopes = [];
     scopes.push(['identityScope', {
       where: {
-        [Op.or]: [{ id: 2 }, { id: 1 }]
+        [Op.or]: [{ number: 2 }, { number: 1 }]
       }
     }]);
     scopes.push(['altIdentityScope', { where: { name: 'bar' } }]);
     const ScopedFoo = Foo.scope(scopes);
     expect(await ScopedFoo.count()).to.equal(1);
     const results = await ScopedFoo.findAll();
-    expect(results[0].id).to.equal(2);
+    expect(results[0].number).to.equal(2);
 };
