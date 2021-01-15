@@ -36,7 +36,11 @@ module.exports = async function() {
     log(await Foo.create({ name: 'bar', id: 2 }));
     log(await Foo.create({ name: 'foo', id: 1 }));
     const scopes = [];
-    scopes.push(['identityScope', { where: { [Op.or]: [{ id: 2 }, { id: 1 }] } });
+    scopes.push(['identityScope', {
+      where: {
+        [Op.or]: [{ id: 2 }, { id: 1 }]
+      }
+    }]);
     scopes.push(['altIdentityScope', { where: { name: 'bar' } }]);
     const ScopedFoo = Foo.scope(scopes);
     expect(await ScopedFoo.count()).to.equal(1);
