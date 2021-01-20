@@ -23,6 +23,13 @@ export async function run() {
     },
   });
 
+  const schemas = await sequelize.showAllSchemas({});
+  if (schemas.length === 0) {
+    // createSchema doesn't manage case where schema already exists
+    await sequelize.createSchema("schema1", {});
+    await sequelize.createSchema("schema2", {});
+  }
+
   class User extends Model {}
   User.init(
     {
