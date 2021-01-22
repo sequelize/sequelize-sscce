@@ -21,17 +21,25 @@ export async function run() {
         }
     });
 
-    class Foo extends Model {};
-    Foo.init({
-        name: DataTypes.TEXT
-    }, {
-        sequelize,
-        modelName: 'Foo'
-    });
+  interface ICompanyAttributes {
+    name?: string
+  }
 
-    await sequelize.sync();
+  interface IUserAttributes {
+    fullName?: string
+  }
 
-    log(await Foo.create({ name: 'TS foo' }));
+  class Company extends Model<ICompanyAttributes> implements ICompanyAttributes {
+    public name?: string
+  }
 
-    expect(await Foo.count()).to.equal(1);
+  class User extends Model<IUserAttributes> implements IUserAttributes {
+    public fullName?: string
+  }
+
+  await User.findOne({
+    where: { fullName: 'abc' },
+    include: [Company],
+//  ^ compile error 🔥
+  })
 }
