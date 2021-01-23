@@ -1,9 +1,12 @@
 #!/bin/bash -c
 
-if [ $USE_TS ]; then
+if [ "$CI_COMBINATION" = "v6 with TS" ]; then
   npm i;
 else
-  npm i --production;
+  if [ $CI_COMBINATION = "v5" ]; then
+    npm i --save sequelize@^5
+  fi
+  npm i --production; # Install faster
 fi
 
 if [ "$DIALECT" = "postgres" ]; then
@@ -20,6 +23,6 @@ elif [ "$DIALECT" = "mssql" ]; then
   npm i tedious@^6
 fi
 
-if [ $USE_TS ]; then
+if [ "$CI_COMBINATION" = "v6 with TS" ]; then
   npm run ts-prep;
 fi

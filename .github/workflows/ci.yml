@@ -11,19 +11,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        use-ts: [true, '']
-    name: SQLite${{ matrix.use-ts && ' (TS)' || '' }}
+        combination: ['v5', 'v6', 'v6 with TS']
+    name: SQLite (${{ matrix.combination }})
     runs-on: ubuntu-latest
     env:
       DIALECT: sqlite
-      USE_TS: ${{ matrix.use-ts }}
+      CI_COMBINATION: ${{ matrix.combination }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: 12.x
       - run: /bin/bash ./setup/prepare-ci.sh
-      - name: Execute SSCCE${{ matrix.use-ts && ' (TS)' || '' }}
+      - name: Execute SSCCE
         run: npm run ci
   test-postgres:
     strategy:
@@ -31,8 +31,8 @@ jobs:
       matrix:
         postgres-version: [9.5, 10] # Does not work with 12
         native: [true, false]
-        use-ts: [true, '']
-    name: Postgres ${{ matrix.postgres-version }}${{ matrix.native && ' (native)' || '' }}${{ matrix.use-ts && ' (TS)' || '' }}
+        combination: ['v5', 'v6', 'v6 with TS']
+    name: Postgres ${{ matrix.postgres-version }}${{ matrix.native && ' (native)' || '' }} (${{ matrix.combination }})
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -46,7 +46,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       DIALECT: ${{ matrix.native && 'postgres-native' || 'postgres' }}
-      USE_TS: ${{ matrix.use-ts }}
+      CI_COMBINATION: ${{ matrix.combination }}
     steps:
       - run: PGPASSWORD=sequelize_test psql -h localhost -p 5432 -U sequelize_test sequelize_test -c '\l'
       - uses: actions/checkout@v2
@@ -54,34 +54,21 @@ jobs:
         with:
           node-version: 12.x
       - run: /bin/bash ./setup/prepare-ci.sh
-      - name: Execute SSCCE${{ matrix.use-ts && ' (TS)' || '' }}
+      - name: Execute SSCCE
         run: npm run ci
   test-mysql-mariadb:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - name: MySQL 5.7
-            image: mysql:5.7
-            dialect: mysql
-            use-ts: ''
-          - name: MySQL 5.7
-            image: mysql:5.7
-            dialect: mysql
-            use-ts: true
-          - name: MariaDB 10.3
-            image: mariadb:10.3
-            dialect: mariadb
-            use-ts: ''
-          - name: MariaDB 10.3
-            image: mariadb:10.3
-            dialect: mariadb
-            use-ts: true
-    name: ${{ matrix.name }}${{ matrix.use-ts && ' (TS)' || '' }}
+        db:
+          - '{ name: "MySQL 5.7", image: "mysql:5.7", dialect: "mysql" }'
+          - '{ name: "MariaDB 10.3", image: "mariadb:10.3", dialect: "mariadb" }'
+        combination: ['v5', 'v6', 'v6 with TS']
+    name: ${{ fromJson(matrix.db).name }} (${{ matrix.combination }})
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: ${{ matrix.image }}
+        image: ${{ fromJson(matrix.db).image }}
         env:
           MYSQL_DATABASE: sequelize_test
           MYSQL_USER: sequelize_test
@@ -91,8 +78,8 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin -usequelize_test -psequelize_test status" --health-interval 10s --health-timeout 5s --health-retries 5 --tmpfs /var/lib/mysql:rw
     env:
-      DIALECT: ${{ matrix.dialect }}
-      USE_TS: ${{ matrix.use-ts }}
+      DIALECT: ${{ fromJson(matrix.db).dialect }}
+      CI_COMBINATION: ${{ matrix.combination }}
     steps:
       - run: mysql --host 127.0.0.1 --port 3306 -uroot -psequelize_test -e "GRANT ALL ON *.* TO 'sequelize_test'@'%' with grant option; FLUSH PRIVILEGES;"
       - uses: actions/checkout@v2
@@ -100,15 +87,15 @@ jobs:
         with:
           node-version: 12.x
       - run: /bin/bash ./setup/prepare-ci.sh
-      - name: Execute SSCCE${{ matrix.use-ts && ' (TS)' || '' }}
+      - name: Execute SSCCE
         run: npm run ci
   test-mssql:
     strategy:
       fail-fast: false
       matrix:
         mssql-version: [2017, 2019]
-        use-ts: [true, '']
-    name: MSSQL ${{ matrix.mssql-version }}${{ matrix.use-ts && ' (TS)' || '' }}
+        combination: ['v5', 'v6', 'v6 with TS']
+    name: MSSQL ${{ matrix.mssql-version }} (${{ matrix.combination }})
     runs-on: ubuntu-latest
     services:
       mssql:
@@ -126,7 +113,7 @@ jobs:
           --health-retries 10
     env:
       DIALECT: mssql
-      USE_TS: ${{ matrix.use-ts }}
+      CI_COMBINATION: ${{ matrix.combination }}
     steps:
       - run: /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "Password12!" -Q "CREATE DATABASE sequelize_test; ALTER DATABASE sequelize_test SET READ_COMMITTED_SNAPSHOT ON;"
       - uses: actions/checkout@v2
@@ -134,5 +121,5 @@ jobs:
         with:
           node-version: 12.x
       - run: /bin/bash ./setup/prepare-ci.sh
-      - name: Execute SSCCE${{ matrix.use-ts && ' (TS)' || '' }}
+      - name: Execute SSCCE
         run: npm run ci
