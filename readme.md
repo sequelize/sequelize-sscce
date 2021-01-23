@@ -18,17 +18,17 @@ Just create your SSCCE in that file, and commit it to your fork:
 
 <div align="center"><img src="https://i.imgur.com/HZP9oIg.png" /></div>
 
-## Step 2 - Run your SSCCE with Travis CI / AppVeyor
+## Step 2 - Run your SSCCE with GitHub Actions
 
 This step is **extremely easy**. Now that you have commited your SSCCE to your fork, just open a Pull Request (don't worry, *I won't accept it!*):
 
 <div align="center"><img src="https://i.imgur.com/TTvuBEM.png" /></div>
 
-The idea here is that once you open the pull request, GitHub Actions will automatically execute it for you, since I have them configured in the main repository. I won't accept the pull request, since the goal is just to have your code executed.
+The idea here is that once you open the pull request, GitHub Actions will automatically execute it for you, since I have it configured in the main repository. I won't accept the pull request, since the goal is just to have your code executed.
 
 It will run your SSCCE and show show a green checkmark (or a red X) next to the commit:
 
-<div align="center"><img src="https://i.imgur.com/I2wbyVJ.png" /></div>
+<div align="center"><img src="https://i.imgur.com/QVAKvnz.png" /></div>
 
 ## What if you want to make some changes to the SSCCE?
 
