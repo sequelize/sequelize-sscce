@@ -4,7 +4,7 @@ require('./global-adjusts');
 
 const sequelizeVersion = require('./sequelize-version');
 
-const USE_TS = process.env.CI_COMBINATION === 'v6 with TS';
+const USE_TS = process.env.LOCAL_TS_RUN || process.env.CI_COMBINATION === 'v6 with TS';
 
 async function run() {
   let heading = `Running SSCCE for ${process.env.DIALECT.toUpperCase()} with Sequelize ${sequelizeVersion}`;
