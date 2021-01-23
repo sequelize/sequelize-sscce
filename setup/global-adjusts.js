@@ -1,5 +1,13 @@
 'use strict';
 
+// Enable same settings to chai from Sequelize main repo
+const chai = require('chai');
+chai.use(require('chai-datetime'));
+chai.use(require('chai-as-promised'));
+chai.use(require('sinon-chai'));
+chai.config.includeStack = true;
+chai.should();
+
 const Sequelize = require('sequelize');
 const chalk = require('chalk');
 
