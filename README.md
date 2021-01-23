@@ -24,9 +24,9 @@ This step is **extremely easy**. Now that you have commited your SSCCE to your f
 
 <div align="center"><img src="https://i.imgur.com/TTvuBEM.png" /></div>
 
-The idea here is that once you open the pull request, [Travis CI](https://travis-ci.org/) and [AppVeyor](https://www.appveyor.com/) will automatically execute it for you, since I have them configured in the main repository. I won't accept the pull request, since the goal is just to have your code executed.
+The idea here is that once you open the pull request, GitHub Actions will automatically execute it for you, since I have them configured in the main repository. I won't accept the pull request, since the goal is just to have your code executed.
 
-These are [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) services, free to use on open source projects, that are used in Sequelize itself to run all the automated tests, such as [here](https://travis-ci.org/sequelize/sequelize/builds/579153246) and [here](https://ci.appveyor.com/project/sushantdhiman/sequelize/builds/27092698). They will run your SSCCE and show show a green checkmarks (or a red X) next to the commit:
+It will run your SSCCE and show show a green checkmark (or a red X) next to the commit:
 
 <div align="center"><img src="https://i.imgur.com/I2wbyVJ.png" /></div>
 
@@ -34,11 +34,11 @@ These are [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_inte
 
 Just add more commits on top of it, in your fork, and your PR will be updated automatically, and the SSCCE will be executed again.
 
-## I don't feel confortable doing this
+## I don't want to open a pull request for this
 
 Why not? This repository was created exactly for this purpose. Please feel free to use it.
 
-However, if you prefer, you can also enable Travis CI and AppVeyor in your own fork, so you can have them execute your code without having to open the PR.
+However, if you prefer, you can also have your SSCCE executed in your own fork, via GitHub actions.
 
 ## Creating a dialect-specific SSCCE
 
