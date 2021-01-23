@@ -19,12 +19,16 @@ process.on("unhandledRejection", e => {
   console.error('An unhandled rejection occurred:');
   throw e;
 });
-Sequelize.Promise.onPossiblyUnhandledRejection(e => {
-  console.error('An unhandled rejection occurred:');
-  throw e;
-});
 
-Sequelize.Promise.longStackTraces();
+const sequelizeVersion = require('sequelize/package.json').version;
+
+if (/^v?5/.test(sequelizeVersion)) {
+  Sequelize.Promise.onPossiblyUnhandledRejection(e => {
+    console.error('An unhandled rejection occurred:');
+    throw e;
+  });
+  Sequelize.Promise.longStackTraces();
+}
 
 const colors = [
   'red',
