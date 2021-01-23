@@ -15,6 +15,7 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+    if (process.env.DIALECT !== "postgres") return;
     const sequelize = createSequelizeInstance({
         logQueryParameters: true,
         benchmark: true,
@@ -22,8 +23,28 @@ module.exports = async function() {
             timestamps: false // For less clutter in the SSCCE
         }
     });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+    const schema = 'admin';
+    await sequelize.createSchema(schema);
+    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT }, {schema});
+    const Bar = sequelize.define('Bar', { name: DataTypes.TEXT }, {schema});
+    Foo.hasMany(Bar);
+    Bar.belongsTo(Foo);
+    const request = `SELECT count (*) FROM information_schema.table_constraints AS tc 
+			JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name
+			JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name
+			WHERE constraint_type = 'FOREIGN KEY' AND tc.table_schema = '${schema}' AND tc.table_name = 'Bars'`;
+
+    await sequelize.sync({alter: true});
+    log(await sequelize.query(`SELECT * FROM information_schema.table_constraints AS tc 
+			JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name
+			JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name
+			WHERE constraint_type = 'FOREIGN KEY' AND tc.table_schema = '${schema}' AND tc.table_name = 'Bars'`));
+    expect((await sequelize.query(request))[0][0].count).to.equal(1);
+    await sequelize.sync({alter: true});
+  
+    log(await sequelize.query(`SELECT * FROM information_schema.table_constraints AS tc 
+			JOIN information_schema.key_column_usage AS kcu ON tc.constraint_name = kcu.constraint_name
+			JOIN information_schema.constraint_column_usage AS ccu ON ccu.constraint_name = tc.constraint_name
+			WHERE constraint_type = 'FOREIGN KEY' AND tc.table_schema = '${schema}' AND tc.table_name = 'Bars'`));
+    expect((await sequelize.query(request))[0][0].count).to.equal(1);
 };
