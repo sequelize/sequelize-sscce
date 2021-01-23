@@ -15,15 +15,15 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
-    const sequelize = createSequelizeInstance({
-        logQueryParameters: true,
-        benchmark: true,
-        define: {
-            timestamps: false // For less clutter in the SSCCE
-        }
-    });
-    const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-    await sequelize.sync();
-    log(await Foo.create({ name: 'foo' }));
-    expect(await Foo.count()).to.equal(1);
+  const sequelize = createSequelizeInstance({
+    logQueryParameters: true,
+    benchmark: true,
+    define: {
+      timestamps: false // For less clutter in the SSCCE
+    }
+  });
+  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  await sequelize.sync();
+  log(await Foo.create({ name: 'foo' }));
+  expect(await Foo.count()).to.equal(1);
 };
