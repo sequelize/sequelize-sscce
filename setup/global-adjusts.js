@@ -20,9 +20,9 @@ process.on("unhandledRejection", e => {
   throw e;
 });
 
-const sequelizeVersion = require('sequelize/package.json').version;
+const sequelizeVersion = require('./sequelize-version');
 
-if (/^v?5/.test(sequelizeVersion)) {
+if (sequelizeVersion.startsWith('v5')) {
   Sequelize.Promise.onPossiblyUnhandledRejection(e => {
     console.error('An unhandled rejection occurred:');
     throw e;
