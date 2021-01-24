@@ -17,6 +17,7 @@
     "is-plain-object": "^3",
     "json-stringify-safe": "^5",
     "lodash.defaults": "^4",
+    "p-settle": "^4.1.1",
     "sequelize": "^6",
     "sinon": "^9",
     "sinon-chai": "^3"

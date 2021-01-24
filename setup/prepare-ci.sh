@@ -4,10 +4,12 @@ if [ "$CI_COMBINATION" = "v6 with TS" ]; then
   npm i;
 else
   if [ $CI_COMBINATION = "v5" ]; then
-    npm i --save sequelize@^5
+    npm i --save sequelize@^5;
   fi
   npm i --production; # Install faster
 fi
+
+npm i --save https://github.com/sequelize/sequelize/tarball/63d5508bbcee56c34e73551a5d072285c0e8d2dc;
 
 if [ "$DIALECT" = "postgres" ]; then
   npm i pg@^7 pg-hstore@^2 pg-types@^2;

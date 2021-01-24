@@ -5,7 +5,7 @@ const username = 'sequelize_test';
 const password = 'sequelize_test';
 const database = 'sequelize_test';
 const pool = {
-  max: 5,
+  max: 4,
   idle: 3000 // make idle time small so that tests exit promptly
 };
 
