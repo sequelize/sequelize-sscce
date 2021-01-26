@@ -31,7 +31,8 @@ module.exports = async function() {
 //   await sequelize.sync();
 //   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo', nested: { bar: 42 }));
+  const record = { name: 'foo', nested: { bar: 42 } };
+  log(await Foo.create(record));
   expect(await Foo.count()).to.equal(1);
   
   const instance = await Foo.findOne()
