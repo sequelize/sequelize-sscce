@@ -31,6 +31,22 @@ module.exports = async function() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ data: { first: 1 }));
-  expect(await Foo.count()).to.equal(1);
+  // Create instance
+  let foo = await Foo.create({ data: { first: 1 } });
+  const id = foo.id;
+
+  // Test created instance
+  foo = await Foo.findByPk(id);
+  expect(foo.data).to.eql({ first: 1 });
+
+  // This works as expected
+  foo = await Foo.findByPk(id);
+  await foo.update({ 'data.second': 2 });
+  foo = await Foo.findByPk(id);
+  expect(foo.data).to.eql({ first: 1, second: 2 });
+
+  // This is NOT working
+  await Foo.update({ 'data.third': 3 }, { where: { id: foo.id } });
+  foo = await Foo.findByPk(id);
+  expect(foo.data).to.eql({ first: 1, second: 2, third: 3 });
 };
