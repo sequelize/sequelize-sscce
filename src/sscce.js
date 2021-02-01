@@ -25,7 +25,30 @@ module.exports = async function() {
   });
 
   const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  
+  class Demo extends Model {}
+  
+  Demo.init({
+      foo: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+      bar: {
+        type: DataTypes.STRING,
+        primaryKey: true,
+      },
+  });
+  
+  Demo.sync();
+  
+  await Demo.create({ foo: "a", bar: "b" });
+  await Demo.create({ foo: "a", bar: "c" });
 
+  const queryInterface = sequelize.getQueryInterface();
+  queryInterface.addColumn("Demo", "blah", { type: DataTypes.STRING });
+  
+  Demo.sync({ alter: true });
+           
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
