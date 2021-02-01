@@ -22,9 +22,7 @@ module.exports = async function() {
     define: {
       timestamps: false // For less clutter in the SSCCE
     }
-  });
-
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  })
   
   class Demo extends Model {}
   
@@ -48,12 +46,5 @@ module.exports = async function() {
   queryInterface.addColumn("Demo", "blah", { type: DataTypes.STRING });
   
   Demo.sync({ alter: true });
-           
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
-  await sequelize.sync();
-  expect(spy).to.have.been.called;
-
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  
 };
