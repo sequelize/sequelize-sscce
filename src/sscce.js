@@ -10,10 +10,6 @@ const createSequelizeInstance = require('./utils/create-sequelize-instance');
 // This is an utility logger that should be preferred over `console.log()`.
 const log = require('./utils/log');
 
-// You can use sinon and chai assertions directly in your SSCCE if you want.
-const sinon = require('sinon');
-const { expect } = require('chai');
-
 // Your SSCCE goes inside this function.
 module.exports = async function() {
   const sequelize = createSequelizeInstance({
@@ -23,7 +19,7 @@ module.exports = async function() {
       timestamps: false // For less clutter in the SSCCE
     }
   })
-  
+
   class Demo extends Model {}
   
   Demo.init({
@@ -35,9 +31,13 @@ module.exports = async function() {
         type: DataTypes.STRING,
         primaryKey: true,
       },
+  }, {
+      sequelize,
+      freezeTableName: true,
   });
   
-  Demo.sync();
+  await Demo.sync( { force: true } ) ;
+    log("Demo synced");
   
   await Demo.create({ foo: "a", bar: "b" });
   await Demo.create({ foo: "a", bar: "c" });
@@ -46,5 +46,4 @@ module.exports = async function() {
   queryInterface.addColumn("Demo", "blah", { type: DataTypes.STRING });
   
   Demo.sync({ alter: true });
-  
 };
