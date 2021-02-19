@@ -22,19 +22,33 @@ export async function run() {
     }
   });
 
-  class Foo extends Model {};
-  Foo.init({
-    name: DataTypes.TEXT
-  }, {
-    sequelize,
-    modelName: 'Foo'
-  });
+  const user = sequelize.define ('user', {}, {timestamps: false});
+  const team = sequelize.define ('team', {}, {timestamps: false});
+  const project = sequelize.define ('project', {}, {timestamps: false});
+
+  project.hasMany (user);
+  user.belongsTo (team);
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  await project.bulkCreate ([{}, {}]);
+
+  await project.findAll ({
+      include: [{
+          model: user,
+          "limit": 1,
+          "include": [
+              {
+                  model: team
+              }
+          ],
+          "attributes": ["id"],
+      }]
+  });
+
+//   log(await Foo.create({ name: 'TS foo' }));
+//   expect(await Foo.count()).to.equal(1);
 }
