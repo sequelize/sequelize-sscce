@@ -37,7 +37,7 @@ module.exports = async function() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await await Place.create({
+  log(await Place.create({
     location: { type: 'Point', coordinates: [ 47.6968933, -122.100652 ] }
   }));
   expect(await Foo.count()).to.equal(1);
