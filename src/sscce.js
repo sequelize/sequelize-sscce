@@ -28,7 +28,7 @@ module.exports = async function() {
   const Place = sequelize.define('Place', { 
     location: {
       type: DataTypes.GEOGRAPHY('POINT', 4326),
-      allowNull: true,
+      allowNull: false,
     }
   });
 
