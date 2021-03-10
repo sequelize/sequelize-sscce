@@ -24,13 +24,20 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Place = sequelize.define('Place', { 
+    location: {
+      type: DataTypes.GEOGRAPHY('POINT', 4326),
+      allowNull: true,
+    }
+  });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
+  log(await await Place.create({
+    location: { type: 'Point', coordinates: [ 47.6968933, -122.100652 ] }
+  }));
   expect(await Foo.count()).to.equal(1);
 };
