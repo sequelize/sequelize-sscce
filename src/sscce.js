@@ -40,5 +40,5 @@ module.exports = async function() {
   log(await Place.create({
     location: { type: 'Point', coordinates: [ 47.6968933, -122.100652 ] }
   }));
-  expect(await Foo.count()).to.equal(1);
+  expect(await Place.count()).to.equal(1);
 };
