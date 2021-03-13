@@ -61,7 +61,7 @@ jobs:
       fail-fast: false
       matrix:
         db:
-          - '{ name: "MySQL 5.7", image: "mysql:5.7", dialect: "mysql" }'
+          - '{ name: "MySQL 8.0", image: "mysql:8.0", dialect: "mysql" }'
           - '{ name: "MariaDB 10.3", image: "mariadb:10.3", dialect: "mariadb" }'
         combination: ['v5', 'v6', 'v6 with TS']
     name: ${{ fromJson(matrix.db).name }} (${{ matrix.combination }})
