@@ -24,8 +24,10 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-
+  const Foo = sequelize.define('user', { name: DataTypes.TEXT });
+  const jane = User.build({name:"Bob"});
+  console.log(jane.name);
+  
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
