@@ -21,16 +21,39 @@ module.exports = async function() {
     benchmark: true,
     define: {
       timestamps: false // For less clutter in the SSCCE
-    }
+    },
+    logging: false,
+    dialect: 'mssql',
+    dialectOptions: {
+      options: {
+        useUTC: false,
+        dateFirst: 1,
+        encrypt: true,
+      },
+    },
+    define: {
+      syncOnAssociation: false,
+    },
+    syncOnAssociation: false,
+    sync: { force: false },
+    seederStorage: 'sequelize',
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Foo = sequelize.define('Foo', { id: DataTypes.INTEGER, name: { DataTypes.TEXT, allowNull: false } });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
+  log(await Foo.create({ id: 1, name: 'foo' })); // Expected: name can not be null
   expect(await Foo.count()).to.equal(1);
+  
+  const foos = Foo.findAll({});
+  
+  console.log(foos) // [ { id: null } ];
+  
+  const foosRaw = Foo.findAll({ raw: true });
+  
+  console.log(foosRaw) // [ { id: 1, name: 12 } ];
 };
