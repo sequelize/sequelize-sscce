@@ -30,7 +30,10 @@ module.exports = async function() {
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
-
+  
+  
   log(await Foo.create({ name: 'foo' }));
+  console.log(Foo.findOne({ name: 'foo' }))
+  
   expect(await Foo.count()).to.equal(1);
 };
