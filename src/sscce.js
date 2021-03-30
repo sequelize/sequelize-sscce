@@ -24,13 +24,40 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+    
+  const Order = sequelize.define(
+      "Order",
+      {
+          status: DataTypes.STRING,
+          price: DataTypes.FLOAT,
+      },
+      {
+          hooks: {
+              beforeValidate: (order) =>
+                  (order.status =
+                      typeof order.price === "number" ? "complete" : "pending"),
+          },
+          sequelize,
+      }
+  );
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  // Creation
+  const newOrder = await Order.create();
+
+  // Subsequent update
+  newOrder.set({ price: 10.0 });
+  await newOrder.save();
+  log(newOrder) // App shows the updated `status`
+
+  // Re-inspect the actual db state
+  const sameOrder = await Order.findByPk(newOrder.id);
+  log(sameOrder)
+
+  // Fails: Sequelize never updated this field in db
+  expect(sameOrder.status).to.equal(newOrder.status);
 };
