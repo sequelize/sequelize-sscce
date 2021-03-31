@@ -24,13 +24,22 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT, value: DataTypes.INTEGER });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
+  log(await Foo.create({ name: 'foo', value: 10 }));
   expect(await Foo.count()).to.equal(1);
+
+  const sums = await Foo.findAll({
+    attributes: [[sequelize.cast(sequelize.fn('SUM', sequelize.col('value')), 'INTEGER'), 'sum']],
+    group: ['name'],
+    raw: true,
+  });
+  log(sums);
+  // Test
+  expect(sums[0].sum).to.be.a('number');
 };
