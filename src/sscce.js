@@ -33,10 +33,10 @@ module.exports = async function() {
 
   log(await Foo.create({ name: 'foo', value: 10 }));
   expect(await Foo.count()).to.equal(1);
-  
+
   // Test
-  expect((await Foo.findAll({
+  log((await Foo.findAll({
     attributes: [[sequelize.cast(sequelize.fn('SUM', sequelize.col('value')), 'INTEGER'), 'sum']],
     group: ['name'],
-  }))[0].sum).to.be.a('number');
+  })));
 };
