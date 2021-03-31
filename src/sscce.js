@@ -36,7 +36,7 @@ module.exports = async function() {
   
   // Test
   expect(await Foo.findAll({
-    attributes: [sequelize.cast(sequelize.fn('SUM', models.sequelize.col('value')), 'INTEGER')],
+    attributes: [sequelize.cast(sequelize.fn('SUM', sequelize.col('value')), 'INTEGER')],
     group: ['name'],
   })[0]).to.be.a('number');
 };
