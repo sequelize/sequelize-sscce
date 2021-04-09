@@ -24,13 +24,47 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  class Team extends Model {}
+  class Game extends Model {}
+  class GameTeam extends Model {}
+
+  Team.init({
+    name: DataTypes.STRING
+  },{
+    sequelize,
+    modelName: 'Team'
+  });
+ 
+  Game.init({
+    name: DataTypes.STRING
+  },{
+    sequelize,
+    modelName: 'Game'
+  });
+
+  GameTeam.init({},{
+    sequelize,
+    modelName: 'GameTeam',
+    freezeTableName: true
+  });
+
+  Team.belongsToMany(Game, { through: GameTeam });
+  Game.belongsToMany(Team, { through: GameTeam });
+  GameTeam.belongsTo(Game);
+  GameTeam.belongsTo(Team);
+  Game.hasMany(GameTeam);
+  Team.hasMany(GameTeam);
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
-  await sequelize.sync();
+  await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  log(await Game.bulkCreate([
+    { name: 'The Big Clash', Teams: [{ id: 1, name: 'The Martians' }, { id: 2, name: 'The Earthlings' }] },
+    { name: 'Winter Showdown', Teams: [{ id: 1, name: 'The Martians' }, { id: 3, name: 'The Plutonians' }] },
+    { name: 'Summer Beatdown', Teams: [{ id: 2, name: 'The Earthlings' }, { id: 3, name: 'The Plutonians' }] }
+  ], { include: [{ model: Team, updateOnDuplicate: ['name'] }, { model: GameTeam, updateOnDuplicate: ['GameID','TeamId']}] }));
+  expect(await GameTeam.count()).to.equal(6);
+
 };
