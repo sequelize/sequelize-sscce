@@ -14,8 +14,12 @@ const log = require('./utils/log');
 const sinon = require('sinon');
 const { expect } = require('chai');
 
+class BookDetails extends Sequelize.Model {}
+
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+  if (process.env.DIALECT !== "postgres") return;
+  
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
@@ -24,13 +28,41 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  BookDetails.init({
+    uniqueName: {
+        type: Sequelize.DataTypes.STRING(100),
+        unique: true,
+        allowNull: false,
+        primaryKey: true
+    },
+    originalCategories: {
+        type: Sequelize.DataTypes.ARRAY(Sequelize.DataTypes.ENUM({
+          values: ['drama', 'comedy'],
+        })),
+      },
+  }, {
+      underscored: true,
+      modelName: 'BookDetails',
+      sequelize
+  });
+  await BookDetails.sync({force: true});
 
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
-  await sequelize.sync();
-  expect(spy).to.have.been.called;
+  /* bulkCreate tries to execute this query:
+  INSERT INTO "book_details" ("unique_name","original_categories","created_at","updated_at") VALUES ('test',ARRAY['drama']::"enum_book_details_originalCategories"[],'2021-04-16 19:38:40.298 +00:00','2021-04-16 19:38:40.298 +00:00') RETURNING "unique_name","original_categories","created_at","updated_at";
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  when it should execute this:
+  INSERT INTO "book_details" ("unique_name","original_categories","created_at","updated_at") VALUES ('test',ARRAY['drama']::"enum_book_details_original_categories"[],'2021-04-16 19:38:40.298 +00:00','2021-04-16 19:38:40.298 +00:00') RETURNING "unique_name","original_categories","created_at","updated_at";
+
+  as the array enum type is not called enum_book_details_originalCategories but enum_book_details_original_categories the insert query fails.
+  */
+  await BookDetails.bulkCreate([{
+      uniqueName: 'test',
+      originalCategories: ['drama']
+  }]);
+  
+  /* The issue is that when sequelize creates the type, it properly uses the undercored property and creates a type named: enum_book_details_original_categories
+  but when doing queries (and this particular error appears on .bulkCreate but not on .create, on lib/dialects/postgres/data-types.js:483 to generate the enum
+  name the code is using options.field.fieldName (that is the not undercored version) instead of the proper undercored value: options.field.field */
+  
+  expect(await BookDetails.count()).to.equal(1);
 };
