@@ -14,6 +14,8 @@ const log = require('./utils/log');
 const sinon = require('sinon');
 const { expect } = require('chai');
 
+class BookDetails extends Sequelize.Model {}
+
 // Your SSCCE goes inside this function.
 module.exports = async function() {
   const sequelize = createSequelizeInstance({
