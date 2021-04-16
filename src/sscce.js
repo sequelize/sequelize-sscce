@@ -1,7 +1,5 @@
 'use strict';
 
-if (process.env.DIALECT !== "postgres") return;
-
 // Require the necessary things from Sequelize
 const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
@@ -20,6 +18,8 @@ class BookDetails extends Sequelize.Model {}
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+  if (process.env.DIALECT !== "postgres") return;
+  
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
