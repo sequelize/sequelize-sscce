@@ -1,5 +1,7 @@
 'use strict';
 
+if (process.env.DIALECT !== "postgres") return;
+
 // Require the necessary things from Sequelize
 const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
@@ -33,4 +35,8 @@ module.exports = async function() {
 
   log(await Foo.create({ name: 'foo' }));
   expect(await Foo.count()).to.equal(1);
+  
+  const stuff = await Foo.findAll({
+    attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('id')) ,'id']]
+  });
 };
