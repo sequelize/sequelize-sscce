@@ -22,7 +22,7 @@
     "sinon-chai": "^3"
   },
   "scripts": {
-    "start": "cross-env LOCAL_SSCCE=true DIALECT=sqlite node setup/runner.js",
+    "start": "cross-env LOCAL_SSCCE=true DIALECT=mariadb node setup/runner.js",
     "ts-prep": "del-cli ts-dist && tsc && node setup/ts-setup.js",
     "ts": "npm run ts-prep && cross-env LOCAL_TS_RUN=true npm start",
     "do-replace": "node setup/lib-replacements.js --do",
