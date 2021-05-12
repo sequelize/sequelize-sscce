@@ -24,7 +24,8 @@ export async function run() {
 
   class Foo extends Model {};
   Foo.init({
-    name: DataTypes.TEXT
+    name: DataTypes.TEXT,
+    criteria: DataTypes.JSON
   }, {
     sequelize,
     modelName: 'Foo'
@@ -35,6 +36,37 @@ export async function run() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'TS foo' }));
+  // Creating an instance succeeds, as expected, with JSON being stored as expected
+  log(
+    await Foo.create({
+      name: "TS foo",
+      criteria: { foo: [1, 2] },
+    })
+  );
+
+  // The count verifies that the instance was created
   expect(await Foo.count()).to.equal(1);
+
+  // Attempt to retrieve the record we just created. Running the following will throw an error. Details below.
+  await Foo.findAll({
+    where: {
+      criteria: {
+        foo: [1, 2],
+      },
+    },
+  });
+
+  // The query above generates the following SQL, which throws an error.
+
+  // SELECT
+  //   `id`,
+  //   `name`,
+  //   `criteria`
+  // FROM
+  //   `Foos` AS `Foo`
+  // WHERE
+  //   CAST(
+  //     json_extract(`Foo`.`criteria`, '$.foo') AS DOUBLE PRECISION
+  //   ) = 1,
+  //   2;
 }
