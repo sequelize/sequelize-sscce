@@ -16,21 +16,20 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
-  const sequelize = createSequelizeInstance({
-    logQueryParameters: true,
-    benchmark: true,
-    define: {
-      timestamps: false // For less clutter in the SSCCE
-    }
-  });
+  const User = sequelize.define('User', {
+  // Model attributes are defined here
+  firstName: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  lastName: {
+    type: DataTypes.STRING
+    // allowNull defaults to true
+  }
+}, {
+  // Other model options go here
+});
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
-  await sequelize.sync();
-  expect(spy).to.have.been.called;
-
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+// `sequelize.define` also returns the model
+console.log(User === sequelize.models.User); // true
 };
