@@ -35,7 +35,7 @@ module.exports = async function() {
       },
       exampleField: {
         unique: true,
-        allowNull: true,
+        allowNull: false,
         type: DataTypes.STRING,
       },
     }
