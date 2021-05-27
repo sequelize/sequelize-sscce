@@ -24,13 +24,35 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const ExampleModel = sequelize.define(
+    "ExampleModel",
+    {
+      id: {
+        allowNull: false,
+        defaultValue: DataTypes.UUIDV1,
+        primaryKey: true,
+        type: DataTypes.UUID,
+      },
+      exampleField: {
+        unique: true,
+        allowNull: true,
+        type: DataTypes.STRING,
+      },
+    }
+  );
 
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
-  await sequelize.sync();
-  expect(spy).to.have.been.called;
+  await sequelize.sync({ alter: true })
+  await sequelize.sync({ alter: true })
+  await sequelize.sync({ alter: true })
+  await sequelize.sync({ alter: true })
+  await sequelize.sync({ alter: true })
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  await ExampleModel.create({
+    exampleField: '',
+    exampleField1: ''
+  })
+
+  const result = await ExampleModel.findAll({});
+
+  log(result);
 };
