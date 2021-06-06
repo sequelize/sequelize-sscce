@@ -30,11 +30,16 @@ export async function run() {
     modelName: 'Foo'
   });
 
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
-  expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  await Foo.create({name: 'foo'});
+  await Foo.create({name: 'bar'});
+
+  const withGroupBy = await Foo.findAndCountAll({
+    group: 'name'
+  });
+  log(withGroupBy);
+
+  const withoutGroupBy = await Foo.findAndCountAll();
+  log(withoutGroupBy);
 }
