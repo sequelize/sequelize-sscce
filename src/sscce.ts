@@ -1,40 +1,24 @@
-// Require the necessary things from Sequelize
-import { Sequelize, Op, Model, DataTypes } from 'sequelize';
+const { Sequelize } = require('sequelize');
 
-// This function should be used instead of `new Sequelize()`.
-// It applies the config for your SSCCE to work on CI.
-import createSequelizeInstance = require('./utils/create-sequelize-instance');
+// Option 1: Passing a connection URI
+const sequelize = new Sequelize('sqlite::memory:') // Example for sqlite
+const sequelize = new Sequelize('postgres://user:pass@example.com:5432/dbname') // Example for postgres
 
-// This is an utility logger that should be preferred over `console.log()`.
-import log = require('./utils/log');
+// Option 2: Passing parameters separately (sqlite)
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: 'path/to/database.sqlite'
+});
 
-// You can use sinon and chai assertions directly in your SSCCE if you want.
-import sinon = require('sinon');
-import { expect } from 'chai';
-
-// Your SSCCE goes inside this function.
-export async function run() {
-  const sequelize = createSequelizeInstance({
-    logQueryParameters: true,
-    benchmark: true,
-    define: {
-      timestamps: false // For less clutter in the SSCCE
-    }
-  });
-
-  class Foo extends Model {};
-  Foo.init({
-    name: DataTypes.TEXT
-  }, {
-    sequelize,
-    modelName: 'Foo'
-  });
-
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
-  await sequelize.sync();
-  expect(spy).to.have.been.called;
-
-  log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+// Option 2: Passing parameters separately (other dialects)
+const sequelize = new Sequelize('database', 'username', 'password', {
+  host: 'localhost',
+  dialect: /* one of 'mysql' | 'mariadb' | 'postgres' | 'mssql' */
+});
+  
+try {
+  await sequelize.authenticate();
+  console.log('Connection has been established successfully.');
+} catch (error) {
+  console.error('Unable to connect to the database:', error);
 }
