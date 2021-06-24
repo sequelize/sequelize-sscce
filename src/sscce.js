@@ -24,13 +24,34 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-
+  const Foo = sequelize.define('Foo', { 
+    myId: {
+          type: DataTypes.INTEGER,
+          primaryKey: true
+    }
+  });
+  const Bar = sequelize.define('Bar', { name: DataTypes.TEXT });
+  Foo.hasOne(Bar, {
+      foreignKey: {
+          name: 'myId',
+          primaryKey: true
+     }
+  });
+  Bar.belongsTo(Foo, {
+      foreignKey: {
+          name: 'myId',
+          primaryKey: true
+     }
+  });
+  
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
+  
+  let fooDescription = await Foo.describe()
+  let barDescription = await Bar.describe()
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  log(fooDescription);
+  log(barDescription);
 };
