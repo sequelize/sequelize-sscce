@@ -38,7 +38,6 @@ export async function run() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  // @ts-expect-error
   log(await Foo.findOrCreate({ where: { name: 'foo' }, hooks: false }));
   expect(await Foo.count()).to.equal(1);
 }
