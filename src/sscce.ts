@@ -27,7 +27,10 @@ export async function run() {
     name: DataTypes.TEXT
   }, {
     sequelize,
-    modelName: 'Foo'
+    modelName: 'Foo',
+    hooks: {
+      beforeCreate: () => { throw new Error('beforeCreate') }
+    }
   });
 
   const spy = sinon.spy();
@@ -35,6 +38,7 @@ export async function run() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'TS foo' }));
+  // @ts-expect-error
+  log(await Foo.findOrCreate({ where: { name: 'foo' }, hooks: false }));
   expect(await Foo.count()).to.equal(1);
 }
