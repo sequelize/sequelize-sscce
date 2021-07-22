@@ -12,7 +12,6 @@
 		"pretty": true,
 		"newLine": "lf",
 		"stripInternal": true,
-		"strict": true,
 		"skipLibCheck": true
 	}
 }

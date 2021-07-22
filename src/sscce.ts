@@ -1,5 +1,5 @@
 // Require the necessary things from Sequelize
-import { Sequelize, Op, Model, DataTypes } from 'sequelize';
+import { Sequelize, Op, Model, DataTypes, UpsertOptions as SequelizeUpsertOptions, CreateOptions as SequelizeCreateOptions } from 'sequelize';
 
 // This function should be used instead of `new Sequelize()`.
 // It applies the config for your SSCCE to work on CI.
@@ -12,6 +12,14 @@ import log = require('./utils/log');
 import sinon = require('sinon');
 import { expect } from 'chai';
 
+interface CreateOptions extends SequelizeCreateOptions {
+  actorId?: number;
+}
+
+interface UpsertOptions extends SequelizeUpsertOptions {
+  actorId?: number;
+}
+
 // Your SSCCE goes inside this function.
 export async function run() {
   const sequelize = createSequelizeInstance({
@@ -22,12 +30,28 @@ export async function run() {
     }
   });
 
-  class Foo extends Model {};
+  class Foo extends Model { public name: string; public createdBy: number; };
   Foo.init({
-    name: DataTypes.TEXT
+    name: DataTypes.TEXT,
+    createdBy: DataTypes.INTEGER,
   }, {
     sequelize,
-    modelName: 'Foo'
+    modelName: 'Foo',
+    hooks: {
+      beforeCreate(model, options: CreateOptions) {
+        if (!options.actorId) {
+          throw new Error(`Must include actorId option`);
+        }
+        model.createdBy = options.actorId;
+      },
+      // @ts-expect-error https://github.com/sequelize/sequelize/pull/13394
+      beforeUpsert(attributes: Foo, options: UpsertOptions) {
+        if (!options.actorId) {
+          throw new Error(`Must include actorId option`);
+        }
+        attributes.createdBy = options.actorId;
+      },
+    }
   });
 
   const spy = sinon.spy();
@@ -35,6 +59,13 @@ export async function run() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  // This passes
+  // @ts-expect-error I am using declaration merging to make actorId ok for TS and the value is passed as expected
+  log(await Foo.create({ name: 'foo 1' }, { actorId: 1 }));
+  expect(await Foo.findOne({ where: { name: 'foo 1' }})).to.include({ createdBy: 1 })
+
+  // This fails but should pass
+  // @ts-expect-error I am using declaration merging to make actorId ok for TS and the value is passed as expected
+  log(await Foo.upsert({ name: 'foo 2' }, { actorId: 1 }));
+  expect(await Foo.findOne({ where: { name: 'foo 2' }})).to.include({ createdBy: 1 })
 }
