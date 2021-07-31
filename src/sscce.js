@@ -31,10 +31,10 @@ module.exports = async function() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(const fooInstance = await Foo.create({ name: 'foo' }));
+  const fooInstance = await Foo.create({ name: 'foo' });
   expect(await Foo.count()).to.equal(1);
   expect(fooInstance.verified).to.equal(false);
 
-  log(const fooInstanceBuild = await Foo.build({ name: 'foo' }));
+  const fooInstanceBuild = await Foo.build({ name: 'foo' });
   expect(fooInstanceBuild.verified).to.equal(false);
 };
