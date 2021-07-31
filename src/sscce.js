@@ -15,7 +15,7 @@ const sinon = require('sinon');
 const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
-module.exports = async function() {
+module.exports = async function(){
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
