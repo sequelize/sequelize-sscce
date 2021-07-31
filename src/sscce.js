@@ -24,13 +24,17 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT, verified: { type: DataTypes.BOOLEAN, default: false } });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
+  log(const fooInstance = await Foo.create({ name: 'foo' }));
   expect(await Foo.count()).to.equal(1);
+  expect(fooInstance.verified).to.equal(false);
+
+  log(const fooInstanceBuild = await Foo.build({ name: 'foo' }));
+  expect(fooInstanceBuild.verified).to.equal(false);
 };
