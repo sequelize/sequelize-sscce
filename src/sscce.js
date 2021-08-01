@@ -24,7 +24,7 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT, verified: { type: DataTypes.BOOLEAN, default: false } });
+  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT, verified: { type: DataTypes.BOOLEAN, default: false }, testString: { type: DataTypes.STRING, default: "test" } });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
@@ -34,11 +34,14 @@ module.exports = async function() {
   const fooInstance = await Foo.create({ name: 'foo' });
   expect(await Foo.count()).to.equal(1);
   expect(fooInstance.verified).to.equal(false);
+  expect(fooInstance.testString).to.equal("test");
 
   const fooInstanceBuild = await Foo.build({ name: 'foo' });
   expect(fooInstanceBuild.verified).to.equal(false);
+  expect(fooInstanceBuild.testString).to.equal("test");
 
   const fooFromDB = await Foo.findByPk(fooInstance.id);
 
   expect(fooFromDB.verified).to.equal(false)
+  expect(fooFromDB.testString).to.equal("test");
 };
