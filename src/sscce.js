@@ -37,4 +37,8 @@ module.exports = async function() {
 
   const fooInstanceBuild = await Foo.build({ name: 'foo' });
   expect(fooInstanceBuild.verified).to.equal(false);
+
+  const fooFromDB = await Foo.findByPk(fooInstance.id);
+
+  expect(fooFromDB.verified).to.equal(false)
 };
