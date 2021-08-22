@@ -106,6 +106,35 @@ module.exports = async function() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  log(await Image.create({ link: 'image-foo' }));
+  log(await Image.create({ link: 'image-bar' }));
+  log(await AdImage.create({ url: 'ad-image' }));
+  log(await Video.create({ thumbnailId: 1, bannerId: 2, title: 'bar' }));
+  log(await VideoAd.create({ videoId: 1, adImageId: 1 }));
+  
+  const result = await Video.findAndCountAll({
+    attributes: ['id', 'title'], // Commenting out attributes allows the query to run but returns count 1, rows []
+    limit: 20, // Issue does not happen when limit removed
+    include: [{
+      model: VideoAd,
+      as: 'ads',
+      required: false,
+      include: {
+        model: AdImage,
+        as: 'image',
+        required: false,
+      },
+    }, {
+      model: Image,
+      as: 'thumbnail',
+      required: true, // Issue does not happen when required: false
+    }, {
+      model: Image,
+      as: 'bannerImage',
+      required: false,
+    }],
+  })
+  
+  expect(result.count).to.equal(1);
+  expect(result.rows.length).to.equal(result.count);
 };
