@@ -119,6 +119,7 @@ module.exports = async function() {
       model: VideoAd,
       as: 'ads',
       required: false,
+      // separate: true, // separate: true is a workaround that allows the query to return the expected results
       include: {
         model: AdImage,
         as: 'image',
