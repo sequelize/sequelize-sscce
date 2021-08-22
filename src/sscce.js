@@ -24,7 +24,82 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Image = sequelize.define('image', { 
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    link: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+  });
+  
+  const Video = sequelize.define('video', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    thumbnailId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    bannerId: DataTypes.INTEGER,
+    title: DataTypes.TEXT,
+  }, {
+    schema: 'video',
+    underscored: true,
+    paranoid: true,
+  });
+  
+  export const AdImage = sequelize.define('ad_image', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    url: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+  }, {
+    underscored: true,
+    paranoid: true,
+  });
+  
+  const VideoAd = sequelize.define('video_ad', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    videoId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    adImageId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+  }, {
+    schema: 'video',
+    underscored: true,
+    paranoid: true,
+  });
+  
+  Video.belongsTo(Image, { as: 'thumbnail', foreignKey: { name: 'thumbnailId', allowNull: false } });
+  Image.hasOne(Video, { as: 'video', foreignKey: { name: 'thumbnailId', allowNull: false } });
+
+  Video.belongsTo(Image, { as: 'bannerImage', foreignKey: { name: 'bannerId', allowNull: true } });
+  Image.hasOne(Video, { as: 'bannerVideo', foreignKey: { name: 'bannerId', allowNull: true } });
+
+  VideoAd.belongsTo(Video, { as: 'video', foreignKey: { name: 'videoId', allowNull: false } });
+  Video.hasMany(VideoAd, { as: 'ads', foreignKey: { name: 'videoId', allowNull: false } });
+
+  VideoAd.belongsTo(AdImage, { as: 'image', foreignKey: { name: 'adImageId', allowNull: false } });
+  AdImage.hasOne(VideoAd, { as: 'ad', foreignKey: { name: 'adImageId', allowNull: false } });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
