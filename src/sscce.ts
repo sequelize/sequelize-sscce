@@ -24,7 +24,10 @@ export async function run() {
 
   class Foo extends Model {};
   Foo.init({
-    name: DataTypes.TEXT
+    identifier: {
+      primaryKey: true,
+      type: DataTypes.STRING,
+    },
   }, {
     sequelize,
     modelName: 'Foo'
@@ -35,6 +38,27 @@ export async function run() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  const identifier = "xxxxxxxxxxxx";
+
+  /* typeIsVoid1,-2 & -3 should NOT be instance of Foo but they are. "SSCCE done without errors!" */
+
+  /* Return type is Foo and this is correct. */
+  const typeIsFoo = await Foo.create({ identifier });
+  log(typeIsFoo);
+  expect(typeIsFoo).to.be.instanceOf(Foo);
+
+  /* Return type is void and this is incorrect. It actually returns a Foo instance. */
+  const typeIsVoid1 = await Foo.create({ identifier }, { ignoreDuplicates: true });
+  log(typeIsVoid1);
+  expect(typeIsVoid1).to.be.instanceOf(Foo);
+
+  /* Return type is still void and this is also incorrect. It returns a Foo Instance. */
+  const typeIsVoid2 = await Foo.create({ identifier }, { ignoreDuplicates: true, returning: false });
+  log(typeIsVoid2);
+  expect(typeIsVoid2).to.be.instanceOf(Foo);
+
+  /* Return type is still void and this is also incorrect. It returns a Foo Instance. */
+  const typeIsVoid3 = await Foo.create({ identifier: "different" }, { returning: false });
+  log(typeIsVoid3);
+  expect(typeIsVoid3).to.be.instanceOf(Foo);
 }
