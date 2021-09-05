@@ -13,7 +13,7 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('test', {
+  const Foo = sequelize.define('foo', {
     pk1: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -31,7 +31,7 @@ module.exports = async function() {
   }, {});
 
   await sequelize.sync();
-  await model.findOne({
+  await Foo.findOne({
     where: {pk1: 'foo'},
     logging: log
   });
