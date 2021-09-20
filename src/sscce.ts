@@ -1,5 +1,6 @@
 // Require the necessary things from Sequelize
 import { Sequelize, Op, Model, DataTypes } from 'sequelize';
+import * as cls from 'cls-hooked';
 
 // This function should be used instead of `new Sequelize()`.
 // It applies the config for your SSCCE to work on CI.
@@ -14,6 +15,8 @@ import { expect } from 'chai';
 
 // Your SSCCE goes inside this function.
 export async function run() {
+  const namespace = cls.createNamespace('test');
+  Sequelize.useCLS(namespace);
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
@@ -22,19 +25,10 @@ export async function run() {
     }
   });
 
-  class Foo extends Model {};
-  Foo.init({
-    name: DataTypes.TEXT
-  }, {
-    sequelize,
-    modelName: 'Foo'
-  });
-
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
-  await sequelize.sync();
-  expect(spy).to.have.been.called;
-
-  log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  await sequelize.transaction(async (t) => {
+    await sequelize.sync();
+  });
+  expect(spy).to.have.been.called;  
 }
