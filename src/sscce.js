@@ -34,3 +34,5 @@ module.exports = async function() {
   log(await Foo.create({ name: 'foo' }));
   expect(await Foo.count()).to.equal(1);
 };
+
+// Modify the sscce.js file.
