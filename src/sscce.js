@@ -15,6 +15,7 @@ const sinon = require('sinon');
 const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
+//WIP
 module.exports = async function() {
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
@@ -25,7 +26,6 @@ module.exports = async function() {
   });
 
   const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
