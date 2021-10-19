@@ -32,5 +32,5 @@ module.exports = async function() {
   expect(spy).to.have.been.called;
 
   log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  expect(await Foo.count()).to.equal(2);
 };
