@@ -30,11 +30,44 @@ export async function run() {
     modelName: 'Foo'
   });
 
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
-  expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  const spyQuery = sinon.spy();
+
+  // "NOT" is missing
+  await Foo.findAll({
+    logging: spyQuery,
+    where: {
+      [Op.not]: Sequelize.where(
+        Sequelize.cast(Sequelize.col('name'), 'text'),
+        Op.like,
+        'abc',
+      ),
+    },
+  });
+
+  expect(spyQuery).calledWith('Executed (default): SELECT `id`, `name` FROM `Foos` AS `Foo` WHERE NOT(CAST(`name` AS TEXT) LIKE \'abc\');');
+
+  // crashes with Error: Invalid value { [Symbol(like)]: 'abc' }
+  await Foo.findAll({
+    logging: spyQuery,
+    where: Sequelize.where(
+      Sequelize.cast(Sequelize.col('name'), 'text'),
+      { [Op.not]: { [Op.like]: 'abc' } },
+    ),
+  });
+
+  expect(spyQuery).calledWith('Executed (default): SELECT `id`, `name` FROM `Foos` AS `Foo` WHERE CAST(`name` AS TEXT) NOT LIKE \'abc\';');
+
+  // // This one passes
+  // await Foo.findAll({
+  //   logging: spyQuery,
+  //   where: {
+  //     [Op.not]: {
+  //       name: { [Op.like]: 'abc' },
+  //     },
+  //   },
+  // });
+  //
+  // expect(spyQuery).calledWith('Executed (default): SELECT `id`, `name` FROM `Foos` AS `Foo` WHERE NOT (CAST(`name` AS TEXT) LIKE \'abc\');');
 }
