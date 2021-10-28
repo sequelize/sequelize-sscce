@@ -8,19 +8,23 @@
   "private": true,
   "license": "MIT",
   "dependencies": {
-    "chai": "^4.2.0",
+    "chai": "^4",
+    "chai-as-promised": "^7",
+    "chai-datetime": "^1",
     "chalk": "^2",
     "cross-env": "^5",
     "fs-jetpack": "^2",
     "is-plain-object": "^3",
     "json-stringify-safe": "^5",
     "lodash.defaults": "^4",
-    "sequelize": "^5"
+    "sequelize": "^6",
+    "sinon": "^9",
+    "sinon-chai": "^3"
   },
   "scripts": {
     "start": "cross-env LOCAL_SSCCE=true DIALECT=sqlite node setup/runner.js",
     "ts-prep": "del-cli ts-dist && tsc && node setup/ts-setup.js",
-    "ts": "npm run ts-prep && cross-env USE_TS=true npm start",
+    "ts": "npm run ts-prep && cross-env LOCAL_TS_RUN=true npm start",
     "do-replace": "node setup/lib-replacements.js --do",
     "undo-replace": "node setup/lib-replacements.js --undo",
     "ci": "node setup/runner.js",
@@ -28,8 +32,12 @@
   },
   "devDependencies": {
     "@types/bluebird": "*",
-    "@types/chai": "^4.2.9",
+    "@types/chai": "^4",
+    "@types/chai-as-promised": "^7",
+    "@types/chai-datetime": "^0.0.36",
     "@types/node": "^10",
+    "@types/sinon": "^9",
+    "@types/sinon-chai": "^3",
     "@types/validator": "*",
     "@typescript-eslint/eslint-plugin": "2.16.0",
     "@typescript-eslint/parser": "2.16.0",
@@ -37,6 +45,6 @@
     "eslint": "^6",
     "eslint-plugin-node": "^10",
     "sqlite3": "^4",
-    "typescript": "3.7.5"
+    "typescript": "~4.1"
   }
 }

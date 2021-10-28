@@ -1,5 +1,13 @@
 'use strict';
 
+// Enable same settings to chai from Sequelize main repo
+const chai = require('chai');
+chai.use(require('chai-datetime'));
+chai.use(require('chai-as-promised'));
+chai.use(require('sinon-chai'));
+chai.config.includeStack = true;
+chai.should();
+
 const Sequelize = require('sequelize');
 const chalk = require('chalk');
 
@@ -11,12 +19,16 @@ process.on("unhandledRejection", e => {
   console.error('An unhandled rejection occurred:');
   throw e;
 });
-Sequelize.Promise.onPossiblyUnhandledRejection(e => {
-  console.error('An unhandled rejection occurred:');
-  throw e;
-});
 
-Sequelize.Promise.longStackTraces();
+const sequelizeVersion = require('./sequelize-version');
+
+if (sequelizeVersion.startsWith('v5')) {
+  Sequelize.Promise.onPossiblyUnhandledRejection(e => {
+    console.error('An unhandled rejection occurred:');
+    throw e;
+  });
+  Sequelize.Promise.longStackTraces();
+}
 
 const colors = [
   'red',
