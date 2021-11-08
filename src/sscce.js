@@ -1,5 +1,7 @@
 'use strict';
 
+//I'm not sure what to do here.
+
 // Require the necessary things from Sequelize
 const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
