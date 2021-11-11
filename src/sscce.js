@@ -25,6 +25,8 @@ module.exports = async function() {
   });
 
   const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Bar = sequelize.define('Bar', { name: DataTypes.TEXT });
+  Foo.hasOne(Bar);
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
