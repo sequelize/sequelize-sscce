@@ -23,14 +23,33 @@ module.exports = async function() {
       timestamps: false // For less clutter in the SSCCE
     }
   });
+  
+	await sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Foo = sequelize.define('Foo', { 
+    id: {
+				type: DataTypes.UUID,
+				defaultValue: DataTypes.UUIDV4,
+				primaryKey: true
+    }
+  });
 
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
-  await sequelize.sync();
-  expect(spy).to.have.been.called;
-
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  const Bar = sequelize.define('Bar', { 
+    id: {
+				type: DataTypes.UUID,
+				defaultValue: DataTypes.UUIDV4,
+				primaryKey: true
+    }
+  });
+  
+  Foo.hasMany(Bar);
+  
+  const records = [{Bars: [{}, {}]}, {}];
+  // This bulkCreate should work
+  await Foo.bulkCreate(records, {include: ["Bars"]});
+  
+  // This bulkCreate should not work
+  await Foo.bulkCreate(records, {include: ["Bars", individualHooks: true]});
+  
+  // What happens is sequelize tries to create 'Bars' twice with the same ids so it fails due to unique constraint.
 };
