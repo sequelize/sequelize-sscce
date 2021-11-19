@@ -24,13 +24,42 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const User = sequelize.define('user', {
+    name: DataTypes.STRING
+  });
+  const Role = sequelize.define('role', {
+    name: DataTypes.STRING
+  });
+  User.Role = User.hasMany(Role)
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  log(await User.create({
+    name: 'parent',
+    roles: [{
+      name: 'role 1'
+    }, {
+      name: 'role 2'
+    }]
+  }, {
+    include: [{ association: User.Role }]
+  }))
+
+  const users = await User.findAll()
+  const roles = await Role.findAll()
+  expect(users).to.have.length(1, 'Created a user')
+  expect(roles).to.have.length(2, 'Created a role')
+
+  const user = users[0]
+  const rolesToBeRemoved = await user.getRoles()
+  expect(rolesToBeRemoved).to.have.length(2, 'User has roles')
+
+  await user.removeRoles(rolesToBeRemoved)
+  //await Promise.all(rolesToBeRemoved.map(role => role.destroy()))
+
+  expect(await user.getRoles()).to.have.length(0, 'User has no roles')
+  expect(await Role.findAll()).to.have.length(0, 'Roles removed from database')
 };
