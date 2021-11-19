@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        combination: ['v5', 'v6', 'v6 with TS']
+        combination: ['v5', 'v6']
     name: SQLite (${{ matrix.combination }})
     runs-on: ubuntu-latest
     env:
@@ -31,7 +31,7 @@ jobs:
       matrix:
         postgres-version: [9.5, 10] # Does not work with 12
         native: [true, false]
-        combination: ['v5', 'v6', 'v6 with TS']
+        combination: ['v5', 'v6']
     name: Postgres ${{ matrix.postgres-version }}${{ matrix.native && ' (native)' || '' }} (${{ matrix.combination }})
     runs-on: ubuntu-latest
     services:
@@ -63,7 +63,7 @@ jobs:
         db:
           - '{ name: "MySQL 5.7", image: "mysql:5.7", dialect: "mysql" }'
           - '{ name: "MariaDB 10.3", image: "mariadb:10.3", dialect: "mariadb" }'
-        combination: ['v5', 'v6', 'v6 with TS']
+        combination: ['v5', 'v6']
     name: ${{ fromJson(matrix.db).name }} (${{ matrix.combination }})
     runs-on: ubuntu-latest
     services:
@@ -94,7 +94,7 @@ jobs:
       fail-fast: false
       matrix:
         mssql-version: [2017, 2019]
-        combination: ['v5', 'v6', 'v6 with TS']
+        combination: ['v5', 'v6']
     name: MSSQL ${{ matrix.mssql-version }} (${{ matrix.combination }})
     runs-on: ubuntu-latest
     services:
