@@ -57,8 +57,8 @@ module.exports = async function() {
   const rolesToBeRemoved = await user.getRoles()
   expect(rolesToBeRemoved).to.have.length(2, 'User has roles')
 
-  await user.removeRoles(rolesToBeRemoved)
-  //await Promise.all(rolesToBeRemoved.map(role => role.destroy()))
+  //await user.removeRoles(rolesToBeRemoved)
+  await Promise.all(rolesToBeRemoved.map(role => role.destroy()))
 
   expect(await user.getRoles()).to.have.length(0, 'User has no roles')
   expect(await Role.findAll()).to.have.length(0, 'Roles removed from database')
