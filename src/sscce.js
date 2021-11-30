@@ -24,7 +24,8 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Foo = sequelize.define('Foo', { email: { type: DataTypes.TEXT, allowNull: false,
+        unique: true } });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
