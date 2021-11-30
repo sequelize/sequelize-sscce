@@ -16,21 +16,42 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+  if (process.env.DIALECT !== "mysql") return;
+
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
     define: {
       timestamps: false // For less clutter in the SSCCE
-    }
+    },
+    dialect: 'mysql',
+    dialectOptions: {
+        supportBigNumbers: true,
+        bigNumberStrings: true,
+        decimalNumbers: true,
+        connectTimeout: 60000
+    },
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Foo = sequelize.define('Foo', { id: {
+            type: DataTypes.BIGINT,
+            allowNull: false,
+            primaryKey: true,
+            defaultValue: () =>124594734759940096
+        },name: DataTypes.TEXT, indexCo: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        } });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
+  const data = await Foo.create({ name: 'foo' });
+  log(data);
+  data.indexCo = 124594734759940094;
+  log(data.save());
   expect(await Foo.count()).to.equal(1);
 };
