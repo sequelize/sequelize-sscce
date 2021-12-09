@@ -1,5 +1,5 @@
 'use strict';
-
+if (process.env.DIALECT !== "mysql") return;
 // Require the necessary things from Sequelize
 const { Sequelize, Op, Model, DataTypes } = require('sequelize');
 
@@ -32,5 +32,5 @@ module.exports = async function() {
   expect(spy).to.have.been.called;
 
   log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  expect(await Foo.count({where: { [Op.and]: [ Sequelize.where(Sequelize.col('name'),Op.startsWith,'fo') ] } })).to.equal(1);
 };
