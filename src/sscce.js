@@ -24,13 +24,17 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Foo = sequelize.define('Foo', { uuid: DataTypes.UUID });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  log(await Foo.create({ uuid: '573b77ae-51ab-4271-aa94-81190b734257' }));
+  expect(await Foo.count({where: { uuid: { [Op.like]: "573b77ae%" } }})).to.equal(1);
+  expect(await Foo.count({where: { uuid: { [Op.startsWith]: "573b77ae" } }})).to.equal(1);
+  expect(await Foo.count({where: { uuid: { [Op.endsWith]: "81190b734257" } }})).to.equal(1);
+  expect(await Foo.count({where: { uuid: { [Op.substring]: "573b77ae" } }})).to.equal(1);
+  expect(await Foo.count({where: { uuid: { [Op.iLike]: "573B77AE%" } }})).to.equal(1);
 };
