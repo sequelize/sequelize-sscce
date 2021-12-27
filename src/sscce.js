@@ -23,7 +23,6 @@ module.exports = async function() {
       timestamps: false // For less clutter in the SSCCE
     }
   });
-
   const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
 
   const spy = sinon.spy();
