@@ -33,4 +33,10 @@ module.exports = async function() {
 
   log(await Foo.create({ name: 'foo' }));
   expect(await Foo.count()).to.equal(1);
+  
+  // If the typescript typings are correct, this should output {"foo": 1}.
+  // Since they are not, it does not.
+  console.log(await Foo.count({group: ["name"]}));
+  
+  
 };
