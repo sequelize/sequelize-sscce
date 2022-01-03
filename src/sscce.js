@@ -23,14 +23,50 @@ module.exports = async function() {
       timestamps: false // For less clutter in the SSCCE
     }
   });
-
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
-
+  
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  const foo = sequelize.define('Foo', { name: DataTypes.TEXT, name2: DataTypes.TEXT });
+  const bar = sequelize.define('Bar', { name: DataTypes.TEXT, name2: DataTypes.TEXT });
+  const baz = sequelize.define('Baz', { name: DataTypes.TEXT });
+  
+  foo.belongsTo(bar, {foreignKey: 'name'});
+  foo.belongsTo(baz, {foreignKey: 'name'});
+
+  foo.addScope('defaultScope', {
+    include: [
+        { 
+          model: bar, 
+          on:{
+            'name2': { [Op.col]: 'bar.name2'}
+          }
+       }
+      ]
+    });
+
+  await foo.create({ name: '1', name2: '1' });
+  await bar.create({ name: '1', name2: '1' });
+  
+  const f1 = await foo.findOne({
+    where: {
+      name: '1',
+      name2: '1'
+    }
+  })
+  
+  expect(f1.bar).to.eql({ name: '1', name2: '1' })
+  
+  await baz.create({ name: '1' });
+  
+  const bz1 = await baz.findOne({
+    where: {
+      name: '1'
+    },
+    include: [{model: foo}]
+  })
+  
+  expect(bz1.foo.bar).to.eql({ name: '1', name2: '1' })
 };
