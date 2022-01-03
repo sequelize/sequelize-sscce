@@ -25,9 +25,9 @@ module.exports = async function () {
   });
 
 
-  const foo = sequelize.define('foo', { name: DataTypes.TEXT, name2: DataTypes.TEXT });
-  const bar = sequelize.define('bar', { name: DataTypes.TEXT, name2: DataTypes.TEXT });
-  const baz = sequelize.define('baz', { name: DataTypes.TEXT });
+  const foo = sequelize.define('foo', { name: {type: DataTypes.TEXT, primaryKey:true}, name2: DataTypes.TEXT });
+  const bar = sequelize.define('bar', { name: {type: DataTypes.TEXT, primaryKey:true}, name2: DataTypes.TEXT });
+  const baz = sequelize.define('baz', { name: {type: DataTypes.TEXT, primaryKey:true} });
 
   foo.belongsTo(bar, { foreignKey: 'name' });
   foo.belongsTo(baz, { foreignKey: 'name' });
@@ -59,7 +59,7 @@ module.exports = async function () {
       name2: '1'
     }
   })
-  expect(f1.bar.toJSON()).to.eql({ id: 1, name: '1', name2: '1' })
+  expect(f1.bar.toJSON()).to.eql({ name: '1', name2: '1' })
 
 
   const bz1 = await baz.findOne({
@@ -69,5 +69,5 @@ module.exports = async function () {
     include: [{ model: foo }]
   })
 
-  expect(bz1.foo.bar.toJSON()).to.eql({ id: 1, name: '1', name2: '1' })
+  expect(bz1.foo.bar.toJSON()).to.eql({ name: '1', name2: '1' })
 };
