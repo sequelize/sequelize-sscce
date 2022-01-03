@@ -16,6 +16,8 @@ const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
 module.exports = async function() {
+  if (process.env.DIALECT !== "mssql") return;
+  
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
@@ -24,13 +26,54 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const ItemModel = sequelize.define('Item', {
+    id: {
+      autoIncrement: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      field: 'Id'
+    },
+    code: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'Code'
+    },
+    name: {
+      type: DataTypes.STRING(200),
+      allowNull: false,
+      field: 'Name'
+    },
+    area: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'Area'
+    }
+  }, {
+    sequelize,
+    tableName: 'Item',
+    timestamps: false,
+    indexes: [
+      {
+        name: 'IX_Item_U',
+        unique: true,
+        fields: [ 'Code', 'Name', 'Area' ]
+      },
+      {
+        name: 'PK_Item',
+        unique: true,
+        fields: [
+          { name: 'Id' },
+        ]
+      },
+    ]
+  });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  let instance = await ItemModel.upsert({code: 101, name: 'me', area: 56});
+  console.log(instance);
 };
