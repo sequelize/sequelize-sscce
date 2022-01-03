@@ -15,7 +15,7 @@ const sinon = require('sinon');
 const { expect } = require('chai');
 
 // Your SSCCE goes inside this function.
-module.exports = async function() {
+module.exports = async function () {
   const sequelize = createSequelizeInstance({
     logQueryParameters: true,
     benchmark: true,
@@ -24,13 +24,50 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+
+  const foo = sequelize.define('foo', { name: DataTypes.TEXT, name2: DataTypes.TEXT });
+  const bar = sequelize.define('bar', { name: DataTypes.TEXT, name2: DataTypes.TEXT });
+  const baz = sequelize.define('baz', { name: DataTypes.TEXT });
+
+  foo.belongsTo(bar, { foreignKey: 'name' });
+  foo.belongsTo(baz, { foreignKey: 'name' });
+  baz.hasMany(foo, { foreignKey: 'name' })
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  foo.addScope('defaultScope', {
+    include: [
+      {
+        model: bar,
+        on: {
+          'name2': { [Op.col]: 'bar.name2' }
+        }
+      }
+    ]
+  });
+
+  await baz.create({ name: '1' });
+  await bar.create({ name: '1', name2: '1' });
+  await foo.create({ name: '1', name2: '1' });
+
+  const f1 = await foo.findOne({
+    where: {
+      name: '1',
+      name2: '1'
+    }
+  })
+  expect(f1.bar.toJSON()).to.eql({ id: 1, name: '1', name2: '1' })
+
+
+  const bz1 = await baz.findOne({
+    where: {
+      name: '1'
+    },
+    include: [{ model: foo }]
+  })
+
+  expect(bz1.foo.bar.toJSON()).to.eql({ id: 1, name: '1', name2: '1' })
 };
