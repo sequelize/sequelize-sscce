@@ -25,12 +25,25 @@ module.exports = async function() {
   });
 
   const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Bar = sequelize.define('Bar', { name: DataTypes.TEXT });
+  Foo.hasMany(Bar, {
+    as: 'bars',
+    onDelete: 'CASCADE',
+  });
+  Foo.belongsTo(Bar, {
+    as: 'currentBar',
+    foreignKey: 'barId',
+    constraints: false,
+  });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
-
-  log(await Foo.create({ name: 'foo' }));
+  
+  const foo = await Foo.create({ name: 'foo' });
+  const bar = await foo.createCurrentBar({ name: 'currentBar' });
+  log(foo);
+  log(bar);
   expect(await Foo.count()).to.equal(1);
 };
