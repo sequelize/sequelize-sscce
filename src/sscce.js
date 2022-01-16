@@ -33,5 +33,5 @@ module.exports = async function() {
 
   log(await Foo.create({ name: 'foo' }));
   expect(await Foo.count()).to.equal(1);
-  expect(await Foo.findByPk(1)).not.toBeNull();
+  expect(await Foo.findByPk(1)).to.not.be.null;
 };
