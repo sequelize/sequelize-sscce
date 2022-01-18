@@ -24,13 +24,18 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Foo = sequelize.define('Foo', { id: DataTypes.NUMBER, name: DataTypes.TEXT });
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
+  log(await Foo.create({ id: 1, name: 'foo' }));
   expect(await Foo.count()).to.equal(1);
+  
+  log(await Foo.create({ id: 1, name: 'foo2' }));
+  expect(await Foo.count()).to.equal(1);
+  
+  
 };
