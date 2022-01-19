@@ -20,7 +20,7 @@ module.exports = async function() {
     logQueryParameters: true,
     benchmark: true,
     define: {
-      timestamps: false // For less clutter in the SSCCE
+      timestamps: false, // For less clutter in the SSCCE
       freezeTableName: true,
       underscored: true,
     }
