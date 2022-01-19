@@ -58,7 +58,7 @@ module.exports = async function() {
     disabled: true,
   });
   
-  const myBarNow2 = await Bars.findOne({ where: { id: myBar.id });
+  const myBarNow2 = await Bars.findOne({ where: { id: myBar.id } });
 
   expect(myBarNow2.disabled).to.equal(true);
 };
