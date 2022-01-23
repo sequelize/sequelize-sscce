@@ -43,7 +43,7 @@ module.exports = async function () {
       {
         model: bar,
         on: {
-          'name2': { [Op.col]: 'bar.name2' }
+          'name2': { [Op.col]: 'foo.name2' }
         }
       }
     ]
