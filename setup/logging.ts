@@ -1,13 +1,11 @@
-'use strict';
-
-const isPlainObject = require('is-plain-object');
-const chalk = require('chalk');
+import isPlainObject from 'lodash/isPlainObject.js';
+import chalk from 'chalk';
 
 function isOptionsObject(arg) {
   return arg && isPlainObject(arg) && Object.prototype.hasOwnProperty.call(arg, 'logging');
 }
 
-module.exports = function(...args) {
+export function log(...args: any): void {
   args = args.filter(x => x !== undefined);
   if (args.length === 0) return;
   if (isOptionsObject(args[args.length - 1])) args.pop();
@@ -18,4 +16,4 @@ module.exports = function(...args) {
     args[1] = chalk.blue(`[Elapsed time: ${args[1]} ms]`);
   }
   console.log('[Sequelize]', ...args, '\n');
-};
+}

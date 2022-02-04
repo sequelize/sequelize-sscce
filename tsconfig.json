@@ -1,15 +1,13 @@
 {
 	"include": [
-		"src/sscce.ts"
+		"src/*",
+    "setup/*"
 	],
 	"compilerOptions": {
-		"outDir": "ts-dist",
-		"target": "es2018", // Node.js 10
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"declaration": true,
-		"pretty": true,
+		"target": "es2021",
+		"module": "es2022",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
 		"newLine": "lf",
 		"stripInternal": true,
 		"strict": true,

@@ -1,6 +1,6 @@
 'use strict';
 
-require('./global-adjusts');
+require('./global-adjusts.js');
 
 const jetpack = require('fs-jetpack').cwd(__dirname);
 jetpack.copy('./../src/utils', './../ts-dist/utils');
