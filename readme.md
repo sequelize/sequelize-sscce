@@ -47,6 +47,8 @@ You'll need to install the `pg` package and have a postgres database running.
 ```shell
 # Do this only once.
 npm install pg
+# or
+npm install pg-native
 
 # Start the postgres database using docker.
 # Requires docker. You can also run your own database if you prefer.

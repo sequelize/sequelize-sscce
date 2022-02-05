@@ -8,15 +8,10 @@ env:
 
 jobs:
   test-sqlite:
-    strategy:
-      fail-fast: false
-      matrix:
-        combination: ['v5', 'v6', 'v6 with TS']
-    name: SQLite (${{ matrix.combination }})
+    name: SQLite (sequelize 6)
     runs-on: ubuntu-latest
     env:
       DIALECT: sqlite
-      CI_COMBINATION: ${{ matrix.combination }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -24,15 +19,14 @@ jobs:
           node-version: 12.x
       - run: /bin/bash ./setup/prepare-ci.sh
       - name: Execute SSCCE
-        run: npm run ci
+        run: npm run _test
   test-postgres:
     strategy:
       fail-fast: false
       matrix:
         postgres-version: [9.5, 10] # Does not work with 12
         native: [true, false]
-        combination: ['v5', 'v6', 'v6 with TS']
-    name: Postgres ${{ matrix.postgres-version }}${{ matrix.native && ' (native)' || '' }} (${{ matrix.combination }})
+    name: Postgres ${{ matrix.postgres-version }}${{ matrix.native && ' (native)' || '' }} (sequelize 6)
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -46,7 +40,6 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       DIALECT: ${{ matrix.native && 'postgres-native' || 'postgres' }}
-      CI_COMBINATION: ${{ matrix.combination }}
     steps:
       - run: PGPASSWORD=sequelize_test psql -h localhost -p 5432 -U sequelize_test sequelize_test -c '\l'
       - uses: actions/checkout@v2
@@ -55,7 +48,7 @@ jobs:
           node-version: 12.x
       - run: /bin/bash ./setup/prepare-ci.sh
       - name: Execute SSCCE
-        run: npm run ci
+        run: npm run _test
   test-mysql-mariadb:
     strategy:
       fail-fast: false
@@ -63,8 +56,7 @@ jobs:
         db:
           - '{ name: "MySQL 5.7", image: "mysql:5.7", dialect: "mysql" }'
           - '{ name: "MariaDB 10.3", image: "mariadb:10.3", dialect: "mariadb" }'
-        combination: ['v5', 'v6', 'v6 with TS']
-    name: ${{ fromJson(matrix.db).name }} (${{ matrix.combination }})
+    name: ${{ fromJson(matrix.db).name }} (sequelize 6)
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -79,7 +71,6 @@ jobs:
         options: --health-cmd="mysqladmin -usequelize_test -psequelize_test status" --health-interval 10s --health-timeout 5s --health-retries 5 --tmpfs /var/lib/mysql:rw
     env:
       DIALECT: ${{ fromJson(matrix.db).dialect }}
-      CI_COMBINATION: ${{ matrix.combination }}
     steps:
       - run: mysql --host 127.0.0.1 --port 3306 -uroot -psequelize_test -e "GRANT ALL ON *.* TO 'sequelize_test'@'%' with grant option; FLUSH PRIVILEGES;"
       - uses: actions/checkout@v2
@@ -88,14 +79,13 @@ jobs:
           node-version: 12.x
       - run: /bin/bash ./setup/prepare-ci.sh
       - name: Execute SSCCE
-        run: npm run ci
+        run: npm run _test
   test-mssql:
     strategy:
       fail-fast: false
       matrix:
         mssql-version: [2017, 2019]
-        combination: ['v5', 'v6', 'v6 with TS']
-    name: MSSQL ${{ matrix.mssql-version }} (${{ matrix.combination }})
+    name: MSSQL ${{ matrix.mssql-version }} (sequelize 6)
     runs-on: ubuntu-latest
     services:
       mssql:
@@ -113,7 +103,6 @@ jobs:
           --health-retries 10
     env:
       DIALECT: mssql
-      CI_COMBINATION: ${{ matrix.combination }}
     steps:
       - run: /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "Password12!" -Q "CREATE DATABASE sequelize_test; ALTER DATABASE sequelize_test SET READ_COMMITTED_SNAPSHOT ON;"
       - uses: actions/checkout@v2
@@ -122,4 +111,4 @@ jobs:
           node-version: 12.x
       - run: /bin/bash ./setup/prepare-ci.sh
       - name: Execute SSCCE
-        run: npm run ci
+        run: npm run _test
