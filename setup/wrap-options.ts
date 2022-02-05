@@ -3,7 +3,7 @@ import { CiDbConfigs } from './ci-db-configs.js';
 import { log } from './logging.js';
 import type { Dialect, Options } from 'sequelize';
 
-export function wrapOptions(options: Options) {
+export function wrapOptions(options: Options = {}) {
   if (!process.env.DIALECT) {
     throw new Error('Dialect is not defined! Aborting.');
   }
@@ -13,7 +13,6 @@ export function wrapOptions(options: Options) {
 
   const config = CiDbConfigs[dialect];
 
-  options = options || {};
   options.dialect = dialect;
   if (isPostgresNative) {
     options.native = true;

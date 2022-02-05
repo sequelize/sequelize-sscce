@@ -24,10 +24,16 @@
     "test:mariadb": "cross-env DIALECT=mariadb npm run _test",
     "test:mysql": "cross-env DIALECT=mysql npm run _test",
     "test:mssql": "cross-env DIALECT=mssql npm run _test",
-    "ts-prep": "del-cli ts-dist && tsc && node setup/ts-setup.ts",
+    "start:mariadb": "bash setup/mariadb/10.3/start.sh",
+    "start:mysql": "bash setup/mysql/8.0/start.sh",
+    "start:postgres": "bash setup/postgres/10/start.sh",
+    "start:mssql": "bash setup/mssql/2019/start.sh",
+    "stop:mariadb": "bash setup/mariadb/10.3/stop.sh",
+    "stop:mysql": "bash setup/mysql/8.0/stop.sh",
+    "stop:postgres": "bash setup/postgres/10/stop.sh",
+    "stop:mssql": "bash setup/mssql/2019/stop.sh",
     "do-replace": "node setup/lib-replacements.ts --do",
     "undo-replace": "node setup/lib-replacements.ts --undo",
-    "ci": "node setup/runner.ts",
     "lint": "eslint . --fix"
   },
   "devDependencies": {

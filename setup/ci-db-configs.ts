@@ -26,7 +26,7 @@ export const CiDbConfigs = {
     dialectOptions: {
       options: {
         encrypt: false,
-        requestTimeout: 25000,
+        requestTimeout: 25_000,
       },
     },
   },
