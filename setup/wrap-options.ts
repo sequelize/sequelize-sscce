@@ -1,11 +1,15 @@
 import defaults from 'lodash/defaults.js';
 import { CiDbConfigs } from './ci-db-configs.js';
 import { log } from './logging.js';
+import type { Dialect, Options } from 'sequelize';
 
-module.exports = function wrapOptions(options) {
-  if (!process.env.DIALECT) throw new Error('Dialect is not defined! Aborting.');
+export function wrapOptions(options: Options) {
+  if (!process.env.DIALECT) {
+    throw new Error('Dialect is not defined! Aborting.');
+  }
+
   const isPostgresNative = process.env.DIALECT === 'postgres-native';
-  const dialect = isPostgresNative ? 'postgres' : process.env.DIALECT;
+  const dialect = (isPostgresNative ? 'postgres' : process.env.DIALECT) as Dialect;
 
   const config = CiDbConfigs[dialect];
 
@@ -17,17 +21,11 @@ module.exports = function wrapOptions(options) {
 
   defaults(options, {
     logging: log,
-    database: config.database,
-    username: config.username,
-    password: config.password,
-    host: config.host,
-    port: config.port,
-    pool: config.pool,
-    storage: config.storage,
-    dialectOptions: config.dialectOptions || {},
+    ...config,
   });
 
+  // @ts-expect-error
   options.__isOptionsObject__ = true;
 
   return options;
-};
+}

@@ -1,6 +1,8 @@
-'use strict';
+import './global-adjusts.js';
 
-require('./global-adjusts.js');
+import { cwd } from 'fs-jetpack';
+import path from 'path';
+import url from 'url';
 
-const jetpack = require('fs-jetpack').cwd(__dirname);
+const jetpack = cwd(path.dirname(url.fileURLToPath(import.meta.url)));
 jetpack.copy('./../src/utils', './../ts-dist/utils');

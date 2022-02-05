@@ -1,44 +1,45 @@
-'use strict';
+#!/usr/bin/env node
 
-require('./global-adjusts.js');
+// @ts-expect-error - it's fine for this to be "any"
+import sequelizeVersion from './sequelize-version.cjs';
+import './global-adjusts.js';
+import assert from 'assert';
+import { logBlue, logGreen, logRed, logYellow } from './logging.js';
 
-const sequelizeVersion = require('./sequelize-version.cjs');
+async function wrappedRun() {
+  const dialect = process.env.DIALECT;
+  assert(dialect, 'Must provide DIALECT environment variable');
 
-const USE_TS = process.env.LOCAL_TS_RUN || process.env.CI_COMBINATION === 'v6 with TS';
-
-async function run() {
-  let heading = `Running SSCCE for ${process.env.DIALECT.toUpperCase()} with Sequelize ${sequelizeVersion}`;
-  if (USE_TS) {
-    heading += ' with TypeScript';
-  }
+  let heading = `Running SSCCE for ${dialect.toUpperCase()} with Sequelize ${sequelizeVersion}`;
 
   heading = `===== ${heading} =====`;
 
-  console.blue(`\n${'-'.repeat(heading.length)}`);
-  console.blue(heading);
-  console.blue(`${'-'.repeat(heading.length)}\n`);
+  logBlue(`\n${'-'.repeat(heading.length)}`);
+  logBlue(heading);
+  logBlue(`${'-'.repeat(heading.length)}\n`);
 
   if (process.env.LOCAL_SSCCE) {
-    console.gold('Warning: running the SSCCE locally will use SQLite only. To run your SSCCE in all dialects, just configure Travis CI / AppVeyor in your GitHub repository.\n');
+    logYellow('Warning: running the SSCCE locally will use SQLite only. To run your SSCCE in all dialects, just configure Travis CI / AppVeyor in your GitHub repository.\n');
   }
 
-  if (USE_TS) {
-    const { run } = require('./../ts-dist/sscce'); // eslint-disable-line
-    await run();
-  } else {
-    await require('./../src/sscce')();
+  const { run, testingOnDialects } = await import('../src/sscce.js');
+  if (!testingOnDialects.has(process.env.DIALECT!)) {
+    logRed(`Skipping dialect ${process.env.DIALECT} as it has been omitted from 'testingOnDialects'`);
+
+    return;
   }
+
+  await run();
 }
 
-(async () => {
-  try {
-    await run();
-    console.log(`\n${'-'.repeat(40)}\n`);
-    console.green('SSCCE done without errors!');
-  } catch (error) {
-    console.red(error);
-    console.log(`\n${'-'.repeat(40)}\n`);
-    console.red('SSCCE done with error (see above).');
-    process.exit(1);
-  }
-})();
+try {
+  await wrappedRun();
+  console.log(`\n${'-'.repeat(40)}\n`);
+  logGreen('SSCCE done without errors!');
+} catch (error) {
+  logRed(error);
+  console.log(`\n${'-'.repeat(40)}\n`);
+  logRed('SSCCE done with error (see above).');
+
+  process.exit(1);
+}

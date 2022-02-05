@@ -2,6 +2,7 @@ import './global-adjusts.js';
 import { dirname, relative } from 'path';
 import { fileURLToPath } from 'url';
 import Jetpack from 'fs-jetpack';
+import { logBlue, logGreen, logYellow } from './logging.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const jetpack = Jetpack.cwd(__dirname);
@@ -19,39 +20,40 @@ async function ensureLibBackup() {
 
 async function undoReplacements() {
   if (await jetpack.existsAsync(replacementsTargetBackupPath) !== 'dir') {
-    console.yellow('No replacements to be undone.');
+    logYellow('No replacements to be undone.');
 
     return;
   }
 
-  console.blue('Undoing replacements...');
+  logBlue('Undoing replacements...');
   await jetpack.removeAsync(replacementsTargetPath);
   await jetpack.moveAsync(replacementsTargetBackupPath, replacementsTargetPath);
-  console.green('Success!');
+  logGreen('Success!');
 }
 
 async function doReplacements() {
-  const isEmpty = (await jetpack.listAsync(replacementsSourcePath)).length === 0;
+  const result = await jetpack.listAsync(replacementsSourcePath);
+  const isEmpty = result == null || result.length === 0;
   if (isEmpty) {
-    console.yellow('No source code replacements to apply.');
+    logYellow('No source code replacements to apply.');
 
     return;
   }
 
-  console.blue(`Doing replacements...`);
+  logBlue(`Doing replacements...`);
   await ensureLibBackup();
   await jetpack.copyAsync(replacementsSourcePath, replacementsTargetPath, {
     overwrite(sourceInspectData/* , destinationInspectData */) {
       const path = relative(
         jetpack.path(replacementsSourcePath),
-        sourceInspectData.absolutePath,
+        sourceInspectData.absolutePath!,
       );
-      console.blue(` - Overwriting "${path}"`);
+      logBlue(` - Overwriting "${path}"`);
 
       return true;
     },
   });
-  console.green('Success!');
+  logGreen('Success!');
 }
 
 async function run() {
