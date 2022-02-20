@@ -29,11 +29,14 @@ module.exports = async function() {
   const modelOne = sequelize.define('modelOne', {  });
   const modelTwo = sequelize.define('modelTwo', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelOnes", key: "id" } } });
   const modelThree = sequelize.define('modelThree', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelTwos", key: "id" } } });
+  const modelFour = sequelize.define('modelFour', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelThrees", key: "id" } } });
   
   modelOne.hasMany(modelTwo);
   modelTwo.belongsTo(modelOne);
   modelTwo.hasMany(modelThree);
   modelThree.belongsTo(modelTwo);
+  modelThree.hasMany(modelFour);
+  modelFour.belongsTo(modelThree);
 
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
@@ -41,5 +44,5 @@ module.exports = async function() {
   expect(spy).to.have.been.called;
   
 
-  await modelOne.findAll({include: { model: modelTwo, include: [modelThree] }});
+  await modelOne.findAll({include: { model: modelTwo, include: [{ model: modelThree, include: [modelFour]}] }});
 };
