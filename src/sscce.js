@@ -28,9 +28,9 @@ module.exports = async function() {
   });
 
   const modelOne = sequelize.define('modelOne', {  });
-  const modelTwo = sequelize.define('modelTwo', { modelOneId: { type: DataTypes.INTEGER, references: { model: "model_ones", key: "id" } } });
-  const modelThree = sequelize.define('modelThree', { modelOneId: { type: DataTypes.INTEGER, references: { model: "model_twos", key: "id" } } });
-  const modelFour = sequelize.define('modelFour', { modelOneId: { type: DataTypes.INTEGER, references: { model: "model_threes", key: "id" } } });
+  const modelTwo = sequelize.define('modelTwo', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelOnes", key: "id" } } });
+  const modelThree = sequelize.define('modelThree', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelTwos", key: "id" } } });
+  const modelFour = sequelize.define('modelFour', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelThrees", key: "id" } } });
   
   modelOne.hasMany(modelTwo);
   modelTwo.belongsTo(modelOne);
