@@ -41,5 +41,5 @@ module.exports = async function() {
   expect(spy).to.have.been.called;
   
 
-  await modelOne.findAll({include: { model: modelTwo, include: [modelThree] });
+  await modelOne.findAll({include: { model: modelTwo, include: [modelThree] }});
 };
