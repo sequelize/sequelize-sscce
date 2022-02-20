@@ -23,13 +23,14 @@ module.exports = async function() {
       timestamps: false // For less clutter in the SSCCE
     },
     logging: console.log,
-    minifyAliases: true
+    minifyAliases: true,
+    underscore: true
   });
 
   const modelOne = sequelize.define('modelOne', {  });
-  const modelTwo = sequelize.define('modelTwo', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelOnes", key: "id" } } });
-  const modelThree = sequelize.define('modelThree', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelTwos", key: "id" } } });
-  const modelFour = sequelize.define('modelFour', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelThrees", key: "id" } } });
+  const modelTwo = sequelize.define('modelTwo', { modelOneId: { type: DataTypes.INTEGER, references: { model: "model_ones", key: "id" } } });
+  const modelThree = sequelize.define('modelThree', { modelOneId: { type: DataTypes.INTEGER, references: { model: "model_twos", key: "id" } } });
+  const modelFour = sequelize.define('modelFour', { modelOneId: { type: DataTypes.INTEGER, references: { model: "model_threes", key: "id" } } });
   
   modelOne.hasMany(modelTwo);
   modelTwo.belongsTo(modelOne);
