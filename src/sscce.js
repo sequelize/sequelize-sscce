@@ -22,18 +22,17 @@ module.exports = async function() {
     logQueryParameters: true,
     benchmark: true,
     define: {
-      timestamps: false, // For less clutter in the SSCCE
-      paranoid: true
+      timestamps: false // For less clutter in the SSCCE
     },
     logging: console.log,
     minifyAliases: true,
     underscore: true
   });
 
-  const modelOne = sequelize.define('modelOne', {  });
-  const modelTwo = sequelize.define('modelTwo', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelOnes", key: "id" } } });
-  const modelThree = sequelize.define('modelThree', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelTwos", key: "id" } } });
-  const modelFour = sequelize.define('modelWithVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongName', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelThrees", key: "id" } } });
+  const modelOne = sequelize.define('modelOne', {  }, { paranoid: true});
+  const modelTwo = sequelize.define('modelTwo', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelOnes", key: "id" } } }, { paranoid: true});
+  const modelThree = sequelize.define('modelThree', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelTwos", key: "id" } } }, { paranoid: true});
+  const modelFour = sequelize.define('modelWithVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongName', { modelOneId: { type: DataTypes.INTEGER, references: { model: "modelThrees", key: "id" } } }, { paranoid: true});
   
   modelOne.hasMany(modelTwo);
   modelTwo.belongsTo(modelOne);
