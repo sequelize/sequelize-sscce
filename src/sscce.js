@@ -22,7 +22,8 @@ module.exports = async function() {
     logQueryParameters: true,
     benchmark: true,
     define: {
-      timestamps: false // For less clutter in the SSCCE
+      timestamps: false, // For less clutter in the SSCCE
+      paranoid: true
     },
     logging: console.log,
     minifyAliases: true,
