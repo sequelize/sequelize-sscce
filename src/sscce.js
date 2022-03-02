@@ -36,13 +36,23 @@ module.exports = async function() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  const invoice = Invoice.create({name: 'INVOICE'});
-  
   log(await Invoice.create({ 
     name: 'INVOICE',
     lineItems:  [
-      { name: 'LINE_ITEM_1' },
-      { name: 'LINE_ITEM_2' }
+      { 
+        name: 'LINE_ITEM_1',
+        taxes: [
+          { name: 'TAX1A' },
+          { name: 'TAX1B' }
+        ]
+      },
+      { 
+        name: 'LINE_ITEM_2',
+        taxes: [
+          { name: 'TAX2A' },
+          { name: 'TAX2B' }
+        ]     
+      }
     ]
   }));
   
@@ -54,4 +64,6 @@ module.exports = async function() {
   
   expect(result.length).to.equal(1);
   expect(result[0].lineItems.length).to.equal(2);
+  expect(result[0].lineItems[0].taxes.length).to.equal(2);
+  expect(result[0].lineItems[1].taxes.length).to.equal(2);
 };
