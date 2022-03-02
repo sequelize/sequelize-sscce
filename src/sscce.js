@@ -28,7 +28,7 @@ module.exports = async function() {
   const LineItem = sequelize.define('LineItem', { name: DataTypes.TEXT });
   const LineItemTaxes = sequelize.define('LineItemTaxes', { name: DataTypes.TEXT });
 
-  Invoice.hasMany(LineItem, { as: 'lineItems' });
+  Invoice.hasMany(LineItem, { as: 'lineItems', foreignKey: '_sdc_source_key' });
   LineItem.hasMany(LineItemTaxes, { as: 'taxes' });
   
   const spy = sinon.spy();
