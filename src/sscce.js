@@ -37,7 +37,6 @@ module.exports = async function() {
   expect(spy).to.have.been.called;
 
   const invoice = Invoice.create({name: 'INVOICE'});
-  invoice.
   
   log(await Invoice.create({ 
     name: 'INVOICE',
