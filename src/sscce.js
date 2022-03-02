@@ -36,25 +36,41 @@ module.exports = async function() {
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Invoice.create({ 
-    name: 'INVOICE',
-    lineItems:  [
-      { 
-        name: 'LINE_ITEM_1',
-        taxes: [
-          { name: 'TAX1A' },
-          { name: 'TAX1B' }
-        ]
-      },
-      { 
-        name: 'LINE_ITEM_2',
-        taxes: [
-          { name: 'TAX2A' },
-          { name: 'TAX2B' }
-        ]     
-      }
-    ]
-  }));
+  log(await Invoice.create(
+    { 
+      name: 'INVOICE',
+      lineItems:  [
+        { 
+          name: 'LINE_ITEM_1',
+          taxes: [
+            { name: 'TAX1A' },
+            { name: 'TAX1B' }
+          ]
+        },
+        { 
+          name: 'LINE_ITEM_2',
+          taxes: [
+            { name: 'TAX2A' },
+            { name: 'TAX2B' }
+          ]     
+        }
+      ]
+    },
+    {
+      include: [
+        { 
+          model: LineItem, 
+          as 'lineItems',
+          include: [
+            {
+              model: LineItemTaxes,
+              as: 'taxes'
+            }
+          ]
+        }
+      ]
+    }
+  ));
   
   const result = await Invoice.findAll({
     include: { all: true }
