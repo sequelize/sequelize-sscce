@@ -25,11 +25,11 @@ module.exports = async function() {
   });
 
   const Invoice = sequelize.define('Invoice', { name: DataTypes.TEXT });
-  const LineItem = sequelize.define('LineItem', { name: DataTypes.TEXT });
+  const LineItem = sequelize.define('LineItem', { name: DataTypes.TEXT, line_item_id });
   const LineItemTaxes = sequelize.define('LineItemTaxes', { name: DataTypes.TEXT });
 
   Invoice.hasMany(LineItem, { as: 'lineItems', foreignKey: '_sdc_source_key' });
-  LineItem.hasMany(LineItemTaxes, { as: 'taxes' });
+  LineItem.hasMany(LineItemTaxes, { as: 'taxes', foreignKey: 'line_item_id' });
   
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
