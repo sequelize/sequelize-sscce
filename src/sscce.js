@@ -24,13 +24,62 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Invoice = sequelize.define('Invoice', { name: DataTypes.TEXT });
+  const LineItem = sequelize.define('LineItem', { name: DataTypes.TEXT });
+  const LineItemTaxes = sequelize.define('LineItemTaxes', { name: DataTypes.TEXT });
 
+  Invoice.hasMany(LineItem, { as: 'lineItems', foreignKey: '_sdc_source_key' });
+  LineItem.hasMany(LineItemTaxes, { as: 'taxes', foreignKey: 'line_item_id' });
+  
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  log(await Invoice.create(
+    { 
+      name: 'INVOICE',
+      lineItems:  [
+        { 
+          name: 'LINE_ITEM_1',
+          taxes: [
+            { name: 'TAX1A' },
+            { name: 'TAX1B' }
+          ]
+        },
+        { 
+          name: 'LINE_ITEM_2',
+          taxes: [
+            { name: 'TAX2A' },
+            { name: 'TAX2B' }
+          ]     
+        }
+      ]
+    },
+    {
+      include: [
+        { 
+          model: LineItem, 
+          as: 'lineItems',
+          include: [
+            {
+              model: LineItemTaxes,
+              as: 'taxes'
+            }
+          ]
+        }
+      ]
+    }
+  ));
+  
+  const result = await Invoice.findAll({
+    include: { all: true, nested: true }
+  })
+  
+  log('RESULT', result);
+  
+  expect(result.length).to.equal(1);
+  expect(result[0].lineItems.length).to.equal(2);
+  expect(result[0].lineItems[0].taxes.length).to.equal(2);
+  expect(result[0].lineItems[1].taxes.length).to.equal(2);
 };
