@@ -76,7 +76,7 @@ module.exports = async function() {
     include: { all: true }
   })
   
-  log(JSON.stringify(result, null, 2));
+  log('RESULT', result);
   
   expect(result.length).to.equal(1);
   expect(result[0].lineItems.length).to.equal(2);
