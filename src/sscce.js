@@ -39,16 +39,18 @@ module.exports = async function() {
   const invoice = Invoice.create({name: 'INVOICE'});
   invoice.
   
-  log(await Foo.create({ 
-    name: 'foo': 
+  log(await Invoice.create({ 
+    name: 'INVOICE',
     lineItems:  [
       { name: 'LINE_ITEM_1' },
       { name: 'LINE_ITEM_2' }
     ]
   }));
   
-  const result = Invoice.findAll({
+  const result = await Invoice.findAll({
     include: { all: true }
   })
-  expect(await Invoice.count()).to.equal(1);
+  
+  expect(result.length).to.equal(1);
+  expect(result[0].lineItems.length).to.equal(2);
 };
