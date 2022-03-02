@@ -25,7 +25,7 @@ module.exports = async function() {
   });
 
   const Invoice = sequelize.define('Invoice', { name: DataTypes.TEXT });
-  const LineItem = sequelize.define('LineItem', { name: DataTypes.TEXT, line_item_id });
+  const LineItem = sequelize.define('LineItem', { name: DataTypes.TEXT });
   const LineItemTaxes = sequelize.define('LineItemTaxes', { name: DataTypes.TEXT });
 
   Invoice.hasMany(LineItem, { as: 'lineItems', foreignKey: '_sdc_source_key' });
