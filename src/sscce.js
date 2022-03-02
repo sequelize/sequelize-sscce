@@ -73,7 +73,7 @@ module.exports = async function() {
   ));
   
   const result = await Invoice.findAll({
-    include: { all: true }
+    include: { all: true, nested: true }
   })
   
   log('RESULT', result);
