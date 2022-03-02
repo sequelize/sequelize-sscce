@@ -60,7 +60,7 @@ module.exports = async function() {
       include: [
         { 
           model: LineItem, 
-          as 'lineItems',
+          as: 'lineItems',
           include: [
             {
               model: LineItemTaxes,
