@@ -24,13 +24,31 @@ module.exports = async function() {
     }
   });
 
-  const Foo = sequelize.define('Foo', { name: DataTypes.TEXT });
+  const Invoice = sequelize.define('Invoice', { name: DataTypes.TEXT });
+  const LineItem = sequelize.define('LineItem', { name: DataTypes.TEXT });
+  const LineItemTaxes = sequelize.define('LineItemTaxes', { name: DataTypes.TEXT });
 
+  Invoice.hasMany(LineItem, { as: 'lineItems' });
+  LineItem.hasMany(LineItemTaxes, { as: 'taxes' });
+  
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
   expect(spy).to.have.been.called;
 
-  log(await Foo.create({ name: 'foo' }));
-  expect(await Foo.count()).to.equal(1);
+  const invoice = Invoice.create({name: 'INVOICE'});
+  invoice.
+  
+  log(await Foo.create({ 
+    name: 'foo': 
+    lineItems:  [
+      { name: 'LINE_ITEM_1' },
+      { name: 'LINE_ITEM_2' }
+    ]
+  }));
+  
+  const result = Invoice.findAll({
+    include: { all: true }
+  })
+  expect(await Invoice.count()).to.equal(1);
 };
