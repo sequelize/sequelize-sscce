@@ -124,8 +124,8 @@ module.exports = async function () {
 
   await comicToUpdate.update(
     {
-      title: "Comic 1",
-      description: "Comic 1",
+      title: "Comic 1 edit",
+      description: "Comic 1 edit",
       comic_genres: [
         {
           genreId: "3",
