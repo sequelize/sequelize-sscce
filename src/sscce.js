@@ -124,8 +124,6 @@ module.exports = async function () {
 
   const comicBeforeUpdate = await comic.findOne({
     where: { id: "1" },
-    raw: true,
-    nest: true,
     include: [
       {
         association: "genres",
@@ -137,9 +135,9 @@ module.exports = async function () {
     ],
   });
 
-  console.log("comicBeforeUpdate", comicBeforeUpdate);
+  log("comicBeforeUpdate", comicBeforeUpdate);
 
-  console.log("START bulkCreate");
+  log("START bulkCreate");
 
   await comicGenre.bulkCreate(
     [
@@ -172,7 +170,7 @@ module.exports = async function () {
     ],
   });
 
-  console.log("comicAfterUpdate", comicAfterUpdate);
+  log("comicAfterUpdate", comicAfterUpdate.toJSON());
 
-  console.log("END bulkCreate");
+  log("END bulkCreate");
 };
