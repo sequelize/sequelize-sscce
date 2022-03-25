@@ -33,6 +33,14 @@ const genreMocks = [
     id: "3",
     name: "Genre 3",
   },
+  {
+    id: "4",
+    name: "Genre 4",
+  },
+  {
+    id: "4",
+    name: "Genre 5",
+  },
 ];
 
 const comicMocks = [
@@ -108,5 +116,25 @@ module.exports = async function () {
         include: [{ model: _comicGenre, as: "comic_genres" }],
       })
     )
+  );
+
+  const comicToUpdate = await comic.findOne({ id: "1" });
+
+  await comicToUpdate.update(
+    {
+      title: "Comic 1",
+      description: "Comic 1",
+      comic_genres: [
+        {
+          genreId: "3",
+        },
+        {
+          genreId: "4",
+        },
+      ],
+    },
+    {
+      include: [{ model: _comicGenre, as: "comic_genres" }],
+    }
   );
 };
