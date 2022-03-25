@@ -146,7 +146,7 @@ module.exports = async function () {
   const comicGenreAfterUpdate = await comicGenre.findAll({
     where: { comicId: "1" },
   });
-  console.log("comicGenreAfterUpdate", comicGenreAfterUpdate.toJSON());
+  console.log("comicGenreAfterUpdate", comicGenreAfterUpdate);
 
   console.log("END update with model include");
 };
