@@ -5,7 +5,7 @@ class comicGenre extends Sequelize.Model {
     super.init(
       {
         comicId: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.STRING,
           allowNull: false,
           primaryKey: true,
           references: {
@@ -14,7 +14,7 @@ class comicGenre extends Sequelize.Model {
           },
         },
         genreId: {
-          type: DataTypes.INTEGER,
+          type: DataTypes.STRING,
           allowNull: false,
           primaryKey: true,
           references: {
