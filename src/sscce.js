@@ -51,9 +51,11 @@ const comicMocks = [
     comic_genres: [
       {
         genreId: "1",
+        isDefault: true,
       },
       {
         genreId: "2",
+        isDefault: false,
       },
     ],
   },
@@ -64,9 +66,11 @@ const comicMocks = [
     comic_genres: [
       {
         genreId: "2",
+        isDefault: true,
       },
       {
         genreId: "3",
+        isDefault: false,
       },
     ],
   },
@@ -118,15 +122,36 @@ module.exports = async function () {
     )
   );
 
+  const comicBeforeUpdate = await comic.findOne({
+    where: { id: "1" },
+    include: [
+      {
+        association: "genres",
+        attributes: ["id", "name"],
+        through: {
+          attributes: ["isDefault"],
+        },
+      },
+    ],
+  });
+
+  console.log("comicBeforeUpdate", comicBeforeUpdate.toJSON());
+
   console.log("START bulkCreate");
 
   await comicGenre.bulkCreate(
-    ["1", "2", "3", "4", "5"].map((genreId) => ({
+    [
+      { genreId: "1", isDefault: false },
+      { genreId: "2", isDefault: true },
+      { genreId: "3", isDefault: false },
+      { genreId: "4", isDefault: false },
+      { genreId: "5", isDefault: false },
+    ].map((genreId) => ({
       comicId: "1",
       genreId,
     })),
     {
-      ignoreDuplicates: true,
+      updateOnDuplicate: ["isDefault"],
     }
   );
 
@@ -137,13 +162,13 @@ module.exports = async function () {
         association: "genres",
         attributes: ["id", "name"],
         through: {
-          attributes: [],
+          attributes: ["isDefault"],
         },
       },
     ],
   });
 
-  console.log(comicAfterUpdate.toJSON());
+  console.log("comicAfterUpdate", comicAfterUpdate.toJSON());
 
   console.log("END bulkCreate");
 };
