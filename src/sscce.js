@@ -143,7 +143,7 @@ module.exports = async function () {
   const comicAfterUpdate = await comic.findOne({ where: { id: "1" } });
   console.log("comicAfterUpdate", comicAfterUpdate.toJSON());
 
-  const comicGenreAfterUpdate = await comicGenre.findOne({
+  const comicGenreAfterUpdate = await comicGenre.findAll({
     where: { comicId: "1" },
   });
   console.log("comicGenreAfterUpdate", comicGenreAfterUpdate.toJSON());
