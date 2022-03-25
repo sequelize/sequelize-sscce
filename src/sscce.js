@@ -118,7 +118,7 @@ module.exports = async function () {
     )
   );
 
-  console.log("START update with model include");
+  console.log("START bulkCreate");
 
   await comicGenre.bulkCreate(
     ["1", "2", "3", "4", "5"].map((genreId) => ({
@@ -130,5 +130,20 @@ module.exports = async function () {
     }
   );
 
-  console.log("END update with model include");
+  const comicAfterUpdate = comic.findOne({
+    where: { id: "1" },
+    include: [
+      {
+        association: "genres",
+        attributes: ["id", "name"],
+        through: {
+          attributes: [],
+        },
+      },
+    ],
+  });
+
+  console.log(comicAfterUpdate.toJSON());
+
+  console.log("END bulkCreate");
 };
