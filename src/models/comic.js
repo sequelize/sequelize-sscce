@@ -23,7 +23,6 @@ class comic extends Sequelize.Model {
       {
         sequelize,
         tableName: "comic",
-        schema: "public",
         timestamps: true,
         paranoid: true,
         indexes: [

@@ -22,7 +22,6 @@ class genre extends Sequelize.Model {
       {
         sequelize,
         tableName: "genre",
-        schema: "public",
         timestamps: true,
         indexes: [
           {

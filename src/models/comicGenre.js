@@ -26,7 +26,6 @@ class comicGenre extends Sequelize.Model {
       {
         sequelize,
         tableName: 'comic_genre',
-        schema: 'public',
         timestamps: false,
         indexes: [
           {
