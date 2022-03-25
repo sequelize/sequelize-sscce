@@ -51,9 +51,7 @@ module.exports = async function () {
   comicGenre.belongsTo(genre, { as: "genre_genre", foreignKey: "genreId" });
   genre.hasMany(comicGenre, { as: "comic_genres", foreignKey: "genreId" });
 
-  await Promise.all([
-    comic.sync({ force: true }),
-    comicGenre.sync({ force: true }),
-    genre.sync({ force: true }),
-  ]);
+  await comic.sync({ force: true }),
+  await genre.sync({ force: true }),
+  await comicGenre.sync({ force: true }),
 };
