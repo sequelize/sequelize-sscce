@@ -120,33 +120,15 @@ module.exports = async function () {
 
   console.log("START update with model include");
 
-  const comicToUpdate = await comic.findOne({ where: { id: "1" } });
-
-  await comicToUpdate.update(
+  await comicGenre.bulkCreate(
+    ["1", "2", "3", "4", "5"].map((genreId) => ({
+      comicId: "1",
+      genreId,
+    })),
     {
-      title: "Comic 1 edit",
-      description: "Comic 1 edit",
-      comic_genres: [
-        {
-          genreId: "3",
-        },
-        {
-          genreId: "4",
-        },
-      ],
-    },
-    {
-      include: [{ model: _comicGenre, as: "comic_genres" }],
+      ignoreDuplicates: true,
     }
   );
-
-  const comicAfterUpdate = await comic.findOne({ where: { id: "1" } });
-  console.log("comicAfterUpdate", comicAfterUpdate.toJSON());
-
-  const comicGenreAfterUpdate = await comicGenre.findAll({
-    where: { comicId: "1" },
-  });
-  console.log("comicGenreAfterUpdate", comicGenreAfterUpdate);
 
   console.log("END update with model include");
 };
