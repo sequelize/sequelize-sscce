@@ -124,6 +124,8 @@ module.exports = async function () {
 
   const comicBeforeUpdate = await comic.findOne({
     where: { id: "1" },
+    raw: true,
+    nest: true,
     include: [
       {
         association: "genres",
@@ -146,9 +148,9 @@ module.exports = async function () {
       { genreId: "3", isDefault: false },
       { genreId: "4", isDefault: false },
       { genreId: "5", isDefault: false },
-    ].map((genreId) => ({
+    ].map((genre) => ({
       comicId: "1",
-      genreId,
+      ...genre,
     })),
     {
       updateOnDuplicate: ["isDefault"],
@@ -157,6 +159,8 @@ module.exports = async function () {
 
   const comicAfterUpdate = await comic.findOne({
     where: { id: "1" },
+    raw: true,
+    nest: true,
     include: [
       {
         association: "genres",
