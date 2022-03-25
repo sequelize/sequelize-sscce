@@ -37,6 +37,7 @@ const genreMocks = [
 
 const comicMocks = [
   {
+    id: "1",
     title: "Comic 1",
     description: "Comic 1",
     comic_genres: [
@@ -49,6 +50,7 @@ const comicMocks = [
     ],
   },
   {
+    id: "2",
     title: "Comic 2",
     description: "Comic 2",
     comic_genres: [
