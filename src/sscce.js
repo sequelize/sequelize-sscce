@@ -130,7 +130,7 @@ module.exports = async function () {
     }
   );
 
-  const comicAfterUpdate = comic.findOne({
+  const comicAfterUpdate = await comic.findOne({
     where: { id: "1" },
     include: [
       {
