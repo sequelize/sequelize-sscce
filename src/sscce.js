@@ -118,7 +118,7 @@ module.exports = async function () {
     )
   );
 
-  const comicToUpdate = await comic.findOne({ id: "1" });
+  const comicToUpdate = await comic.findOne({ where: { id: "1" } });
 
   await comicToUpdate.update(
     {
@@ -137,4 +137,7 @@ module.exports = async function () {
       include: [{ model: _comicGenre, as: "comic_genres" }],
     }
   );
+
+  const comicAfterUpdate = await comic.findOne({ where: { id: "1" } });
+  console.log("comicAfterUpdate", comicAfterUpdate);
 };
