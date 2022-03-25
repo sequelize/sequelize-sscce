@@ -170,7 +170,7 @@ module.exports = async function () {
     ],
   });
 
-  log("comicAfterUpdate", comicAfterUpdate.toJSON());
+  log("comicAfterUpdate", comicAfterUpdate);
 
   log("END bulkCreate");
 };
