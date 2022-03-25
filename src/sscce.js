@@ -20,6 +20,48 @@ const _comic = require("./models/comic");
 const _comicGenre = require("./models/comicGenre");
 const _genre = require("./models/genre");
 
+const genreMocks = [
+  {
+    id: "1",
+    name: "Genre 1",
+  },
+  {
+    id: "2",
+    name: "Genre 2",
+  },
+  {
+    id: "3",
+    name: "Genre 3",
+  },
+];
+
+const comicMocks = [
+  {
+    title: "Comic 1",
+    description: "Comic 1",
+    comic_genres: [
+      {
+        genreId: "1",
+      },
+      {
+        genreId: "2",
+      },
+    ],
+  },
+  {
+    title: "Comic 2",
+    description: "Comic 2",
+    comic_genres: [
+      {
+        genreId: "2",
+      },
+      {
+        genreId: "3",
+      },
+    ],
+  },
+];
+
 // Your SSCCE goes inside this function.
 module.exports = async function () {
   const sequelize = createSequelizeInstance({
@@ -51,7 +93,18 @@ module.exports = async function () {
   comicGenre.belongsTo(genre, { as: "genre_genre", foreignKey: "genreId" });
   genre.hasMany(comicGenre, { as: "comic_genres", foreignKey: "genreId" });
 
-  await comic.sync({ force: true }),
-  await genre.sync({ force: true }),
-  await comicGenre.sync({ force: true })
+  await comic.sync({ force: true });
+  await genre.sync({ force: true });
+  await comicGenre.sync({ force: true });
+
+  // create genres
+  await Promise.all(genreMocks.map((item) => genre.create(item)));
+  // create comics
+  await Promise.all(
+    comicMocks.map((item) =>
+      comic.create(item, {
+        include: [{ model: _comicGenre, as: "comic_genres" }],
+      })
+    )
+  );
 };
