@@ -22,6 +22,11 @@ class comicGenre extends Sequelize.Model {
             key: "id",
           },
         },
+        isDefault: {
+          type: DataTypes.BOOLEAN,
+          allowNull: false,
+          defaultValue: false,
+        },
       },
       {
         sequelize,
