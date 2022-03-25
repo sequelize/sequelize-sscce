@@ -137,7 +137,7 @@ module.exports = async function () {
     ],
   });
 
-  console.log("comicBeforeUpdate", comicBeforeUpdate.toJSON());
+  console.log("comicBeforeUpdate", comicBeforeUpdate);
 
   console.log("START bulkCreate");
 
@@ -172,7 +172,7 @@ module.exports = async function () {
     ],
   });
 
-  console.log("comicAfterUpdate", comicAfterUpdate.toJSON());
+  console.log("comicAfterUpdate", comicAfterUpdate);
 
   console.log("END bulkCreate");
 };
