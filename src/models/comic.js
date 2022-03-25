@@ -5,9 +5,8 @@ class comic extends Sequelize.Model {
     super.init(
       {
         id: {
-          type: DataTypes.UUID,
+          type: DataTypes.NUMBER,
           allowNull: false,
-          defaultValue: DataTypes.UUIDV4,
           primaryKey: true,
         },
         title: {

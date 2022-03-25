@@ -1,37 +1,37 @@
-const Sequelize = require('sequelize');
+const Sequelize = require("sequelize");
 
 class comicGenre extends Sequelize.Model {
   static init(sequelize, DataTypes) {
     super.init(
       {
         comicId: {
-          type: DataTypes.UUID,
+          type: DataTypes.NUMBER,
           allowNull: false,
           primaryKey: true,
           references: {
-            model: 'comic',
-            key: 'id',
+            model: "comic",
+            key: "id",
           },
         },
         genreId: {
-          type: DataTypes.UUID,
+          type: DataTypes.NUMBER,
           allowNull: false,
           primaryKey: true,
           references: {
-            model: 'genre',
-            key: 'id',
+            model: "genre",
+            key: "id",
           },
         },
       },
       {
         sequelize,
-        tableName: 'comic_genre',
+        tableName: "comic_genre",
         timestamps: false,
         indexes: [
           {
-            name: 'comic_genre_pkey',
+            name: "comic_genre_pkey",
             unique: true,
-            fields: [{ name: 'comicId' }, { name: 'genreId' }],
+            fields: [{ name: "comicId" }, { name: "genreId" }],
           },
         ],
       }
