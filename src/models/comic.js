@@ -5,7 +5,7 @@ class comic extends Sequelize.Model {
     super.init(
       {
         id: {
-          type: DataTypes.NUMBER,
+          type: DataTypes.INTEGER,
           allowNull: false,
           primaryKey: true,
         },
