@@ -157,8 +157,6 @@ module.exports = async function () {
 
   const comicAfterUpdate = await comic.findOne({
     where: { id: "1" },
-    raw: true,
-    nest: true,
     include: [
       {
         association: "genres",
