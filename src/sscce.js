@@ -53,5 +53,5 @@ module.exports = async function () {
 
   await comic.sync({ force: true }),
   await genre.sync({ force: true }),
-  await comicGenre.sync({ force: true }),
+  await comicGenre.sync({ force: true })
 };
