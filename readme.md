@@ -14,7 +14,13 @@ Run `npm install` or `yarn` to install the necessary dependencies.
 
 ### Step 1 - Create the SSCCE
 
-Modify [src/sscce.ts](./src/sscce.ts) to create a failing test that accurately represents the issue you're experiencing.
+You now need to create a failing test that accurately represents the issue you're experiencing.
+
+If you want to test against Sequelize 6, modify [src/sscce-sequelize-6.ts](./src/sscce-sequelize-6.ts).
+If you want to test against Sequelize 7, modify [src/sscce-sequelize-7.ts](./src/sscce-sequelize-7.ts).
+
+If you are using a version older than Sequelize 6, unfortunately these versions are now EOL and won't receive support.
+You should consider migrating to Sequelize 6.
 
 Remember the [SSCCE rules](http://www.sscce.org/). It should be:
 
@@ -131,11 +137,14 @@ By using this method, you won't have to worry about setting up any database.
 You don't need to install anything, you don't need docker, you don't need to spend time configuring a development environment to create your SSCCE.
 Everything is already set up for you in our GitHub actions.
 
-**You just [write your code](src/sscce.ts) and it works, directly from GitHub!**
+**You just write your code and it works, directly from GitHub!**
 
 ### Step 1 - Create the SSCCE
 
-Go to the [src/sscce.ts](./src/sscce.ts) file in this repository, and click the edit button (a pencil).
+If you want to test against Sequelize 6, go to this file: [src/sscce-sequelize-6.ts](./src/sscce-sequelize-6.ts).
+If you want to test against Sequelize 7, go to this file: [src/sscce-sequelize-7.ts](./src/sscce-sequelize-7.ts).
+
+Then click the edit button (a pencil).
 
 Since this is not your repository, a fork will be automatically created for you to perform your edit. You will see this message:
 
@@ -172,7 +181,7 @@ However, opening a pull request will ensure the SSCCE continues to exist even if
 ### Creating a dialect-specific SSCCE
 
 By default, your SSCCE will be executed on all dialects. If you only want a specific dialect,
-you can remove dialects you don't need to test on from the `testingOnDialects` set in [src/sscce.ts](./src/sscce.ts).
+you can remove dialects you don't need to test on from the `testingOnDialects` variable in your `sscce-sequelize-x.ts` file.
 
 For example, if you only want to run your SSCCE for postgres, change the following line:
 
