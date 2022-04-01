@@ -22,18 +22,29 @@ export async function run() {
     }
   });
 
+  async function getTableColumns(tableName: string): Promise<Array<string>> {
+    const [PragmaResults, Metadata] = await sequelize.query(`PRAGMA table_info(${tableName});`)
+    return PragmaResults.map((pragmaResult) => (pragmaResult as { name: string }).name)
+  }
+
+  const nonNullTextColumn = {
+    type: DataTypes.TEXT,
+    allowNull: false
+  }
+
   class Foo extends Model {};
   Foo.init({
-    name: DataTypes.TEXT
+    firstName: nonNullTextColumn,
+    lastName: nonNullTextColumn,
   }, {
     sequelize,
     modelName: 'Foo'
   });
 
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
   await sequelize.sync();
-  expect(spy).to.have.been.called;
+  const syncedColumns = await getTableColumns('Foos')
+  expect(syncedColumns).contains('firstName')
+  expect(syncedColumns).contains('lastName')
 
   log(await Foo.create({ name: 'TS foo' }));
   expect(await Foo.count()).to.equal(1);
