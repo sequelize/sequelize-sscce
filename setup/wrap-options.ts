@@ -1,6 +1,6 @@
 import defaults from 'lodash/defaults.js';
-import { CiDbConfigs } from './ci-db-configs.js';
-import { log } from './logging.js';
+import { CiDbConfigs } from './ci-db-configs';
+import { log } from './logging';
 import type { Dialect, Options } from 'sequelize';
 
 export function wrapOptions(options: Options = {}) {

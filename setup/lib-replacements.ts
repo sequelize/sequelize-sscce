@@ -1,10 +1,8 @@
 import './global-adjusts.js';
-import { dirname, relative } from 'path';
-import { fileURLToPath } from 'url';
+import { relative } from 'path';
 import Jetpack from 'fs-jetpack';
 import { logBlue, logGreen, logYellow } from './logging.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
 const jetpack = Jetpack.cwd(__dirname);
 const replacementsSourcePath = './../src/lib-replacements';
 const replacementsTargetPath = './../node_modules/sequelize/lib';
@@ -66,4 +64,4 @@ async function run() {
   }
 }
 
-await run();
+void run();

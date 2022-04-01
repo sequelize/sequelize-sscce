@@ -6,7 +6,7 @@ services:
       ACCEPT_EULA: Y
       SA_PASSWORD: Password12!
     ports:
-      - 22019:1433
+      - 1433:1433
     healthcheck:
       test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "SA", "-P", "Password12!", "-l", "30", "-Q", "SELECT 1"]
       interval: 3s

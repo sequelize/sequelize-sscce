@@ -194,7 +194,7 @@ If your issue needs a postgres extension such as `uuid-ossp`, you should enable 
 
 ```js
 export async function run() {
-  const sequelize = createSequelizeInstance();
+  const sequelize = createSequelize6Instance();
 
   // add it here, after createSequelizeInstance:
   await sequelize.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);

@@ -1,41 +1,82 @@
 #!/usr/bin/env node
 
 // @ts-expect-error - it's fine for this to be "any"
-import sequelizeVersion from './sequelize-version.cjs';
-import './global-adjusts.js';
+import versions from './sequelize-version.cjs';
+import './global-adjusts';
 import assert from 'assert';
-import { logBlue, logGreen, logRed } from './logging.js';
+import { existsSync } from 'fs';
+import { logBlue, logGreen, logRed } from './logging';
+
+const majorNodeVersion = Number.parseInt(process.version.slice(1), 10);
 
 async function wrappedRun() {
   const dialect = process.env.DIALECT;
-  assert(dialect, 'Must provide DIALECT environment variable');
+  assert(dialect, 'Must provide DIALECT environment variable. Use one of the `test:` npm scripts available. (e.g. `npm run test:sqlite`)');
 
-  let heading = `Running SSCCE for ${dialect.toUpperCase()} with Sequelize ${sequelizeVersion}`;
+  let failed = false;
 
-  heading = `===== ${heading} =====`;
+  if (existsSync(`${__dirname}/../src/sscce-sequelize-6.ts`)) {
+    let heading = `Running SSCCE for ${dialect.toUpperCase()} with Sequelize ${versions.sequelize6}`;
+    heading = `===== ${heading} =====`;
 
-  logBlue(`\n${'-'.repeat(heading.length)}`);
-  logBlue(heading);
-  logBlue(`${'-'.repeat(heading.length)}\n`);
+    logBlue(`\n${'-'.repeat(heading.length)}`);
+    logBlue(heading);
+    logBlue(`${'-'.repeat(heading.length)}\n`);
 
-  const { run, testingOnDialects } = await import('../src/sscce.js');
-  if (!testingOnDialects.has(process.env.DIALECT!)) {
-    logRed(`Skipping dialect ${process.env.DIALECT} as it has been omitted from 'testingOnDialects'`);
+    const { run, testingOnDialects } = require('../src/sscce-sequelize-6');
+    if (!testingOnDialects.has(process.env.DIALECT!)) {
+      logRed(`Skipping dialect ${process.env.DIALECT} as it has been omitted from 'testingOnDialects'`);
 
-    return;
+      return;
+    }
+
+    try {
+      await run();
+    } catch (error) {
+      logRed('Sequelize 6 test failed');
+      logRed(error);
+      failed = true;
+    }
   }
 
-  await run();
-}
+  if (existsSync(`${__dirname}/../src/sscce-sequelize-7.ts`)) {
+    let heading = `Running SSCCE for ${dialect.toUpperCase()} with Sequelize ${versions.sequelize7}`;
+    heading = `===== ${heading} =====`;
 
-try {
-  await wrappedRun();
+    logBlue(`\n${'-'.repeat(heading.length)}`);
+    logBlue(heading);
+    logBlue(`${'-'.repeat(heading.length)}\n`);
+
+    if (majorNodeVersion >= 14) {
+      const { run, testingOnDialects } = require('../src/sscce-sequelize-7');
+      if (!testingOnDialects.has(process.env.DIALECT!)) {
+        logRed(`Skipping dialect ${process.env.DIALECT} as it has been omitted from 'testingOnDialects'`);
+
+        return;
+      }
+
+      try {
+        await run();
+      } catch (error) {
+        logRed('Sequelize 7 test failed');
+        logRed(error);
+        failed = true;
+      }
+    } else {
+      logRed(`Current node version ${process.version} is insufficient for Sequelize 7, skipping this test`);
+    }
+  }
+
+  if (failed) {
+    console.log(`\n${'-'.repeat(40)}\n`);
+    logRed('SSCCE done with error (see above).');
+    process.exit(1);
+  }
+
   console.log(`\n${'-'.repeat(40)}\n`);
   logGreen('SSCCE done without errors!');
-} catch (error) {
-  logRed(error);
-  console.log(`\n${'-'.repeat(40)}\n`);
-  logRed('SSCCE done with error (see above).');
-
-  process.exit(1);
 }
+
+(async () => {
+  await wrappedRun();
+})();

@@ -5,8 +5,9 @@
   ],
   "compilerOptions": {
     "target": "es2021",
-    "module": "es2022",
+    "module": "CommonJS",
     "moduleResolution": "Node",
+    "esModuleInterop": true,
     "resolveJsonModule": true,
     "newLine": "lf",
     "stripInternal": true,

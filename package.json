@@ -1,23 +1,24 @@
 {
   "private": true,
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=10.0.0"
   },
-  "type": "module",
+  "type": "commonjs",
   "license": "MIT",
   "dependencies": {
     "chai": "^4",
     "chai-as-promised": "^7",
     "chai-datetime": "^1",
-    "chalk": "^5",
+    "chalk": "^4.1.2",
     "cross-env": "^7",
     "fs-jetpack": "^4",
     "sequelize": "^6",
+    "@sequelize/core": "^7.0.0-alpha.10",
     "sinon": "^13",
     "sinon-chai": "^3"
   },
   "scripts": {
-    "_test": "node --loader ts-node/esm setup/runner.ts",
+    "_test": "ts-node setup/runner.ts",
     "test:sqlite": "cross-env DIALECT=sqlite npm run _test",
     "test:postgres": "cross-env DIALECT=postgres npm run _test",
     "test:postgres-native": "cross-env DIALECT=postgres-native npm run _test",

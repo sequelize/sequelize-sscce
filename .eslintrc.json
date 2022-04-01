@@ -9,7 +9,11 @@
     "import/order": "off",
     "prefer-object-has-own": "off",
     "unicorn/prefer-at": "off",
-    "@typescript-eslint/no-unused-expressions": "off"
+    "@typescript-eslint/no-unused-expressions": "off",
+
+    // we still have to support node 10 while Sequelize 6 remains alive
+    "unicorn/prefer-module": "off",
+    "unicorn/prefer-top-level-await": "off"
   },
   "ignorePatterns": ["src/*"]
 }

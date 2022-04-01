@@ -1,5 +1,5 @@
 import isPlainObject from 'lodash/isPlainObject.js';
-import type { ChalkInstance } from 'chalk';
+import type { Chalk } from 'chalk';
 import chalk from 'chalk';
 import type { Options } from 'sequelize';
 
@@ -43,7 +43,7 @@ export function logYellow(...args: any[]): void {
   return logColor(chalk.yellow, ...args);
 }
 
-function logColor(color: ChalkInstance, ...args: any[]) {
+function logColor(color: Chalk, ...args: any[]) {
   return console.log(...args.map(arg => {
     if (typeof arg !== 'string') {
       return arg;
