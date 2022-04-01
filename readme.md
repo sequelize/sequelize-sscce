@@ -50,6 +50,9 @@ npm install pg
 # or
 npm install pg-native
 
+# if you need to use DataTypes.HSTORE, you also need this dependency
+npm install pg-hstore
+
 # Start the postgres database using docker.
 # Requires docker. You can also run your own database if you prefer.
 npm run start:postgres
