@@ -10,5 +10,6 @@
     "prefer-object-has-own": "off",
     "unicorn/prefer-at": "off",
     "@typescript-eslint/no-unused-expressions": "off"
-  }
+  },
+  "ignorePatterns": ["src/*"]
 }
