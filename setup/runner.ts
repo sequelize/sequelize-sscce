@@ -4,7 +4,7 @@
 import sequelizeVersion from './sequelize-version.cjs';
 import './global-adjusts.js';
 import assert from 'assert';
-import { logBlue, logGreen, logRed, logYellow } from './logging.js';
+import { logBlue, logGreen, logRed } from './logging.js';
 
 async function wrappedRun() {
   const dialect = process.env.DIALECT;
@@ -17,10 +17,6 @@ async function wrappedRun() {
   logBlue(`\n${'-'.repeat(heading.length)}`);
   logBlue(heading);
   logBlue(`${'-'.repeat(heading.length)}\n`);
-
-  if (process.env.LOCAL_SSCCE) {
-    logYellow('Warning: running the SSCCE locally will use SQLite only. To run your SSCCE in all dialects, just configure Travis CI / AppVeyor in your GitHub repository.\n');
-  }
 
   const { run, testingOnDialects } = await import('../src/sscce.js');
   if (!testingOnDialects.has(process.env.DIALECT!)) {

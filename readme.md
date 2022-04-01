@@ -122,7 +122,7 @@ npm run stop:mssql
 Open an issue on the [main sequelize repo](https://github.com/sequelize/sequelize/) describing
 your problem and include a link to your SSCCE in it.
 
-You can also send a fork to the [sequelize-sscce](https://github.com/sequelize/sequelize-sscce) repository,
+You can also open a PR of your fork to [this repository](https://github.com/sequelize/sequelize-sscce),
 this way your SSCCE will be run on our CI and will continue existing even if you delete your fork.
 
 ## Method 2: Create your SSCCE on GitHub
