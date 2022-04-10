@@ -1,15 +1,13 @@
-'use strict';
-
 const host = 'localhost';
 const username = 'sequelize_test';
 const password = 'sequelize_test';
 const database = 'sequelize_test';
 const pool = {
   max: 5,
-  idle: 3000 // make idle time small so that tests exit promptly
+  idle: 3000, // make idle time small so that tests exit promptly
 };
 
-module.exports = {
+export const CiDbConfigs = {
   mysql: { host, username, password, database, port: 3306, pool },
 
   mariadb: { host, username, password, database, port: 3306, pool },
@@ -28,8 +26,8 @@ module.exports = {
     dialectOptions: {
       options: {
         encrypt: false,
-        requestTimeout: 25000
-      }
-    }
-  }
+        requestTimeout: 25_000,
+      },
+    },
+  },
 };

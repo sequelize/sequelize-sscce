@@ -1,17 +1,19 @@
 {
-  "env": {
-    "es6": true,
-    "node": true
-  },
-  "parserOptions": {
-    "ecmaVersion": 10
-  },
   "extends": [
-    "eslint:recommended",
-    "plugin:node/recommended"
+    "@ephys/eslint-config-typescript",
+    "@ephys/eslint-config-typescript/node"
   ],
   "rules": {
-    "no-unused-vars": "off",
-    "node/no-unpublished-require": "off"
-  }
+    "unicorn/prefer-node-protocol": "off",
+    "no-console": "off",
+    "import/order": "off",
+    "prefer-object-has-own": "off",
+    "unicorn/prefer-at": "off",
+    "@typescript-eslint/no-unused-expressions": "off",
+
+    // we still have to support node 10 while Sequelize 6 remains alive
+    "unicorn/prefer-module": "off",
+    "unicorn/prefer-top-level-await": "off"
+  },
+  "ignorePatterns": ["src/*"]
 }

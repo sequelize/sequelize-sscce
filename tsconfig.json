@@ -1,18 +1,18 @@
 {
-	"include": [
-		"src/sscce.ts"
-	],
-	"compilerOptions": {
-		"outDir": "ts-dist",
-		"target": "es2018", // Node.js 10
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"declaration": true,
-		"pretty": true,
-		"newLine": "lf",
-		"stripInternal": true,
-		"strict": true,
-		"skipLibCheck": true
-	}
+  "include": [
+    "src/*",
+    "setup/*"
+  ],
+  "compilerOptions": {
+    "target": "es2021",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "newLine": "lf",
+    "stripInternal": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true
+  }
 }
