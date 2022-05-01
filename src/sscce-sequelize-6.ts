@@ -21,7 +21,9 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class Foo extends Model {
+    declare name: string;
+  }
 
   Foo.init({
     name: DataTypes.TEXT,
@@ -36,6 +38,41 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  // Create a new instance with "initial name"
+  const instance = new Foo({ name: "initial name" });
+
+  // Start an INSERT INTO, but don't await for it yet
+  const insertIntoPromise = instance.save();
+
+  // Wait until next frame when the INSERT INTO has properly started (but not finished)
+  await new Promise<void>(resolve => {
+    setTimeout(() => resolve(), 0);
+  });
+
+  // Set the name to "new name" while the INSERT INTO is still running
+  instance.name = "new name";
+
+  // As expected: instance.changed("name") === true
+  console.log({
+    'instance.name': instance.name,
+    'instance.changed("name")': instance.changed("name")
+  });
+
+  // Now we wait until the previous INSERT INTO is finished
+  await insertIntoPromise;
+
+  // Unexpectedly: instance.changed("name") === false (despite it being "new name" in this instance and "initial name" in the database)
+  console.log({
+    'instance.name': instance.name,
+    'instance.changed("name")': instance.changed("name")
+  });
+
+  // Try to UPDATE with "new name" - but this doesn't do anything, because instance.changed("name") === false
+  await instance.save();
+
+  // The instance in memory has "new name"
+  expect(instance.name).to.equal("new name");
+
+  // The instance in the database unexpectedly still has "initial name"
+  expect((await Foo.findOne())?.name).to.equal("new name"); // AssertionError: expected 'initial name' to equal 'new name'
 }
