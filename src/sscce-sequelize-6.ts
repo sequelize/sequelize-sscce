@@ -37,5 +37,5 @@ export async function run() {
   expect(spy).to.have.been.called;
 
   console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  expect(await Foo.count()).to.equal(1); 
 }
