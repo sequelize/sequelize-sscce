@@ -12,6 +12,7 @@
     "chalk": "^4.1.2",
     "cross-env": "^7",
     "fs-jetpack": "^4",
+    "pg": "^8.7.3",
     "sequelize": "^6",
     "@sequelize/core": "^7.0.0-alpha.10",
     "sinon": "^13",

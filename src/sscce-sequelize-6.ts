@@ -15,16 +15,19 @@ export async function run() {
   const sequelize = createSequelize6Instance({
     logQueryParameters: true,
     benchmark: true,
+    minifyAliases: true,
     define: {
       // For less clutter in the SSCCE
       timestamps: false,
     },
   });
 
-  class Foo extends Model {}
+  class Foo extends Model {
+    name!: string
+  }
 
   Foo.init({
-    name: DataTypes.TEXT,
+    name: {field: "my_name", type: DataTypes.TEXT},
   }, {
     sequelize,
     modelName: 'Foo',
@@ -36,6 +39,14 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  console.log(await Foo.create({ name: 'Foo1' }));
+  console.log(await Foo.create({ name: 'Foo2' }));
+  let thisWorks = (await Foo.findAll({subQuery: false, order: sequelize.literal(`"Foo".my_name`)})).map(f => f.name);
+  expect(thisWorks[0]).to.equal("Foo1")
+
+  let thisDoesntWork = (await Foo.findAll({attributes: {include: [[sequelize.literal(`"Foo".my_name`), "customAttribute"]]}, subQuery: true, order: ["customAttribute"]})).map(f => f.name);
+  expect(thisDoesntWork[0]).to.equal("Foo1")
+
+  // let thisDoesntWork = (await Foo.findAll({subQuery: true, order: sequelize.literal(`"Foo".my_name`)})).map(f => f.name);
+  // expect(thisDoesntWork[0]).to.equal("Foo1")
 }
