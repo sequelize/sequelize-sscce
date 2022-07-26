@@ -21,14 +21,59 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class Task extends Model {}
 
-  Foo.init({
-    name: DataTypes.TEXT,
+  Task.init({
+    // id: DataTypes.INTEGER,
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
+    name: DataTypes.TEXT
   }, {
     sequelize,
-    modelName: 'Foo',
+    modelName: 'Task',
   });
+
+  class Country extends Model {}
+
+  Country.init({
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true
+    },
+    name: DataTypes.TEXT
+  }, {
+    sequelize,
+    modelName: 'Country',
+  });
+
+  class TaskCountry extends Model {}
+
+  TaskCountry.init({
+    TaskId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Task,
+        key: 'id'
+      },
+      primaryKey: true
+    },
+    CountryId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Country,
+        key: 'id'
+      },
+      primaryKey: true
+    }
+  }, {
+    sequelize,
+    modelName: 'TaskCountry',
+  });
+
+  Task.hasMany(TaskCountry);
+  TaskCountry.belongsTo(Task);
 
   // You can use sinon and chai assertions directly in your SSCCE.
   const spy = sinon.spy();
@@ -36,6 +81,36 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  await Task.create({
+    id: 1,
+    name: "first task"
+  });
+  await Task.create({
+    id: 15,
+    name: "second task"
+  });
+
+  await Country.create({
+    id: 2,
+    name: "first country"
+  });
+  await Country.create({
+    id: 52,
+    name: "second country"
+  });
+
+  await TaskCountry.create({
+    TaskId: 1,
+    CountryId: 52
+  });
+  await TaskCountry.create({
+    TaskId: 15,
+    CountryId: 2
+  });
+
+  const tasks = await Task.findAll({
+    include: [{ model: TaskCountry, separate: true }]
+  })
+  expect(tasks[0].getDataValue("TaskCountries")).to.be.an('array').that.has.length(1)
+  expect(tasks[1].getDataValue("TaskCountries")).to.be.an('array').that.has.length(1)
 }
