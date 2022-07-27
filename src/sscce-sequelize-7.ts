@@ -21,21 +21,19 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class Setting extends Model {}
 
-  Foo.init({
+  Setting.init({
     name: DataTypes.TEXT,
+    value: DataTypes.JSON
   }, {
     sequelize,
-    modelName: 'Foo',
+    modelName: 'Setting',
   });
 
-  // You can use sinon and chai assertions directly in your SSCCE.
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
   await sequelize.sync({ force: true });
-  expect(spy).to.have.been.called;
+  console.log(await Setting.create({ name: 'title', value: 'test' }));
+  const setting = await Setting.findOne()
+  expect(setting?.get().value).to.equal('test');
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
 }
