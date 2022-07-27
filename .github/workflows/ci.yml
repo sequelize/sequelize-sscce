@@ -65,6 +65,7 @@ jobs:
         db:
           - '{ name: "MySQL 5.7", image: "mysql:5.7", dialect: "mysql" }'
           - '{ name: "MariaDB 10.3", image: "mariadb:10.3", dialect: "mariadb" }'
+          - '{ name: "MariaDB 10.5", image: "mariadb:10.5", dialect: "mariadb" }'
     name: ${{ fromJson(matrix.db).name }} (node ${{ matrix.node }})
     runs-on: ubuntu-latest
     services:
