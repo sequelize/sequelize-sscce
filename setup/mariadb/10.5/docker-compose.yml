@@ -1,0 +1,20 @@
+services:
+  mariadb-105:
+    container_name: sequelize-mariadb-105
+    image: mariadb:10.5
+    environment:
+      MYSQL_DATABASE: sequelize_test
+      MYSQL_USER: sequelize_test
+      MYSQL_PASSWORD: sequelize_test
+      MYSQL_ROOT_PASSWORD: sequelize_test
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-usequelize_test", "-psequelize_test", "status"]
+      interval: 3s
+      timeout: 1s
+      retries: 10
+
+networks:
+  default:
+    name: sequelize-mariadb-105-network
