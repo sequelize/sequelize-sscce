@@ -25,6 +25,7 @@ export async function run() {
 
   Foo.init({
     name: DataTypes.TEXT,
+    balance: DataTypes.TINYINT
   }, {
     sequelize,
     modelName: 'Foo',
@@ -36,6 +37,11 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  await Foo.create({ name: 'TS foo', balance: 2 });
+
+  const updatedFoo = await Foo.increment({
+    {balance: 4},
+    {where: {name: 'TS foo'}}
+  });
+  expect(updatedFoo).to.be.an.instanceof(Foo);
 }
