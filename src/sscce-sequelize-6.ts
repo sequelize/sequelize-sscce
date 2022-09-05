@@ -39,9 +39,9 @@ export async function run() {
 
   await Foo.create({ name: 'TS foo', balance: 2 });
 
-  const updatedFoo = await Foo.increment({
+  const updatedFoo = await Foo.increment(
     {balance: 4},
     {where: {name: 'TS foo'}}
-  });
+  );
   expect(updatedFoo).to.be.an.instanceof(Foo);
 }
