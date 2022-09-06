@@ -43,7 +43,7 @@ export async function run() {
   
   const result1 = await sequelize.query(
     `
-      INSERT INTO Foos (id, name) 
+      INSERT INTO "Foos" (id, name) 
       VALUES          (1, 'steve') 
       ON CONFLICT DO UPDATE 
       SET name='pekka'
@@ -57,7 +57,7 @@ export async function run() {
   const result2 = await sequelize.query(
     `
       -- HAX
-      INSERT INTO Foos (id, name) 
+      INSERT INTO "Foos" (id, name) 
       VALUES          (1, 'steve') 
       ON CONFLICT DO UPDATE 
       SET name='pekka'
