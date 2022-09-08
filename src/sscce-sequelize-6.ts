@@ -82,21 +82,18 @@ export async function run() {
     modelName: 'Foo',
   });
 
-  const spies = {};
-
   Object.keys(hookTypes).forEach((hook) => {
-    const spy = sinon.spy();
-    spies[hook] = spy;
     Foo.addHook(hook, () => {
       console.log(hook)
-      spy()
     });
   })
   
   const resetSpies = () => {
+/*
     Object.values(spies).forEach((spy) => {
       spy.resetHistory();
     });
+*/
   }
 
   // You can use sinon and chai assertions directly in your SSCCE.
