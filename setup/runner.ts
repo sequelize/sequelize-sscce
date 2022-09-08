@@ -15,7 +15,7 @@ async function wrappedRun() {
 
   let failed = false;
 
-  if (existsSync(`${__dirname}/../src/sscce-sequelize-6.js`)) {
+  if (existsSync(`${__dirname}/../src/sscce-sequelize-6.ts`)) {
     let heading = `Running SSCCE for ${dialect.toUpperCase()} with Sequelize ${versions.sequelize6}`;
     heading = `===== ${heading} =====`;
 
