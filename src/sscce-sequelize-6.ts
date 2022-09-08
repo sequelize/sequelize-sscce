@@ -108,54 +108,13 @@ export async function run() {
   resetSpies();
   console.log("Upserting action: insert")
   
-  const result1 = await sequelize.query(
-    `
-      INSERT INTO "Foos" (id, name)
-      VALUES          (1, 'steve')
-      ON CONFLICT (id) DO UPDATE
-      SET name='ben'
-      RETURNING id, name
-    `,
-    {
-      type: QueryTypes.RAW,
-    }
-  );
+  console.log(await Foo.upsert({ id: 1, name: 'bar'}));
   
   resetSpies();
   console.log("Upserting action: update")
   
-  const result2 = await sequelize.query(
-    `
-      INSERT INTO "Foos" (id, name)
-      VALUES          (1, 'doug')
-      ON CONFLICT (id) DO UPDATE
-      SET name='will'
-      RETURNING id, name
-    `,
-    {
-      type: QueryTypes.RAW,
-    }
-  );
-  
-  resetSpies();
-  console.log("Upserting action: nothing")
-  
-  const result3 = await sequelize.query(
-    `
-      INSERT INTO "Foos" (id, name)
-      VALUES          (1, 'gladys')
-      ON CONFLICT (id) DO UPDATE
-      SET name='malla'
-      WHERE 1 = 2
-      RETURNING id, name
-    `,
-    {
-      type: QueryTypes.RAW,
-    }
-  );
+  console.log(await Foo.upsert({ id: 1, name: 'baz'}));
   
   resetSpies();
   console.log("End")
-
-  console.log("Results", result1, result2, result3);
 }
