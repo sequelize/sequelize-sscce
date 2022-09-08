@@ -106,7 +106,7 @@ export async function run() {
   expect(spy).to.have.been.called;
   
   resetSpies();
-  console.log("Upserting first")
+  console.log("Upserting action: insert")
   
   const result1 = await sequelize.query(
     `
@@ -122,7 +122,7 @@ export async function run() {
   );
   
   resetSpies();
-  console.log("Upserting second")
+  console.log("Upserting action: update")
   
   const result2 = await sequelize.query(
     `
@@ -138,8 +138,24 @@ export async function run() {
   );
   
   resetSpies();
+  console.log("Upserting action: nothing")
+  
+  const result3 = await sequelize.query(
+    `
+      INSERT INTO "Foos" (id, name)
+      VALUES          (1, 'gladys')
+      ON CONFLICT (id) DO UPDATE
+      SET name='malla'
+      WHERE 1 = 2
+      RETURNING id, name
+    `,
+    {
+      type: QueryTypes.RAW,
+    }
+  );
+  
+  resetSpies();
   console.log("End")
 
-  console.log(result1, result2);
-  expect(result1).to.deep.equal(result2);
+  console.log("Results", result1, result2, result3);
 }
