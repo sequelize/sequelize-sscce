@@ -1,4 +1,4 @@
-import { DataTypes, Model, QueryTypes, Hooks: { hooks }  } from 'sequelize';
+import { DataTypes, Model, QueryTypes } from 'sequelize';
 import { createSequelize6Instance } from '../setup/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
