@@ -46,7 +46,7 @@ export async function run() {
       INSERT INTO "Foos" (id, name)
       VALUES          (1, 'steve')
       ON CONFLICT (id) DO UPDATE
-      SET name='pekka'
+      SET name='steve'
       RETURNING id, name
     `,
     {
@@ -60,7 +60,7 @@ export async function run() {
       INSERT INTO "Foos" (id, name)
       VALUES          (1, 'steve')
       ON CONFLICT (id) DO UPDATE
-      SET name='pekka'
+      SET name='steve'
       RETURNING id, name
     `,
     {
