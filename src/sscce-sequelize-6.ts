@@ -44,8 +44,8 @@ export async function run() {
   let thisWorks = (await Foo.findAll({subQuery: false, order: sequelize.literal(`"Foo".my_name`)})).map(f => f.name);
   expect(thisWorks[0]).to.equal("Foo1")
 
-  let thisDoesntWork = (await Foo.findAll({attributes: {include: [[sequelize.literal(`"Foo".my_name`), "customAttribute"]]}, subQuery: true, order: ["customAttribute"]})).map(f => f.name);
-  expect(thisDoesntWork[0]).to.equal("Foo1")
+  let thisDoesntWork = (await Foo.findAll({attributes: {include: [[sequelize.literal(`"Foo".my_name`), "customAttribute"]]}, subQuery: true, order: [["customAttribute", "DESC"]], limit: 1})).map(f => f.name);
+  expect(thisDoesntWork[0]).to.equal("Foo2")
 
   // let thisDoesntWork = (await Foo.findAll({subQuery: true, order: sequelize.literal(`"Foo".my_name`)})).map(f => f.name);
   // expect(thisDoesntWork[0]).to.equal("Foo1")
