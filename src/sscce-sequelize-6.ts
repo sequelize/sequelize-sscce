@@ -101,7 +101,7 @@ export async function run() {
   
   console.log("Start")
   
-  console.log(await sequelize.query("SELECT * FROM ", {
+  console.log(await sequelize.query('SELECT * FROM "Foos"', {
     type: sequelize.QueryTypes.SELECT,
     model: Foo,
   }));
