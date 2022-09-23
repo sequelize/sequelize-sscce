@@ -90,31 +90,21 @@ export async function run() {
       console.log(hook)
     });
   })
-  
-  const resetSpies = () => {
-/*
-    Object.values(spies).forEach((spy) => {
-      spy.resetHistory();
-    });
-*/
-  }
 
   // You can use sinon and chai assertions directly in your SSCCE.
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
+  await Foo.upsert({ id: 1, name: 'bar'});
+  await Foo.upsert({ id: 2, name: 'baz'});
   
-  resetSpies();
-  console.log("Upserting action: insert")
+  console.log("Start")
   
-  console.log(await Foo.upsert({ id: 1, name: 'bar'}));
+  console.log(await sequelize.query("SELECT * FROM ", {
+    type: sequelize.QueryTypes.SELECT,
+    model: Foo,
+  }));
   
-  resetSpies();
-  console.log("Upserting action: update")
-  
-  console.log(await Foo.upsert({ id: 1, name: 'baz'}));
-  
-  resetSpies();
   console.log("End")
 }
