@@ -21,14 +21,25 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
-
-  Foo.init({
+  const Foo = sequelize.define('Foo', {
     name: DataTypes.TEXT,
   }, {
-    sequelize,
     modelName: 'Foo',
   });
+
+  const Bar = sequelize.define('Bar', {
+    name: DataTypes.TEXT,
+  }, {
+    modelName: 'Bar',
+    scopes: {
+      includeFoo: {
+        include: [{ model: Foo}],
+      }
+    }
+  });
+  
+  Foo.hasMany(Bar);
+  Bar.belongsTo(Foo);
 
   // You can use sinon and chai assertions directly in your SSCCE.
   const spy = sinon.spy();
@@ -36,6 +47,5 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  expect(Bar.scope('includeFoo').findAndCountAll({ distinct: true })).to.not.be.rejected;
 }
