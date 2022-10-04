@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, QueryTypes } from 'sequelize';
 import { createSequelize6Instance } from '../setup/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -24,6 +24,11 @@ export async function run() {
   class Foo extends Model {}
 
   Foo.init({
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
     name: DataTypes.TEXT,
   }, {
     sequelize,
@@ -35,7 +40,34 @@ export async function run() {
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
+  
+  const result1 = await sequelize.query(
+    `
+      INSERT INTO "Foos" (id, name)
+      VALUES          (1, 'steve')
+      ON CONFLICT (id) DO UPDATE
+      SET name='steve'
+      RETURNING id, name
+    `,
+    {
+      type: QueryTypes.RAW,
+    }
+  );
+  
+  const result2 = await sequelize.query(
+    `
+      -- HAX
+      INSERT INTO "Foos" (id, name)
+      VALUES          (1, 'steve')
+      ON CONFLICT (id) DO UPDATE
+      SET name='steve'
+      RETURNING id, name
+    `,
+    {
+      type: QueryTypes.RAW,
+    }
+  );
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  console.log(result1, result2);
+  expect(result1).to.deep.equal(result2);
 }
