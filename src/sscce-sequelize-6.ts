@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 // if your issue is dialect specific, remove the dialects you don't need to test on.
-export const testingOnDialects = new Set(['mysql']);
+export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb', 'postgres', 'postgres-native']);
 
 // You can delete this file if you don't want your SSCCE to be tested against Sequelize 6
 
@@ -51,7 +51,20 @@ export async function run() {
             }
         }]));
   expect(await Foo.count()).to.equal(3);
-  let foos = await Foo.findAll({
+  
+  // error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''null'' at line 1
+    let foos = await Foo.findAll({
+            where: {
+                schoolInfo: {
+                    isRegister: {
+                        [Op.is]: null
+                    }
+                }
+            }
+        });
+        expect(foos.length).to.equal(1)
+  
+   foos = await Foo.findAll({
             where: {
                 schoolInfo: {
                     isRegister: {
@@ -63,15 +76,5 @@ export async function run() {
         // fail  Expected: 2  Received: 1
         expect(foos.length).to.equal(2);
 
-        // error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''null'' at line 1
-        foos = await Foo.findAll({
-            where: {
-                schoolInfo: {
-                    isRegister: {
-                        [Op.is]: null
-                    }
-                }
-            }
-        });
-        expect(foos.length).to.equal(1)
+        
 }
