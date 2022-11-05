@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 // if your issue is dialect specific, remove the dialects you don't need to test on.
-export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb', 'postgres', 'postgres-native']);
+export const testingOnDialects = new Set(['mysql']);
 
 // You can delete this file if you don't want your SSCCE to be tested against Sequelize 6
 
@@ -25,6 +25,7 @@ export async function run() {
 
   Foo.init({
     name: DataTypes.TEXT,
+    schoolInfo: DataTypes.JSON
   }, {
     sequelize,
     modelName: 'Foo',
@@ -36,6 +37,41 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  console.log(await Foo.bulkCreate([{
+            name: 'Emma', schoolInfo: {
+                numCode: 'No.1', isRegister: false
+            }
+        }, {
+            name: 'Lily', schoolInfo: {
+                numCode: 'No.2', isRegister: true
+            }
+        }, {
+            name: 'Jennifer', schoolInfo: {
+                numCode: 'No.3'
+            }
+        }]));
+  expect(await Foo.count()).to.equal(3);
+  let foos = await Foo.findAll({
+            where: {
+                schoolInfo: {
+                    isRegister: {
+                        [Op.not]: true
+                    }
+                }
+            }
+        });
+        // fail  Expected: 2  Received: 1
+        expect(foos.length).toBe(2);
+
+        // error: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''null'' at line 1
+        foos = await Foo.findAll({
+            where: {
+                schoolInfo: {
+                    isRegister: {
+                        [Op.is]: null
+                    }
+                }
+            }
+        });
+        expect(foos.length).toBe(1);
 }
