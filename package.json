@@ -6,6 +6,7 @@
   "type": "commonjs",
   "license": "MIT",
   "dependencies": {
+    "@sequelize/core": "^7.0.0-alpha.10",
     "chai": "^4",
     "chai-as-promised": "^7",
     "chai-datetime": "^1",
@@ -13,9 +14,9 @@
     "cross-env": "^7",
     "fs-jetpack": "^4",
     "sequelize": "^6",
-    "@sequelize/core": "^7.0.0-alpha.10",
     "sinon": "^13",
-    "sinon-chai": "^3"
+    "sinon-chai": "^3",
+    "tedious": "^15.1.2"
   },
   "scripts": {
     "_test": "ts-node setup/runner.ts",
