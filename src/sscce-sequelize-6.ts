@@ -21,13 +21,13 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class BigIntIssue extends Model {}
 
-  Foo.init({
-    name: DataTypes.TEXT,
+  BigIntIssue.init({
+    testField: DataTypes.BIGINT,
   }, {
     sequelize,
-    modelName: 'Foo',
+    modelName: 'BigIntIssue',
   });
 
   // You can use sinon and chai assertions directly in your SSCCE.
@@ -36,6 +36,6 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  console.log(await BigIntIssue.bulkCreate([{ testField: 1234567890n }]));
+  expect(await BigIntIssue.count()).to.equal(1);
 }
