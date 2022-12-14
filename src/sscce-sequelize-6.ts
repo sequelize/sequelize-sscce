@@ -65,7 +65,7 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await ServiceOrders.findAll({
+  console.log(await OrderLines.findAll({
     include: [ { association: 'order' } ],
     order: [ [ 'order', 'ship_to_company', 'ASC' ] ] // here 'order' refers to the association, not the field
   }));
