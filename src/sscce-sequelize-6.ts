@@ -21,14 +21,43 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
-
-  Foo.init({
-    name: DataTypes.TEXT,
+  class Orders extends Model {}
+  class OrderLines extends Model {}
+  
+  Orders.init({
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    shipToCompany: {
+      type: DataTypes.STRING,
+      field: 'ship_to_company',
+    },
   }, {
     sequelize,
-    modelName: 'Foo',
+    modelName: 'Orders',
+  })
+
+  OrderLines.init({
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    orderID: {
+      type: DataTypes.INTEGER,
+      field: 'order',
+    },
+  }, {
+    sequelize,
+    modelName: 'OrderLines',
   });
+  
+  OrderLines.belongsTo(Orders, {
+    foreignKey: "orderID",
+    as: "order",
+  })
 
   // You can use sinon and chai assertions directly in your SSCCE.
   const spy = sinon.spy();
@@ -36,6 +65,9 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  console.log(await ServiceOrders.findAll({
+    include: [ { association: 'order' } ],
+    order: [ [ 'order', 'ship_to_company', 'ASC' ] ] // here 'order' refers to the association, not the field
+  }));
+  // expect(await Foo.count()).to.equal(1);
 }
