@@ -1,3 +1,10 @@
+/*
+ * @Author: 羊驼
+ * @Date: 2023-01-17 14:21:06
+ * @LastEditors: 羊驼
+ * @LastEditTime: 2023-01-17 14:48:36
+ * @Description: file content
+ */
 import { DataTypes, Model } from 'sequelize';
 import { createSequelize6Instance } from '../setup/create-sequelize-instance';
 import { expect } from 'chai';
@@ -21,14 +28,24 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class Score extends Model { }
 
-  Foo.init({
-    name: DataTypes.TEXT,
-  }, {
-    sequelize,
-    modelName: 'Foo',
-  });
+  Score.init({
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    student_name: {
+      type: DataTypes.STRING
+    },
+    score: {
+      type: DataTypes.INTEGER
+    },
+    createdAt: {
+      type: DataTypes.DATE
+    },
+  }, { sequelize, createdAt: true })
 
   // You can use sinon and chai assertions directly in your SSCCE.
   const spy = sinon.spy();
@@ -36,6 +53,18 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  await Score.create({ student_name: "tom", score: 0 })
+  await Score.create({ student_name: "tom", score: 1 })
+  await Score.create({ student_name: "tom", score: 2 })
+  //  we sorting  and grouping createdAt with desc
+  let data = await Score.findAll({
+    order: [["createdAt", "desc"]],
+    group: ["createdAt"],
+    attributes: ["student_name", "score"],
+    raw: true,
+  })
+  // we expect sorting and grouping get newest date data
+  // but sorting and grouping together only one select can't came true ordering before to grouping
+  expect(data[0]).have.equal({ student_name: "tom", score: 2 })
+
 }
