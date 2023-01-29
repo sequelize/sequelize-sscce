@@ -1,10 +1,17 @@
-import { DataTypes, Model } from '@sequelize/core';
-import { createSequelize7Instance } from '../setup/create-sequelize-instance';
-import { expect } from 'chai';
-import sinon from 'sinon';
+import { DataTypes, Model } from "@sequelize/core";
+import { createSequelize7Instance } from "../setup/create-sequelize-instance";
+import { expect } from "chai";
+import sinon from "sinon";
 
 // if your issue is dialect specific, remove the dialects you don't need to test on.
-export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb', 'postgres', 'postgres-native']);
+export const testingOnDialects = new Set([
+  "mssql",
+  "sqlite",
+  "mysql",
+  "mariadb",
+  "postgres",
+  "postgres-native",
+]);
 
 // You can delete this file if you don't want your SSCCE to be tested against Sequelize 7
 
@@ -21,13 +28,45 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class Post extends Model {}
+  class Author extends Model {}
 
-  Foo.init({
-    name: DataTypes.TEXT,
-  }, {
-    sequelize,
-    modelName: 'Foo',
+  Post.init(
+    {
+      id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      content: DataTypes.TEXT,
+      authorId: DataTypes.INTEGER,
+      coAuthorId: DataTypes.INTEGER,
+    },
+    {
+      sequelize,
+      modelName: "Post",
+    }
+  );
+
+  Author.init(
+    {
+      id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      name: DataTypes.TEXT,
+    },
+    {
+      sequelize,
+      modelName: "Author",
+    }
+  );
+
+  Post.belongsTo(Author, {
+    foreignKey: "authorId",
+    as: "author",
+    targetKey: "id",
+    inverse: { as: "myBooks", type: "hasMany" },
+  });
+
+  Post.belongsTo(Author, {
+    foreignKey: "coAuthorId",
+    as: "coAuthor",
+    targetKey: "id",
+    inverse: { as: "notMyBooks", type: "hasMany" },
   });
 
   // You can use sinon and chai assertions directly in your SSCCE.
@@ -36,6 +75,7 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  // Not needed since sync not working
+  // console.log(await Post.create({ name: 'TS foo' }));
+  // expect(await Post.count()).to.equal(1);
 }
