@@ -77,7 +77,7 @@ export async function run() {
       },
     },
     {
-      tableName: 'users2',
+      tableName: 'users',
       schema: 'schema_b'
     }
   )
