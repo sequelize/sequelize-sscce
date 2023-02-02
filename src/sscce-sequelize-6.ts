@@ -25,7 +25,7 @@ export async function run() {
   await sequelize.createSchema('schema_a', {})
   await sequelize.createSchema('schema_b', {})
 
-  // Table `users` within schema `schemaA`
+  // Table `users` within schema `schema_a`
   const User1 = sequelize.define(
     'User',
     {
@@ -42,7 +42,7 @@ export async function run() {
     }
   )
 
-  // Create `files` within schema `schemaA` that belongs to `user`
+  // Create `files` within schema `schema_a` that belongs to `user`
   const File = sequelize.define(
     'File',
     {
@@ -65,7 +65,7 @@ export async function run() {
     constraints: true, // Set this to false and use the `User2` model and it will run work right.
   })
 
-  // Table `user` within schema `schemaB`
+  // Table `user` within schema `schema_b`
   const User2 = sequelize.define( // Comment this model and use constraints with `belongsTo` and it will work just right.
     'User',
     {
