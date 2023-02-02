@@ -62,7 +62,7 @@ export async function run() {
   File.belongsTo(User1, {
     as: 'file',
     foreignKey: 'fileId',
-    constraints: true, // Set this to false and use the `User2` model and it will run work right.
+    constraints: true, // Set this to false and use the `User2` model and it will work just right.
   })
 
   // Table `user` within schema `schema_b`
