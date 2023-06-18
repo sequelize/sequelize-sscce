@@ -4,6 +4,7 @@
     "setup/*"
   ],
   "compilerOptions": {
+    "experimentalDecorators": true,
     "target": "es2021",
     "module": "CommonJS",
     "moduleResolution": "Node",

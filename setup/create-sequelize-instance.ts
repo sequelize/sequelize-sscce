@@ -1,5 +1,5 @@
 import type { Options as Sequelize6Options } from 'sequelize';
-import { Sequelize as Sequelize6 } from 'sequelize';
+import { Sequelize as Sequelize6 } from 'sequelize-typescript';
 import type { Options as Sequelize7Options, Sequelize as Sequelize7 } from '@sequelize/core';
 import { wrapOptions } from './wrap-options';
 
