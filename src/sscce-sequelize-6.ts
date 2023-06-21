@@ -35,7 +35,15 @@ export async function run() {
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
+  
+  const foo = await Foo.create({ name: 'original name', id : 1 });
+  await Foo.update({ name: 'random update'},  {where: { id : 1 }});
+  const updated = await foo.update({ name: 'updated name'}, { where: { name: 'original name' } });
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  // no update should happen
+  expect(updated.get('name'))
+    .equal(
+      'random update',
+      'no update should happen because of where option'
+    );
 }
