@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Op } from 'sequelize';
 import { createSequelize6Instance } from '../setup/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -38,4 +38,6 @@ export async function run() {
 
   console.log(await Foo.create({ name: 'TS foo' }));
   expect(await Foo.count()).to.equal(1);
+
+  console.log(await Foo.findAll({where: [Op.iLike]: `%d%` }));
 }
