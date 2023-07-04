@@ -36,8 +36,10 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  console.log(await Foo.create({ name: 'TS foo'}));
+  console.log(await Foo.create({ name: 'd-test'}));
+  expect(await Foo.count()).to.equal(2);
 
-  console.log(await Foo.findAll({where: [Op.iLike]: `%d%` }));
+  console.log(await Foo.count({where: {name: { [Op.iLike]: `%d%`} }}));
+  expect(await Foo.count({where: {name: { [Op.iLike]: `%d%`} }})).to.equal(1);
 }
