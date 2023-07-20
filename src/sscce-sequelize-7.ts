@@ -42,14 +42,14 @@ export async function run() {
   console.log(created);
   expect(created.name).to.equal('Foo);
   expect(created.password).to.be.undefined;
-  const updatedWithChange = await User.update({name:'Bar'}, {where: {id: created.id}, returning: attributes});
+  const updatedWithChange = await User.update({name:'Bar'}, {where: {id: created.id}, returning: attributes, individualHooks: true});
   console.log(updatedWithChange)
-  expect(updatedWithChange.name).to.equal('Bar');
-  expect(updatedWithChange.password).to.be.undefined;
-  const updatedNoChange = await User.update({name:undefined}, {where: {id: created.id}, returning: attributes});
+  expect(updatedWithChange[1][0].name).to.equal('Bar');
+  expect(updatedWithChange[1][0].password).to.be.undefined;
+  const updatedNoChange = await User.update({name:undefined}, {where: {id: created.id}, returning: attributes, individualHooks: true});
   console.log(updatedNoChange)
-  expect(updatedWithChange.name).to.equal('Bar');
-  expect(updatedWithChange.password).to.be.undefined;
+  expect(updatedWithChange[1][0].name).to.equal('Bar');
+  expect(updatedWithChange[1][0].password).to.be.undefined;
   
   //expect(await Foo.count()).to.equal(1);
   await User.up
