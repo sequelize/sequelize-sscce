@@ -39,12 +39,15 @@ export async function run() {
 
   const attributes = ['name'];
   const created = await User.create({ name: 'Foo', password: 'pass' }, {returning: attributes});
+  console.log(created);
   expect(created.name).to.equal('Foo);
   expect(created.password).to.be.undefined;
   const updatedWithChange = await User.update({name:'Bar'}, {where: {id: created.id}, returning: attributes});
+  console.log(updatedWithChange)
   expect(updatedWithChange.name).to.equal('Bar');
   expect(updatedWithChange.password).to.be.undefined;
   const updatedNoChange = await User.update({name:undefined}, {where: {id: created.id}, returning: attributes});
+  console.log(updatedNoChange)
   expect(updatedWithChange.name).to.equal('Bar');
   expect(updatedWithChange.password).to.be.undefined;
   
