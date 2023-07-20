@@ -21,7 +21,7 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class User extends Model {}
 
   User.init({
     name: DataTypes.STRING,
