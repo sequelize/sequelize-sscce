@@ -11,7 +11,12 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}\\setup\\runner.js",
+      "runtimeExecutable": "npm",
+      "args": [
+        "run",
+        "test:sqlite"
+      ],
+      // "program": "${workspaceFolder}\\setup\\runner.ts",
       "env": {
         "LOCAL_SSCCE": "true",
         "DIALECT": "sqlite"
