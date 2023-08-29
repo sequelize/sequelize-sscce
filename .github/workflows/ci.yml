@@ -12,8 +12,8 @@ jobs:
       fail-fast: false
       matrix:
         # node 10 is the minimum supported version for Sequelize 6
-        # node 14 is the minimum supported version for Sequelize 7
-        # node 16 is latest LTS (to keep updated)
+        # node 16 is the minimum supported version for Sequelize 7
+        # node 18 is latest LTS (to keep updated)
         node: [10, 14, 16]
     name: SQLite (sequelize 6 & 7, node ${{ matrix.node }})
     runs-on: ubuntu-latest
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: ${{ matrix.node }}
       - run: /bin/bash ./setup/prepare-ci.sh
       - name: Execute SSCCE
         run: npm run _test
