@@ -31,14 +31,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres-version: [9.5, 10] # Does not work with 12
+        postgres-version: [9.5, 10, 11, 12, 16]
         native: [true, false]
         node: [10, 14, 16]
     name: Postgres ${{ matrix.postgres-version }}${{ matrix.native && ' (native)' || '' }} (sequelize 6 & 7, node ${{ matrix.node }})
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: sushantdhiman/postgres:${{ matrix.postgres-version }}
+        image: postgres:${{ matrix.postgres-version }}
         env:
           POSTGRES_USER: sequelize_test
           POSTGRES_DB: sequelize_test
