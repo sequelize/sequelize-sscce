@@ -69,7 +69,7 @@ export async function run() {
       select
         i::integer,
         md5(random()::text)
-      from generate_series(1, 1000000) s(i)
+      from generate_series(1, 10000000) s(i)
     `),
     sequelize.query(`
       insert into bars (
@@ -79,24 +79,63 @@ export async function run() {
         i::integer,
         i::integer,
         md5(random()::text)
-      from generate_series(1, 1000000) s(i)
+      from generate_series(1, 10000000) s(i)
     `),
   ]);
   
-  const offset = 0;
-  const limit = 10;
-  const result = await Foo.findAll({
-    logging: console.log,
-    benchmark: true,
-    // distinct: true,
-    limit,
-    offset,
-    include: {
-      model: Bar,
-      required: true,
-      where: { id: { [Op.gt]: 1 } }
-    },
-  });
+  {
+    console.log("TEST 1")
+    const offset = 0;
+    const limit = 10;
+    const result = await Foo.findAll({
+      logging: console.log,
+      benchmark: true,
+      // distinct: true,
+      limit,
+      offset,
+      include: {
+        model: Bar,
+        required: true,
+        where: { id: { [Op.gt]: 1 } }
+      },
+    });
 
-  console.log(result);
+    console.log(result);
+  }
+  
+  {
+    console.log("TEST 2")
+    const result = await sequelize.query(
+      `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data"
+        FROM (SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
+          WHERE ( SELECT "foo_id" FROM "bars" AS "bars" WHERE ("bars"."id" > 1 AND "bars"."foo_id" = "foo"."id") LIMIT 1 ) IS NOT NULL
+        LIMIT 10 OFFSET 0)
+        AS "foo"
+      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 1;`,
+      {
+        logging: console.log,
+        benchmark: true,
+      }
+    );
+
+    console.log(result);
+  }
+  
+  {
+    console.log("TEST 3")
+    const result = await sequelize.query(
+      `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data"
+        FROM (SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
+          WHERE EXISTS ( SELECT "foo_id" FROM "bars" AS "bars" WHERE ("bars"."id" > 1 AND "bars"."foo_id" = "foo"."id") LIMIT 1 )
+        LIMIT 10 OFFSET 0)
+        AS "foo"
+      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 1;`,
+      {
+        logging: console.log,
+        benchmark: true,
+      }
+    );
+
+    console.log(result);
+  }
 }
