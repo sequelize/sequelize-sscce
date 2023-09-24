@@ -143,7 +143,7 @@ export async function run() {
   }
 
   {
-    console.log("TEST 1.1")
+    console.log("TEST 2.1")
     const offset = 0;
     const limit = 10;
     const result = await Foo.findAll({
