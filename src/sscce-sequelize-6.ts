@@ -97,7 +97,7 @@ export async function run() {
       include: {
         model: Bar,
         required: true,
-        where: { id: { [Op.gt]: 123 } }
+        where: { id: { [Op.between]: [2345, 8678] } }
       },
     });
   }
@@ -110,11 +110,11 @@ export async function run() {
           WHERE "foo"."id" BETWEEN 345 AND 5678 AND
           (
             SELECT "foo_id" FROM "bars" AS "bars"
-              WHERE ("bars"."id" > 123 AND "bars"."foo_id" = "foo"."id") LIMIT 1
+              WHERE ("bars"."id" BETWEEN 2345 AND 8678 AND "bars"."foo_id" = "foo"."id") LIMIT 1
           ) IS NOT NULL
           LIMIT 10 OFFSET 0
         ) AS "foo"
-      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 123;`,
+      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" BETWEEN 2345 AND 8678;`,
       {
         logging: console.log,
         benchmark: true,
@@ -130,11 +130,11 @@ export async function run() {
           WHERE "foo"."id" BETWEEN 345 AND 5678 AND
           EXISTS (
             SELECT "foo_id" FROM "bars" AS "bars"
-              WHERE ("bars"."id" > 123 AND "bars"."foo_id" = "foo"."id") LIMIT 1
+              WHERE ("bars"."id" BETWEEN 2345 AND 8678 AND "bars"."foo_id" = "foo"."id") LIMIT 1
           )
           LIMIT 10 OFFSET 0
         ) AS "foo"
-      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 123;`,
+      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" BETWEEN 2345 AND 8678;`,
       {
         logging: console.log,
         benchmark: true,
