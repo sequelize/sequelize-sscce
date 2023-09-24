@@ -199,4 +199,120 @@ export async function run() {
       }
     );
   }
+
+  {
+    console.log("TEST 3.1")
+    const offset = 0;
+    const limit = 10;
+    const result = await Foo.findAll({
+      logging: console.log,
+      benchmark: true,
+      limit,
+      offset,
+      where: { id: { [Op.gt]: 123 } },
+      include: {
+        model: Bar,
+        required: true,
+        where: { id: { [Op.gt]: 123 } }
+      },
+    });
+  }
+  
+  {
+    console.log("TEST 3.2")
+    const result = await sequelize.query(
+      `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data" FROM (
+        SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
+          WHERE "foo"."id" > 123 AND
+          (
+            SELECT "foo_id" FROM "bars" AS "bars"
+              WHERE ("bars"."id" > 123 AND "bars"."foo_id" = "foo"."id") LIMIT 1
+          ) IS NOT NULL
+          LIMIT 10 OFFSET 0
+        ) AS "foo"
+      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 123;`,
+      {
+        logging: console.log,
+        benchmark: true,
+      }
+    );
+  }
+  
+  {
+    console.log("TEST 3.3")
+    const result = await sequelize.query(
+      `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data" FROM (
+        SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
+          WHERE "foo"."id" > 123 AND
+          EXISTS (
+            SELECT "foo_id" FROM "bars" AS "bars"
+              WHERE ("bars"."id" > 123 AND "bars"."foo_id" = "foo"."id") LIMIT 1
+          )
+          LIMIT 10 OFFSET 0
+        ) AS "foo"
+      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 123;`,
+      {
+        logging: console.log,
+        benchmark: true,
+      }
+    );
+  }
+
+  {
+    console.log("TEST 4.1")
+    const offset = 0;
+    const limit = 10;
+    const result = await Foo.findAll({
+      logging: console.log,
+      benchmark: true,
+      limit,
+      offset,
+      where: { id: { [Op.gt]: 123 } },
+      include: {
+        model: Bar,
+        required: true,
+        where: { id: { [Op.between]: [345, 5678] } }
+      },
+    });
+  }
+  
+  {
+    console.log("TEST 4.2")
+    const result = await sequelize.query(
+      `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data" FROM (
+        SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
+          WHERE "foo"."id" > 123 AND
+          (
+            SELECT "foo_id" FROM "bars" AS "bars"
+              WHERE ("bars"."id" BETWEEN 345 AND 5678 AND "bars"."foo_id" = "foo"."id") LIMIT 1
+          ) IS NOT NULL
+          LIMIT 10 OFFSET 0
+        ) AS "foo"
+      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" BETWEEN 345 AND 5678;`,
+      {
+        logging: console.log,
+        benchmark: true,
+      }
+    );
+  }
+  
+  {
+    console.log("TEST 4.3")
+    const result = await sequelize.query(
+      `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data" FROM (
+        SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
+          WHERE "foo"."id" > 123 AND
+          EXISTS (
+            SELECT "foo_id" FROM "bars" AS "bars"
+              WHERE ("bars"."id" BETWEEN 345 AND 5678 AND "bars"."foo_id" = "foo"."id") LIMIT 1
+          )
+          LIMIT 10 OFFSET 0
+        ) AS "foo"
+      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" BETWEEN 345 AND 5678;`,
+      {
+        logging: console.log,
+        benchmark: true,
+      }
+    );
+  }
 }
