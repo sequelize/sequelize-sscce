@@ -44,6 +44,7 @@ export async function run() {
     },
     fooId: {
       type: DataTypes.INTEGER,
+      references: { model: 'foos' },
     },
     data: DataTypes.TEXT,
   }, {
@@ -90,17 +91,15 @@ export async function run() {
     const result = await Foo.findAll({
       logging: console.log,
       benchmark: true,
-      // distinct: true,
       limit,
       offset,
+      where: { id: { [Op.between]: [345, 5678] } },
       include: {
         model: Bar,
         required: true,
-        where: { id: { [Op.gt]: 1 } }
+        where: { id: { [Op.gt]: 123 } }
       },
     });
-
-    console.log(result);
   }
   
   {
@@ -108,17 +107,15 @@ export async function run() {
     const result = await sequelize.query(
       `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data"
         FROM (SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
-          WHERE ( SELECT "foo_id" FROM "bars" AS "bars" WHERE ("bars"."id" > 1 AND "bars"."foo_id" = "foo"."id") LIMIT 1 ) IS NOT NULL
+          WHERE ( SELECT "foo_id" FROM "bars" AS "bars" WHERE ("bars"."id" > 123 AND "bars"."foo_id" = "foo"."id") LIMIT 1 ) IS NOT NULL
         LIMIT 10 OFFSET 0)
         AS "foo"
-      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 1;`,
+      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 123;`,
       {
         logging: console.log,
         benchmark: true,
       }
     );
-
-    console.log(result);
   }
   
   {
@@ -126,16 +123,14 @@ export async function run() {
     const result = await sequelize.query(
       `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data"
         FROM (SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
-          WHERE EXISTS ( SELECT "foo_id" FROM "bars" AS "bars" WHERE ("bars"."id" > 1 AND "bars"."foo_id" = "foo"."id") LIMIT 1 )
+          WHERE EXISTS ( SELECT "foo_id" FROM "bars" AS "bars" WHERE ("bars"."id" > 123 AND "bars"."foo_id" = "foo"."id") LIMIT 1 )
         LIMIT 10 OFFSET 0)
         AS "foo"
-      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 1;`,
+      INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 123;`,
       {
         logging: console.log,
         benchmark: true,
       }
     );
-
-    console.log(result);
   }
 }
