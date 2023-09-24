@@ -31,7 +31,7 @@ export async function run() {
     name: DataTypes.TEXT,
   }, {
     sequelize,
-    modelName: 'Foo',
+    modelName: 'foo',
   });
 
   class Bar extends Model {}
@@ -47,7 +47,7 @@ export async function run() {
     data: DataTypes.TEXT,
   }, {
     sequelize,
-    modelName: 'Bar',
+    modelName: 'bar',
   });
 
   Foo.hasMany(Bar);
@@ -61,7 +61,7 @@ export async function run() {
 
   await Promise.all([
     sequelize.query(`
-      insert into Foo (
+      insert into foo (
         id, name
       )
       select
@@ -70,7 +70,7 @@ export async function run() {
       from generate_series(1, 1000000) s(i)
     `),
     sequelize.query(`
-      insert into Bar (
+      insert into bar (
         id, fooId, data
       )
       select
