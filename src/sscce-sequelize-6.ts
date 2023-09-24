@@ -1,4 +1,4 @@
-import { DataTypes, Model, QueryTypes } from 'sequelize';
+import { DataTypes, Model, QueryTypes, Op } from 'sequelize';
 import { createSequelize6Instance } from '../setup/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -35,39 +35,66 @@ export async function run() {
     modelName: 'Foo',
   });
 
+  Bar.init({
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    fooId: {
+      type: DataTypes.INTEGER,
+    },
+    data: DataTypes.TEXT,
+  }, {
+    sequelize,
+    modelName: 'Bar',
+  });
+
+  Foo.hasMany(Bar);
+  Bar.belongsTo(Foo);
+
   // You can use sinon and chai assertions directly in your SSCCE.
   const spy = sinon.spy();
   sequelize.afterBulkSync(() => spy());
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
-  
-  const result1 = await sequelize.query(
-    `
-      INSERT INTO "Foos" (id, name)
-      VALUES          (1, 'steve')
-      ON CONFLICT (id) DO UPDATE
-      SET name='steve'
-      RETURNING id, name
-    `,
-    {
-      type: QueryTypes.RAW,
-    }
-  );
-  
-  const result2 = await sequelize.query(
-    `
-      -- HAX
-      INSERT INTO "Foos" (id, name)
-      VALUES          (1, 'steve')
-      ON CONFLICT (id) DO UPDATE
-      SET name='steve'
-      RETURNING id, name
-    `,
-    {
-      type: QueryTypes.RAW,
-    }
-  );
 
-  console.log(result1, result2);
-  expect(result1).to.deep.equal(result2);
+  await Promise.all([
+    sequelize.query(`
+      insert into Foo (
+        id, name
+      )
+      select
+        i::integer,
+        md5(random()::text)
+      from generate_series(1, 1000000) s(i)
+    `),
+    sequelize.query(`
+      insert into Bar (
+        id, fooId, data
+      )
+      select
+        i::integer,
+        i::integer,
+        md5(random()::text)
+      from generate_series(1, 1000000) s(i)
+    `),
+  ]);
+  
+  const offset = 0;
+  const limit = 10;
+  const result = await Foo.FindAll({
+    logging: console.log,
+    benchmark: true,
+    distinct: true,
+    limit,
+    offset,
+    include: {
+      model: Bar,
+      required: true,
+      where: { id: { [Op.gt]: 1 } }
+    },
+  });
+
+  console.log(result);
 }
