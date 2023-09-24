@@ -105,11 +105,15 @@ export async function run() {
   {
     console.log("TEST 2")
     const result = await sequelize.query(
-      `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data"
-        FROM (SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
-          WHERE ( SELECT "foo_id" FROM "bars" AS "bars" WHERE ("bars"."id" > 123 AND "bars"."foo_id" = "foo"."id") LIMIT 1 ) IS NOT NULL
-        LIMIT 10 OFFSET 0)
-        AS "foo"
+      `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data" FROM (
+        SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
+          WHERE "foo"."id" BETWEEN 345 AND 5678 AND
+          (
+            SELECT "foo_id" FROM "bars" AS "bars"
+              WHERE ("bars"."id" > 123 AND "bars"."foo_id" = "foo"."id") LIMIT 1
+          ) IS NOT NULL
+          LIMIT 10 OFFSET 0
+        ) AS "foo"
       INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 123;`,
       {
         logging: console.log,
@@ -121,11 +125,15 @@ export async function run() {
   {
     console.log("TEST 3")
     const result = await sequelize.query(
-      `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data"
-        FROM (SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
-          WHERE EXISTS ( SELECT "foo_id" FROM "bars" AS "bars" WHERE ("bars"."id" > 123 AND "bars"."foo_id" = "foo"."id") LIMIT 1 )
-        LIMIT 10 OFFSET 0)
-        AS "foo"
+      `SELECT "foo".*, "bars"."id" AS "bars.id", "bars"."foo_id" AS "bars.fooId", "bars"."data" AS "bars.data" FROM (
+        SELECT "foo"."id", "foo"."name" FROM "foos" AS "foo"
+          WHERE "foo"."id" BETWEEN 345 AND 5678 AND
+          EXISTS (
+            SELECT "foo_id" FROM "bars" AS "bars"
+              WHERE ("bars"."id" > 123 AND "bars"."foo_id" = "foo"."id") LIMIT 1
+          )
+          LIMIT 10 OFFSET 0
+        ) AS "foo"
       INNER JOIN "bars" AS "bars" ON "foo"."id" = "bars"."foo_id" AND "bars"."id" > 123;`,
       {
         logging: console.log,
