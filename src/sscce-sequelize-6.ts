@@ -22,7 +22,6 @@ export async function run() {
   });
 
   class Foo extends Model {}
-
   Foo.init({
     id: {
       type: DataTypes.INTEGER,
@@ -35,6 +34,7 @@ export async function run() {
     modelName: 'Foo',
   });
 
+  class Bar extends Model {}
   Bar.init({
     id: {
       type: DataTypes.INTEGER,
