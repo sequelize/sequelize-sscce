@@ -61,7 +61,7 @@ export async function run() {
 
   await Promise.all([
     sequelize.query(`
-      insert into foo (
+      insert into foos (
         id, name
       )
       select
@@ -70,7 +70,7 @@ export async function run() {
       from generate_series(1, 1000000) s(i)
     `),
     sequelize.query(`
-      insert into bar (
+      insert into bars (
         id, fooId, data
       )
       select
