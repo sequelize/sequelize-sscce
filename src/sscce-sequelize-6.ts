@@ -86,7 +86,7 @@ export async function run() {
   const result = await Foo.findAll({
     logging: console.log,
     benchmark: true,
-    distinct: true,
+    // distinct: true,
     limit,
     offset,
     include: {
