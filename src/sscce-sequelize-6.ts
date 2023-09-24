@@ -32,6 +32,7 @@ export async function run() {
   }, {
     sequelize,
     modelName: 'foo',
+    underscored: true,
   });
 
   class Bar extends Model {}
@@ -48,6 +49,7 @@ export async function run() {
   }, {
     sequelize,
     modelName: 'bar',
+    underscored: true,
   });
 
   Foo.hasMany(Bar);
@@ -71,7 +73,7 @@ export async function run() {
     `),
     sequelize.query(`
       insert into bars (
-        id, fooId, data
+        id, foo_id, data
       )
       select
         i::integer,
