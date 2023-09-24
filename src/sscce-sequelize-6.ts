@@ -83,7 +83,7 @@ export async function run() {
   
   const offset = 0;
   const limit = 10;
-  const result = await Foo.FindAll({
+  const result = await Foo.findAll({
     logging: console.log,
     benchmark: true,
     distinct: true,
