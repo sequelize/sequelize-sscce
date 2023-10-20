@@ -36,6 +36,11 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  const foo = await Foo.create({ name: 'TS foo' });
+  console.log('findByPk OK');
+  expect(await Foo.findByPk(foo.getDataValue('id'))).to.not.be.null;
+  console.log('findByPk fake id with rejectOnEmpty rejects');
+  await expect(Foo.findByPk(2000, { rejectOnEmpty: true })).to.be.rejected;
+  console.log('findByPk null with rejectOnEmpty should reject');
+  await expect(Foo.findByPk(null, { rejectOnEmpty: true })).to.be.rejected;
 }
