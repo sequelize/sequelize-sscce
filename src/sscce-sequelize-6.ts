@@ -7,7 +7,17 @@ import sinon from 'sinon';
 export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb', 'postgres', 'postgres-native']);
 
 // You can delete this file if you don't want your SSCCE to be tested against Sequelize 6
+interface FooAttributes {
+  createdAt: Date;
+  active: boolean;
+  completedAt: Date;
+  time: number;
+}
 
+interface FooCreationAttributes {
+  createdAt: Date;
+  active: boolean;
+}
 // Your SSCCE goes inside this function.
 export async function run() {
   // This function should be used instead of `new Sequelize()`.
@@ -21,21 +31,31 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class Foo extends Model<FooAttributes, FooCreationAttributes> {
+    createdAt!: Date;
+    active!: boolean;
+    completedAt: Date|null = null;
+    time?: number;
+  }
 
   Foo.init({
-    name: DataTypes.TEXT,
+    createdAt: DataTypes.DATE,
+    active: DataTypes.BOOLEAN,
+    completedAt: DataTypes.DATE,
+    time: {
+      type: DataTypes.INTEGER,
+      get() {
+        return Math.trunc(((this.completedAt ?? new Date()).getTime() - this.createdAt.getTime()) / 1000);
+      }
+    }
   }, {
     sequelize,
     modelName: 'Foo',
   });
 
-  // You can use sinon and chai assertions directly in your SSCCE.
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
   await sequelize.sync({ force: true });
-  expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  await Foo.create({ createdAt: new Date(), active: true });
+
+  await Foo.update({ completedAt: sequelize.literal('createdAt') }, { where: { active: true } });
 }
