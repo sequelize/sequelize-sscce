@@ -1,11 +1,9 @@
 {
-  "include": [
-    "src/*",
-    "setup/*"
-  ],
+  "include": ["src/*", "setup/*"],
   "compilerOptions": {
     "target": "es2021",
     "module": "CommonJS",
+    "experimentalDecorators": true,
     "moduleResolution": "Node",
     "esModuleInterop": true,
     "resolveJsonModule": true,
