@@ -12,16 +12,16 @@ jobs:
       fail-fast: false
       matrix:
         # node 10 is the minimum supported version for Sequelize 6
-        # node 16 is the minimum supported version for Sequelize 7
-        # node 18 is latest LTS (to keep updated)
-        node: [10, 16, 18]
+        # node 18 is the minimum supported version for Sequelize 7
+        # node 20 is latest LTS (to keep updated)
+        node: [10, 18, 20]
     name: SQLite (sequelize 6 & 7, node ${{ matrix.node }})
     runs-on: ubuntu-latest
     env:
       DIALECT: sqlite
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - run: /bin/bash ./setup/prepare-ci.sh
@@ -33,7 +33,7 @@ jobs:
       matrix:
         postgres-version: [9.5, 10] # Does not work with 12
         native: [true, false]
-        node: [10, 16, 18]
+        node: [10, 18, 20]
     name: Postgres ${{ matrix.postgres-version }}${{ matrix.native && ' (native)' || '' }} (sequelize 6 & 7, node ${{ matrix.node }})
     runs-on: ubuntu-latest
     services:
@@ -50,8 +50,8 @@ jobs:
       DIALECT: ${{ matrix.native && 'postgres-native' || 'postgres' }}
     steps:
       - run: PGPASSWORD=sequelize_test psql -h localhost -p 5432 -U sequelize_test sequelize_test -c '\l'
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - run: /bin/bash ./setup/prepare-ci.sh
@@ -61,7 +61,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [10, 16, 18]
+        node: [10, 18, 20]
         db:
           - '{ name: "MySQL 5.7", image: "mysql:5.7", dialect: "mysql" }'
           - '{ name: "MariaDB 10.3", image: "mariadb:10.3", dialect: "mariadb" }'
@@ -82,8 +82,8 @@ jobs:
       DIALECT: ${{ fromJson(matrix.db).dialect }}
     steps:
       - run: mysql --host 127.0.0.1 --port 3306 -uroot -psequelize_test -e "GRANT ALL ON *.* TO 'sequelize_test'@'%' with grant option; FLUSH PRIVILEGES;"
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - run: /bin/bash ./setup/prepare-ci.sh
@@ -93,7 +93,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [10, 16, 18]
+        node: [10, 18, 20]
         mssql-version: [2017, 2019]
     name: MSSQL ${{ matrix.mssql-version }} (sequelize 6 & 7, node ${{ matrix.node }})
     runs-on: ubuntu-latest
@@ -115,8 +115,8 @@ jobs:
       DIALECT: mssql
     steps:
       - run: /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "Password12!" -Q "CREATE DATABASE sequelize_test; ALTER DATABASE sequelize_test SET READ_COMMITTED_SNAPSHOT ON;"
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - run: /bin/bash ./setup/prepare-ci.sh
