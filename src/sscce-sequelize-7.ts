@@ -50,6 +50,7 @@ export async function run() {
     }
   );
 
+  // You can also use the new decorators model definition
   class Bar extends Model {
     @Attribute(DataTypes.INTEGER)
     @PrimaryKey
@@ -58,7 +59,7 @@ export async function run() {
 
     @Attribute(DataTypes.TEXT)
     @NotNull
-    declare description: string;
+    declare name: string;
   }
 
   sequelize.addModels([Bar]);
