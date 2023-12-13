@@ -2,26 +2,15 @@ import { CreationOptional, DataTypes, Model } from "@sequelize/core";
 import {
   Attribute,
   AutoIncrement,
-  ColumnName,
-  CreatedAt,
   NotNull,
   PrimaryKey,
-  Table,
-  UpdatedAt,
 } from "@sequelize/core/decorators-legacy";
 import { createSequelize7Instance } from "../setup/create-sequelize-instance";
 import { expect } from "chai";
 import sinon from "sinon";
 
 // if your issue is dialect specific, remove the dialects you don't need to test on.
-export const testingOnDialects = new Set([
-  "mssql",
-  "sqlite",
-  "mysql",
-  "mariadb",
-  "postgres",
-  "postgres-native",
-]);
+export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb', 'postgres', 'postgres-native']);
 
 // You can delete this file if you don't want your SSCCE to be tested against Sequelize 7
 
@@ -40,15 +29,12 @@ export async function run() {
 
   class Foo extends Model {}
 
-  Foo.init(
-    {
-      name: DataTypes.TEXT,
-    },
-    {
-      sequelize,
-      modelName: "Foo",
-    }
-  );
+  Foo.init({
+    name: DataTypes.TEXT,
+  }, {
+    sequelize,
+    modelName: 'Foo',
+  });
 
   // You can also use the new decorators model definition
   class Bar extends Model {
@@ -70,6 +56,6 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: "TS foo" }));
+  console.log(await Foo.create({ name: 'TS foo' }));
   expect(await Foo.count()).to.equal(1);
 }
