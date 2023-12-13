@@ -2,9 +2,9 @@
   "include": ["src/*", "setup/*"],
   "compilerOptions": {
     "target": "es2021",
-    "module": "CommonJS",
+    "module": "nodenext",
     "experimentalDecorators": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "nodenext",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "newLine": "lf",
