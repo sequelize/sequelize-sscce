@@ -47,7 +47,7 @@ async function wrappedRun() {
     logBlue(heading);
     logBlue(`${'-'.repeat(heading.length)}\n`);
 
-    if (majorNodeVersion >= 16) {
+    if (majorNodeVersion >= 18) {
       const { run, testingOnDialects } = require('../src/sscce-sequelize-7');
       if (!testingOnDialects.has(process.env.DIALECT!)) {
         logRed(`Skipping dialect ${process.env.DIALECT} as it has been omitted from 'testingOnDialects'`);
