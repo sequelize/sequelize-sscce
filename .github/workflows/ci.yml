@@ -25,11 +25,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-engines
       - name: Compress artifact
-        run: tar -cf install-build-node-${{ matrix.node-version }}.tar ./packages/core/lib ./packages/core/types ./packages/validator-js/lib ./packages/validator-js/types ./node_modules
+        run: tar -cf install-node-${{ matrix.node-version }}.tar ./node_modules
       - uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
-          name: install-build-artifact-node-${{ matrix.node-version }}
-          path: install-build-node-${{ matrix.node-version }}.tar
+          name: install-artifact-node-${{ matrix.node-version }}
+          path: install-node-${{ matrix.node-version }}.tar
           retention-days: 1
   test-sqlite:
     strategy:
@@ -49,9 +49,9 @@ jobs:
           cache: yarn
       - uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
         with:
-          name: install-build-artifact-node-${{ matrix.node-version }}
+          name: install-artifact-node-${{ matrix.node-version }}
       - name: Extract artifact
-        run: tar -xf install-build-node-${{ matrix.node-version }}.tar
+        run: tar -xf install-node-${{ matrix.node-version }}.tar
       - run: /bin/bash ./setup/prepare-ci.sh
       - name: Execute SSCCE
         run: yarn run _test
@@ -77,9 +77,9 @@ jobs:
           cache: yarn
       - uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
         with:
-          name: install-build-artifact-node-${{ matrix.node-version }}
+          name: install-artifact-node-${{ matrix.node-version }}
       - name: Extract artifact
-        run: tar -xf install-build-node-${{ matrix.node-version }}.tar
+        run: tar -xf install-node-${{ matrix.node-version }}.tar
       - run: yarn start-postgres-${{ matrix.postgres-version }}
       - run: /bin/bash ./setup/prepare-ci.sh
       - name: Execute SSCCE
@@ -104,9 +104,9 @@ jobs:
           cache: yarn
       - uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
         with:
-          name: install-build-artifact-node-${{ matrix.node-version }}
+          name: install-artifact-node-${{ matrix.node-version }}
       - name: Extract artifact
-        run: tar -xf install-build-node-${{ matrix.node-version }}.tar
+        run: tar -xf install-node-${{ matrix.node-version }}.tar
       - run: yarn start-${{ matrix.dialect }}-${{ matrix.database-version }}
       - run: /bin/bash ./setup/prepare-ci.sh
       - name: Execute SSCCE
