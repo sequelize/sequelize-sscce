@@ -1,7 +1,13 @@
-import { DataTypes, Model } from '@sequelize/core';
-import { createSequelize7Instance } from '../dev/create-sequelize-instance';
+import { CreationOptional, DataTypes, Model } from '@sequelize/core';
+import {
+  Attribute,
+  AutoIncrement,
+  NotNull,
+  PrimaryKey,
+} from "@sequelize/core/decorators-legacy";
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { createSequelize7Instance } from '../dev/create-sequelize-instance';
 
 // if your issue is dialect specific, remove the dialects you don't need to test on.
 export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb', 'postgres', 'postgres-native']);
@@ -29,6 +35,20 @@ export async function run() {
     sequelize,
     modelName: 'Foo',
   });
+
+  // You can also use the new decorators model definition
+  class Bar extends Model {
+    @Attribute(DataTypes.INTEGER)
+    @PrimaryKey
+    @AutoIncrement
+    declare id: CreationOptional<number>;
+
+    @Attribute(DataTypes.TEXT)
+    @NotNull
+    declare name: string;
+  }
+
+  sequelize.addModels([Bar]);
 
   // You can use sinon and chai assertions directly in your SSCCE.
   const spy = sinon.spy();
