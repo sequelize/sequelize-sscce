@@ -18,7 +18,7 @@
     "sinon-chai": "^3"
   },
   "scripts": {
-    "_test": "ts-node setup/runner.ts",
+    "_test": "ts-node dev/runner.ts",
     "test:sqlite": "cross-env DIALECT=sqlite yarn run _test",
     "test:postgres": "cross-env DIALECT=postgres yarn run _test",
     "test:postgres-native": "cross-env DIALECT=postgres-native yarn run _test",
@@ -51,8 +51,8 @@
     "stop-mssql": "bash dev/mssql/oldest/stop.sh; bash dev/mssql/latest/stop.sh",
     "stop-db2": "bash dev/db2/oldest/stop.sh; bash dev/db2/latest/stop.sh",
     "stop-all": "concurrently \"npm:stop-*(!all)\"",
-    "do-replace": "node setup/lib-replacements.ts --do",
-    "undo-replace": "node setup/lib-replacements.ts --undo",
+    "do-replace": "node dev/lib-replacements.ts --do",
+    "undo-replace": "node dev/lib-replacements.ts --undo",
     "lint": "eslint . --fix"
   },
   "devDependencies": {

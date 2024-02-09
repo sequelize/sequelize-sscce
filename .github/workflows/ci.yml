@@ -52,7 +52,7 @@ jobs:
           name: install-artifact-node-${{ matrix.node-version }}
       - name: Extract artifact
         run: tar -xf install-node-${{ matrix.node-version }}.tar
-      - run: /bin/bash ./setup/prepare-ci.sh
+      - run: /bin/bash ./dev/prepare-ci.sh
       - name: Execute SSCCE
         run: yarn run _test
   test-postgres:
@@ -81,7 +81,7 @@ jobs:
       - name: Extract artifact
         run: tar -xf install-node-${{ matrix.node-version }}.tar
       - run: yarn start-postgres-${{ matrix.postgres-version }}
-      - run: /bin/bash ./setup/prepare-ci.sh
+      - run: /bin/bash ./dev/prepare-ci.sh
       - name: Execute SSCCE
         run: yarn run _test
   test-oldest-latest:
@@ -108,6 +108,6 @@ jobs:
       - name: Extract artifact
         run: tar -xf install-node-${{ matrix.node-version }}.tar
       - run: yarn start-${{ matrix.dialect }}-${{ matrix.database-version }}
-      - run: /bin/bash ./setup/prepare-ci.sh
+      - run: /bin/bash ./dev/prepare-ci.sh
       - name: Execute SSCCE
         run: yarn run _test
