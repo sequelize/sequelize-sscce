@@ -1,13 +1,15 @@
 services:
-  postgres-10:
-    container_name: sequelize-postgres-10
-    image: sushantdhiman/postgres:10
+  postgres-oldest:
+    container_name: sequelize-postgres-oldest
+    image: postgis/postgis:11-2.5
     environment:
       POSTGRES_USER: sequelize_test
       POSTGRES_PASSWORD: sequelize_test
       POSTGRES_DB: sequelize_test
     ports:
-      - 5432:5432
+      - 23010:5432
+    volumes:
+      - postgres-oldest:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "sequelize_test"]
       interval: 3s
@@ -16,4 +18,8 @@ services:
 
 networks:
   default:
-    name: sequelize-postgres-10-network
+    name: sequelize-postgres-oldest-network
+
+volumes:
+  postgres-oldest:
+    name: sequelize-postgres-oldest-volume

@@ -1,15 +1,16 @@
 services:
-  mysql-80:
-    container_name: sequelize-mysql-80
-    image: mysql:8.0
+  mysql-latest:
+    container_name: sequelize-mysql-latest
+    image: mysql:8.3.0
     environment:
       MYSQL_DATABASE: sequelize_test
       MYSQL_USER: sequelize_test
       MYSQL_PASSWORD: sequelize_test
       MYSQL_ROOT_PASSWORD: sequelize_test
     ports:
-      - 3306:3306
-    # tmpfs: /var/lib/mysql:rw
+      - 20057:3306
+    volumes:
+      - mysql-latest:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "-usequelize_test", "-psequelize_test", "status"]
       interval: 3s
@@ -18,4 +19,8 @@ services:
 
 networks:
   default:
-    name: sequelize-mysql-80-network
+    name: sequelize-mysql-latest-network
+
+volumes:
+  mysql-latest:
+    name: sequelize-mysql-latest-volume
