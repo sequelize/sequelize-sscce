@@ -2,15 +2,12 @@
 set -Eeuxo pipefail # https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
 cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" # https://stackoverflow.com/a/17744637
 
+docker compose -p sequelize-mysql-oldest down --remove-orphans
+docker compose -p sequelize-mysql-oldest up -d
 
-docker-compose -p sequelize-mariadb-103 down --remove-orphans
-docker-compose -p sequelize-mariadb-103 up -d
+./../../wait-until-healthy.sh sequelize-mysql-oldest
 
-./../../wait-until-healthy.sh sequelize-mariadb-103
-
-docker exec sequelize-mariadb-103 \
+docker exec sequelize-mysql-oldest \
   mysql --host 127.0.0.1 --port 3306 -uroot -psequelize_test -e "GRANT ALL ON *.* TO 'sequelize_test'@'%' with grant option; FLUSH PRIVILEGES;"
 
-DIALECT=mariadb node --loader ts-node/esm ../../check-database-running.ts
-
-echo "Local MariaDB-10.3 instance is ready for Sequelize tests."
+DIALECT=mysql ts-node ../../check-connection.ts
