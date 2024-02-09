@@ -9,28 +9,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  install:
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [10, 18, 20]
-    name: Upload install artifact (Node ${{ matrix.node-version }})
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: yarn
-      - name: Install dependencies
-        run: yarn install --ignore-engines
-      - name: Compress artifact
-        run: tar -cf install-node-${{ matrix.node-version }}.tar ./node_modules
-      - uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
-        with:
-          name: install-artifact-node-${{ matrix.node-version }}
-          path: install-node-${{ matrix.node-version }}.tar
-          retention-days: 1
   test-sqlite:
     strategy:
       fail-fast: false
@@ -38,7 +16,6 @@ jobs:
         node-version: [10, 18, 20]
     name: sqlite (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
-    needs: [ install ]
     env:
       DIALECT: sqlite
     steps:
@@ -47,9 +24,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
-      - uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
-        with:
-          name: install-artifact-node-${{ matrix.node-version }}
       - run: /bin/bash ./dev/prepare-ci.sh
       - name: Extract artifact
         run: tar -xf install-node-${{ matrix.node-version }}.tar
@@ -65,7 +39,6 @@ jobs:
         native: [true, false]
     name: postgres ${{ matrix.postgres-version }}${{ matrix.native && ' (native)' || '' }} (Node ${{ matrix.node-version }})${{ matrix.minify-aliases && ' (minified aliases)' || '' }}
     runs-on: ubuntu-latest
-    needs: [ install ]
     env:
       DIALECT: ${{ matrix.native && 'postgres-native' || 'postgres' }}
       SEQ_PG_MINIFY_ALIASES: ${{ matrix.minify-aliases && '1' || '' }}
@@ -75,11 +48,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
-      - uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
-        with:
-          name: install-artifact-node-${{ matrix.node-version }}
-      - name: Extract artifact
-        run: tar -xf install-node-${{ matrix.node-version }}.tar
       - run: /bin/bash ./dev/prepare-ci.sh
       - run: yarn start-postgres-${{ matrix.postgres-version }}
       - name: Execute SSCCE
@@ -93,7 +61,6 @@ jobs:
         dialect: [mysql, mariadb, mssql]
     name: ${{ matrix.dialect }} ${{ matrix.database-version }} (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
-    needs: [ install ]
     env:
       DIALECT: ${{ matrix.dialect }}
     steps:
@@ -102,11 +69,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
-      - uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
-        with:
-          name: install-artifact-node-${{ matrix.node-version }}
-      - name: Extract artifact
-        run: tar -xf install-node-${{ matrix.node-version }}.tar
       - run: /bin/bash ./dev/prepare-ci.sh
       - run: yarn start-${{ matrix.dialect }}-${{ matrix.database-version }}
       - name: Execute SSCCE

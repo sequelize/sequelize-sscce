@@ -1,17 +1,17 @@
 #!/bin/bash -c
 
-npm i;
+yarn install --ignore-engines;
 
 if [ "$DIALECT" = "postgres" ]; then
-  npm i pg@^7 pg-hstore@^2 pg-types@^2;
+  yarn add pg@^8 pg-hstore@^2 pg-types@^2;
 elif [ "$DIALECT" = "postgres-native" ]; then
-  npm i pg@^7 pg-hstore@^2 pg-types@^2 pg-native;
+  yarn add pg@^8 pg-hstore@^2 pg-types@^2 pg-native;
 elif [ "$DIALECT" = "mysql" ]; then
-  npm i mysql2@^1;
+  yarn add mysql2@^2;
 elif [ "$DIALECT" = "mariadb" ]; then
-  npm i mariadb@^2;
+  yarn add mariadb@^2;
 elif [ "$DIALECT" = "sqlite" ]; then
-  npm i sqlite3@^4;
+  yarn add sqlite3@^5;
 elif [ "$DIALECT" = "mssql" ]; then
-  npm i tedious@^6
+  yarn add tedious@^8;
 fi
