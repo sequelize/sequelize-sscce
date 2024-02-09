@@ -60,7 +60,7 @@ async function run() {
   } else if (process.argv[2] === '--undo') {
     await undoReplacements();
   } else {
-    throw new Error('Invalid call to setup/lib-replacements.js');
+    throw new Error('Invalid call to dev/lib-replacements.js');
   }
 }
 
