@@ -5,9 +5,9 @@ import {
   NotNull,
   PrimaryKey,
 } from "@sequelize/core/decorators-legacy";
-import { createSequelize7Instance } from "../dev/create-sequelize-instance";
 import { expect } from "chai";
 import sinon from "sinon";
+import { createSequelize7Instance } from "../dev/create-sequelize-instance";
 
 // if your issue is dialect specific, remove the dialects you don't need to test on.
 export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb', 'postgres', 'postgres-native']);
