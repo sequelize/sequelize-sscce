@@ -1,5 +1,5 @@
 import { DataTypes, Model } from '@sequelize/core';
-import { createSequelize7Instance } from '../setup/create-sequelize-instance';
+import { createSequelize7Instance } from '../dev/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
 

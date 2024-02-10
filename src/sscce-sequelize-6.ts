@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { createSequelize6Instance } from '../setup/create-sequelize-instance';
+import { createSequelize6Instance } from '../dev/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
 

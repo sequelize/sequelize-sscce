@@ -1,124 +1,73 @@
 name: CI
-on: [pull_request]
+on:
+  pull_request:
 
-env:
-  SEQ_DB: sequelize_test
-  SEQ_USER: sequelize_test
-  SEQ_PW: sequelize_test
+# This configuration cancels previous runs if a new run is started on the same PR. Only one run at a time per PR.
+# from https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-using-a-fallback-value
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   test-sqlite:
     strategy:
       fail-fast: false
       matrix:
-        # node 10 is the minimum supported version for Sequelize 6
-        # node 14 is the minimum supported version for Sequelize 7
-        # node 16 is latest LTS (to keep updated)
-        node: [10, 14, 16]
-    name: SQLite (sequelize 6 & 7, node ${{ matrix.node }})
+        node-version: [10, 18, 20]
+    name: sqlite (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     env:
       DIALECT: sqlite
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
-          node-version: 14.x
-      - run: /bin/bash ./setup/prepare-ci.sh
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - run: /bin/bash ./dev/prepare-ci.sh
       - name: Execute SSCCE
-        run: npm run _test
+        run: yarn run _test
   test-postgres:
     strategy:
       fail-fast: false
       matrix:
-        postgres-version: [9.5, 10] # Does not work with 12
+        node-version: [10, 18, 20]
+        postgres-version: [oldest, latest]
+        minify-aliases: [true, false]
         native: [true, false]
-        node: [10, 14, 16]
-    name: Postgres ${{ matrix.postgres-version }}${{ matrix.native && ' (native)' || '' }} (sequelize 6 & 7, node ${{ matrix.node }})
+    name: postgres ${{ matrix.postgres-version }}${{ matrix.native && ' (native)' || '' }} (Node ${{ matrix.node-version }})${{ matrix.minify-aliases && ' (minified aliases)' || '' }}
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: sushantdhiman/postgres:${{ matrix.postgres-version }}
-        env:
-          POSTGRES_USER: sequelize_test
-          POSTGRES_DB: sequelize_test
-          POSTGRES_PASSWORD: sequelize_test
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       DIALECT: ${{ matrix.native && 'postgres-native' || 'postgres' }}
+      SEQ_PG_MINIFY_ALIASES: ${{ matrix.minify-aliases && '1' || '' }}
     steps:
-      - run: PGPASSWORD=sequelize_test psql -h localhost -p 5432 -U sequelize_test sequelize_test -c '\l'
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
-          node-version: ${{ matrix.node }}
-      - run: /bin/bash ./setup/prepare-ci.sh
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - run: /bin/bash ./dev/prepare-ci.sh
+      - run: yarn start-postgres-${{ matrix.postgres-version }}
       - name: Execute SSCCE
-        run: npm run _test
-  test-mysql-mariadb:
+        run: yarn run _test
+  test-oldest-latest:
     strategy:
       fail-fast: false
       matrix:
-        node: [10, 14, 16]
-        db:
-          - '{ name: "MySQL 5.7", image: "mysql:5.7", dialect: "mysql" }'
-          - '{ name: "MariaDB 10.3", image: "mariadb:10.3", dialect: "mariadb" }'
-    name: ${{ fromJson(matrix.db).name }} (node ${{ matrix.node }})
+        node-version: [10, 18, 20]
+        database-version: [oldest, latest]
+        dialect: [mysql, mariadb, mssql]
+    name: ${{ matrix.dialect }} ${{ matrix.database-version }} (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: ${{ fromJson(matrix.db).image }}
-        env:
-          MYSQL_DATABASE: sequelize_test
-          MYSQL_USER: sequelize_test
-          MYSQL_PASSWORD: sequelize_test
-          MYSQL_ROOT_PASSWORD: sequelize_test
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin -usequelize_test -psequelize_test status" --health-interval 10s --health-timeout 5s --health-retries 5 --tmpfs /var/lib/mysql:rw
     env:
-      DIALECT: ${{ fromJson(matrix.db).dialect }}
+      DIALECT: ${{ matrix.dialect }}
     steps:
-      - run: mysql --host 127.0.0.1 --port 3306 -uroot -psequelize_test -e "GRANT ALL ON *.* TO 'sequelize_test'@'%' with grant option; FLUSH PRIVILEGES;"
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
-          node-version: ${{ matrix.node }}
-      - run: /bin/bash ./setup/prepare-ci.sh
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+      - run: /bin/bash ./dev/prepare-ci.sh
+      - run: yarn start-${{ matrix.dialect }}-${{ matrix.database-version }}
       - name: Execute SSCCE
-        run: npm run _test
-  test-mssql:
-    strategy:
-      fail-fast: false
-      matrix:
-        node: [10, 14, 16]
-        mssql-version: [2017, 2019]
-    name: MSSQL ${{ matrix.mssql-version }} (sequelize 6 & 7, node ${{ matrix.node }})
-    runs-on: ubuntu-latest
-    services:
-      mssql:
-        image: mcr.microsoft.com/mssql/server:${{ matrix.mssql-version }}-latest
-        env:
-          ACCEPT_EULA: Y
-          SA_PASSWORD: Password12!
-        ports:
-          - 1433:1433
-        options: >-
-          --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "Password12!" -l 30 -Q \"SELECT 1\" || exit 1"
-          --health-start-period 10s
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 10
-    env:
-      DIALECT: mssql
-    steps:
-      - run: /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "Password12!" -Q "CREATE DATABASE sequelize_test; ALTER DATABASE sequelize_test SET READ_COMMITTED_SNAPSHOT ON;"
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node }}
-      - run: /bin/bash ./setup/prepare-ci.sh
-      - name: Execute SSCCE
-        run: npm run _test
+        run: yarn run _test
