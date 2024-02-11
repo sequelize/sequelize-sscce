@@ -21,21 +21,40 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class FooModel extends Model {}
 
-  Foo.init({
-    name: DataTypes.TEXT,
-  }, {
-    sequelize,
-    modelName: 'Foo',
+  FooModel.init(
+    {
+      id: {type: DataTypes.STRING, primaryKey: true}
+    },
+    {sequelize, modelName: 'FooModel'}
+  );
+
+  await FooModel.sync();
+
+  class OtherModel extends Model {}
+
+  OtherModel.init(
+    {
+      id: {type: DataTypes.STRING, primaryKey: true},
+      modelId: {type: DataTypes.STRING, field: 'model_id'},
+      modelType: {type: DataTypes.ENUM('foo', 'bar'), field: 'model_type'}
+    },
+    {sequelize, modelName: 'OtherModel'}
+  );
+
+  await OtherModel.sync();
+
+  FooModel.hasMany(OtherModel, {
+    foreignKey: 'modelId',
+    scope: {
+      modelType: 'foo'
+    }
   });
 
-  // You can use sinon and chai assertions directly in your SSCCE.
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
-  await sequelize.sync({ force: true });
-  expect(spy).to.have.been.called;
-
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  await FooModel.findAndCountAll({
+    include: {
+      model: OtherModel
+    }
+  });
 }
