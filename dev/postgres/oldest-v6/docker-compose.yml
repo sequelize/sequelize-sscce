@@ -1,0 +1,25 @@
+services:
+  postgres-oldest-v6:
+    container_name: sequelize-postgres-oldest-v6
+    image: postgis/postgis:9.5-2.5
+    environment:
+      POSTGRES_USER: sequelize_test
+      POSTGRES_PASSWORD: sequelize_test
+      POSTGRES_DB: sequelize_test
+    ports:
+      - 23010:5432
+    volumes:
+      - postgres-oldest-v6:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "sequelize_test"]
+      interval: 3s
+      timeout: 1s
+      retries: 10
+
+networks:
+  default:
+    name: sequelize-postgres-oldest-v6-network
+
+volumes:
+  postgres-oldest-v6:
+    name: sequelize-postgres-oldest-v6-volume
