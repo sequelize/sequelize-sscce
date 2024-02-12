@@ -12,6 +12,7 @@ export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb',
 export async function run() {
   // This function should be used instead of `new Sequelize()`.
   // It applies the config for your SSCCE to work on CI.
+  
   const sequelize = createSequelize6Instance({
     logQueryParameters: true,
     benchmark: true,
