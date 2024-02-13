@@ -1,4 +1,10 @@
-import { DataTypes, Model } from '@sequelize/core';
+import { CreationOptional, DataTypes, Model } from '@sequelize/core';
+import {
+  Attribute,
+  AutoIncrement,
+  NotNull,
+  PrimaryKey,
+} from '@sequelize/core/decorators-legacy';
 import { createSequelize7Instance } from '../dev/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -29,6 +35,20 @@ export async function run() {
     sequelize,
     modelName: 'Foo',
   });
+
+  // You can also use the new decorators model definition
+  class Bar extends Model {
+    @Attribute(DataTypes.INTEGER)
+    @PrimaryKey
+    @AutoIncrement
+    declare id: CreationOptional<number>;
+
+    @Attribute(DataTypes.TEXT)
+    @NotNull
+    declare name: string;
+  }
+
+  sequelize.addModels([Bar]);
 
   // You can use sinon and chai assertions directly in your SSCCE.
   const spy = sinon.spy();
