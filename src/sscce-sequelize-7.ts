@@ -1,10 +1,5 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core';
-import {
-  Attribute,
-  AutoIncrement,
-  NotNull,
-  PrimaryKey,
-} from '@sequelize/core/decorators-legacy';
+import { Attribute, NotNull } from '@sequelize/core/decorators-legacy';
 import { createSequelize7Instance } from '../dev/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
