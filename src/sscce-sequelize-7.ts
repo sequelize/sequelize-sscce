@@ -1,4 +1,4 @@
-import { CreationOptional, DataTypes, Model } from '@sequelize/core';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core';
 import {
   Attribute,
   AutoIncrement,
@@ -27,20 +27,7 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
-
-  Foo.init({
-    name: DataTypes.TEXT,
-  }, {
-    sequelize,
-    modelName: 'Foo',
-  });
-
-  // You can also use the new decorators model definition
-  class Bar extends Model {
-    @Attribute(DataTypes.INTEGER)
-    @PrimaryKey
-    @AutoIncrement
+  class Foo extends Model<InferAttributes<Foo>, InferCreationAttributes<Foo>> {
     declare id: CreationOptional<number>;
 
     @Attribute(DataTypes.TEXT)
@@ -48,7 +35,7 @@ export async function run() {
     declare name: string;
   }
 
-  sequelize.addModels([Bar]);
+  sequelize.addModels([Foo]);
 
   // You can use sinon and chai assertions directly in your SSCCE.
   const spy = sinon.spy();
