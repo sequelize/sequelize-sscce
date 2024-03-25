@@ -1,4 +1,5 @@
-import { DataTypes, Model } from '@sequelize/core';
+import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core';
+import { Attribute, NotNull } from '@sequelize/core/decorators-legacy';
 import { createSequelize7Instance } from '../dev/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -21,14 +22,15 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class Foo extends Model<InferAttributes<Foo>, InferCreationAttributes<Foo>> {
+    declare id: CreationOptional<number>;
 
-  Foo.init({
-    name: DataTypes.TEXT,
-  }, {
-    sequelize,
-    modelName: 'Foo',
-  });
+    @Attribute(DataTypes.TEXT)
+    @NotNull
+    declare name: string;
+  }
+
+  sequelize.addModels([Foo]);
 
   // You can use sinon and chai assertions directly in your SSCCE.
   const spy = sinon.spy();
