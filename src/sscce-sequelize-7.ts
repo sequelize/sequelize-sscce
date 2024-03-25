@@ -1,8 +1,9 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core';
-import { Attribute, NotNull } from '@sequelize/core/decorators-legacy';
+import { BelongsToMany } from '@sequelize/core/decorators-legacy';
+import { BelongsToManyAddAssociationMixin, DataTypes, Model } from '@sequelize/core';
 import { createSequelize7Instance } from '../dev/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { BelongsToManyGetAssociationsMixin } from 'sequelize';
 
 // if your issue is dialect specific, remove the dialects you don't need to test on.
 export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb', 'postgres', 'postgres-native']);
@@ -11,6 +12,18 @@ export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb',
 
 // Your SSCCE goes inside this function.
 export async function run() {
+  class From extends Model {
+    @BelongsToMany(() => To, { through: () => Through})
+    declare to?: To[];
+
+    declare addTo: BelongsToManyAddAssociationMixin<To, number>;
+    declare getTo: BelongsToManyGetAssociationsMixin<To>
+  }
+
+  class To extends Model {}
+
+  class Through extends Model {}
+
   // This function should be used instead of `new Sequelize()`.
   // It applies the config for your SSCCE to work on CI.
   const sequelize = createSequelize7Instance({
@@ -20,24 +33,35 @@ export async function run() {
       // For less clutter in the SSCCE
       timestamps: false,
     },
+    models: [From, To, Through]
   });
 
-  class Foo extends Model<InferAttributes<Foo>, InferCreationAttributes<Foo>> {
-    declare id: CreationOptional<number>;
+  await sequelize.sync();
 
-    @Attribute(DataTypes.TEXT)
-    @NotNull
-    declare name: string;
-  }
+  const [from, to] = await Promise.all([
+    From.create(),
+    To.create()
+  ]);
 
-  sequelize.addModels([Foo]);
+  await from.addTo(to);
 
-  // You can use sinon and chai assertions directly in your SSCCE.
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
-  await sequelize.sync({ force: true });
-  expect(spy).to.have.been.called;
+  const eagerLoadedTo = (await From.findOne({
+    include: [To],
+    rejectOnEmpty: true
+  })).to!;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  const lazyLoadedTo = await (await From.findOne({
+    rejectOnEmpty: true
+  })).getTo();
+
+  console.log(eagerLoadedTo);
+  console.dir(lazyLoadedTo);
+
+  // The through model is loaded as the model name for eager-loaded associations
+  expect('Through' in eagerLoadedTo);
+  expect(!('fromTo' in eagerLoadedTo));
+
+  // But as the name of the association
+  expect(!('Through' in lazyLoadedTo));
+  expect('fromTo' in lazyLoadedTo);
 }
