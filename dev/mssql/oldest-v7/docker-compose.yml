@@ -1,0 +1,25 @@
+services:
+  mssql-oldest-v7:
+    container_name: sequelize-mssql-oldest-v7
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: Password12!
+    ports:
+      - 22019:1433
+    volumes:
+      - mssql-oldest-v7:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "SA", "-P", "Password12!", "-l", "30", "-Q", "SELECT 1"]
+      interval: 3s
+      timeout: 1s
+      retries: 10
+
+networks:
+  default:
+    name: sequelize-mssql-oldest-v7-network
+
+volumes:
+  mssql-oldest-v7:
+    name: sequelize-mssql-oldest-v7-volume

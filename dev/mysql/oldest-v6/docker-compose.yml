@@ -1,0 +1,26 @@
+services:
+  mysql-oldest-v6:
+    container_name: sequelize-mysql-oldest-v6
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: sequelize_test
+      MYSQL_USER: sequelize_test
+      MYSQL_PASSWORD: sequelize_test
+      MYSQL_ROOT_PASSWORD: sequelize_test
+    ports:
+      - 20057:3306
+    volumes:
+      - mysql-oldest-v6:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-usequelize_test", "-psequelize_test", "status"]
+      interval: 3s
+      timeout: 1s
+      retries: 10
+
+networks:
+  default:
+    name: sequelize-mysql-oldest-v6-network
+
+volumes:
+  mysql-oldest-v6:
+    name: sequelize-mysql-oldest-v6-volume

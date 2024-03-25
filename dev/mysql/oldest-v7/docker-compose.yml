@@ -1,6 +1,6 @@
 services:
-  mysql-oldest:
-    container_name: sequelize-mysql-oldest
+  mysql-oldest-v7:
+    container_name: sequelize-mysql-oldest-v7
     image: mysql:8.0.19
     environment:
       MYSQL_DATABASE: sequelize_test
@@ -10,7 +10,7 @@ services:
     ports:
       - 20057:3306
     volumes:
-      - mysql-oldest:/var/lib/mysql
+      - mysql-oldest-v7:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "-usequelize_test", "-psequelize_test", "status"]
       interval: 3s
@@ -19,8 +19,8 @@ services:
 
 networks:
   default:
-    name: sequelize-mysql-oldest-network
+    name: sequelize-mysql-oldest-v7-network
 
 volumes:
-  mysql-oldest:
-    name: sequelize-mysql-oldest-volume
+  mysql-oldest-v7:
+    name: sequelize-mysql-oldest-v7-volume
