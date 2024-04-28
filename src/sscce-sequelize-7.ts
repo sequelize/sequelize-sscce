@@ -38,6 +38,16 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  console.log(await Foo.create({ name: "foo" }));
+
+  // When using `findAndCountAll` method, the virtual column gets removed, hence it's not possible to apply a condition on that column
+  expect(
+    await Foo.findAndCountAll({
+      attributes: [
+        [sequelize.fn("length", sequelize.col("name")), "nameLength"],
+      ],
+      group: ["name"],
+      having: { nameLength: 3 },
+    })
+  ).to.equal(1);
 }
