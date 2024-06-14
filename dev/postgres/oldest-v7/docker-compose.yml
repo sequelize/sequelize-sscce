@@ -1,6 +1,6 @@
 services:
-  postgres-oldest:
-    container_name: sequelize-postgres-oldest
+  postgres-oldest-v7:
+    container_name: sequelize-postgres-oldest-v7
     image: postgis/postgis:11-2.5
     environment:
       POSTGRES_USER: sequelize_test
@@ -9,7 +9,7 @@ services:
     ports:
       - 23010:5432
     volumes:
-      - postgres-oldest:/var/lib/postgresql/data
+      - postgres-oldest-v7:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "sequelize_test"]
       interval: 3s
@@ -18,8 +18,8 @@ services:
 
 networks:
   default:
-    name: sequelize-postgres-oldest-network
+    name: sequelize-postgres-oldest-v7-network
 
 volumes:
-  postgres-oldest:
-    name: sequelize-postgres-oldest-volume
+  postgres-oldest-v7:
+    name: sequelize-postgres-oldest-v7-volume
