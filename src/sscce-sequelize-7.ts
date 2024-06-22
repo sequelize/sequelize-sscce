@@ -28,6 +28,10 @@ export async function run() {
     @Attribute(DataTypes.TEXT)
     @NotNull
     declare name: string;
+
+    // Nullable array attribute
+    @Attribute(DataTypes.ARRAY(DataTypes.STRING))
+    declare colors?: Array<string>;
   }
 
   sequelize.addModels([Foo]);
@@ -38,6 +42,33 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
+  console.log(await Foo.create({ name: 'TS foo', colors: ['red', 'blue'] }));
+  await Foo.create({ name: 'Colorless Foo' });
   expect(await Foo.count()).to.equal(1);
+
+  // This works fine and has the expected result, but type-checking fails with
+  
+  /*
+  No overload matches this call.
+  Overload 1 of 2, '(this: ModelStatic<Foo>, options: Omit<FindOptions<InferAttributes<Foo, { omit: never; }>>, "raw"> & { raw: true; }): Promise<...>', gave the following error.
+    Type '{ colors: null; }' is not assignable to type 'WhereOptions<InferAttributes<Foo, { omit: never; }>>'.
+      Types of property 'colors' are incompatible.
+        Type 'null' is not assignable to type 'WhereAttributeHashValue<string[] | undefined>'.
+  Overload 2 of 2, '(this: ModelStatic<Foo>, options?: FindOptions<InferAttributes<Foo, { omit: never; }>> | undefined): Promise<...>', gave the following error.
+    Type '{ colors: null; }' is not assignable to type 'WhereOptions<InferAttributes<Foo, { omit: never; }>>'.
+      Types of property 'colors' are incompatible.
+        Type 'null' is not assignable to type 'WhereAttributeHashValue<string[] | undefined>'.ts(2769)
+  model.d.ts(104, 3): The expected type comes from property 'where' which is declared here on type 'Omit<FindOptions<InferAttributes<Foo, { omit: never; }>>, "raw"> & { raw: true; }'
+  */
+
+  // I _think_ the correct type for where.colors would be WhereAttributeHashValue<string[] | null | undefined> because it is a nullable attribute of the model.
+  const foosWithoutColors = await Foo.findAll({
+    where: {
+      colors: null
+    }
+  })
+
+  // My type-fu is not good enough to write a unit test asserting that the query type-checks...
+  // This is expected to pass. The code works fine, it's only a type inference problem.
+  expect(foosWithoutColors.length === 1)
 }
