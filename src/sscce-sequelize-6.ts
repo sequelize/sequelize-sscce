@@ -51,6 +51,8 @@ export async function run() {
     }
     nonTransactionCb();
   }
+
+  Bar.addHook('afterSave', 'afterSaveFooHook', afterSaveFooHook);
   
   await Bar.create({ name: 'A' });
   expect(nonTransactionCb).to.have.been.called;
