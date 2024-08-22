@@ -24,7 +24,7 @@ export async function run() {
   class Foo extends Model {}
 
   Foo.init({
-    name: DataTypes.TEXT,
+    name: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Foo',
@@ -36,6 +36,51 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  const afterCommitCb = sinon.spy();
+  const nonTransactionCb = sinon.spy();
+
+  const resetSpy = () => {
+    afterCommitCb.reset();
+    nonTransactionCb.reset();
+  }
+  
+  const afterSaveFooHook = (instance, { transaction }) => {
+    if (transaction) {
+      transaction.afterCommit(() => afterCommitCb());
+      return;
+    }
+    nonTransactionCb();
+  }
+  
+  await Foo.create({ name: 'A' });
+  expect(nonTransactionCb).to.have.been.called;
+  expect(afterCommitCb).not.to.have.been.called;
+
+  resetSpy();
+
+  await Foo.findOrCreate({ where: { name: 'B' } });
+  expect(nonTransactionCb).not.to.have.been.called;
+  expect(afterCommitCb).to.have.been.called;
+
+  resetSpy();
+  
+  await sequelize.transaction(async (transaction) => {
+    await Foo.create({ name: 'C' }, { transaction });
+  });
+  expect(nonTransactionCb).not.to.have.been.called;
+  expect(afterCommitCb).to.have.been.called;
+
+  resetSpy();
+  
+  // This next case will fail
+  
+  const internalAfterCommitCb = sinon.spy();
+  
+  await sequelize.transaction(async (transaction) => {
+    transaction.internalAfterCommitCb(() => internalAfterCommitCb());
+    await Foo.findOrCreate({ where: { name: 'C' } }, { transaction });
+  });
+  expect(internalAfterCommitCb).to.have.been.called;
+  expect(nonTransactionCb).not.to.have.been.called;
+  expect(afterCommitCb).to.have.been.called;
 }
