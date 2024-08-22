@@ -21,13 +21,13 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class Bar extends Model {}
 
-  Foo.init({
+  Bar.init({
     name: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: 'Foo',
+    modelName: 'Bar',
   });
 
   // You can use sinon and chai assertions directly in your SSCCE.
@@ -44,7 +44,7 @@ export async function run() {
     nonTransactionCb.resetHistory();
   }
   
-  const afterSaveFooHook = (instance: Foo, options: any) => {
+  const afterSaveFooHook = (instance: Bar, options: any) => {
     if (options.transaction) {
       options.transaction.afterCommit(() => afterCommitCb());
       return;
