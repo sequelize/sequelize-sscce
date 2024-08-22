@@ -52,20 +52,20 @@ export async function run() {
     nonTransactionCb();
   }
   
-  await Foo.create({ name: 'A' });
+  await Bar.create({ name: 'A' });
   expect(nonTransactionCb).to.have.been.called;
   expect(afterCommitCb).not.to.have.been.called;
 
   resetSpy();
 
-  await Foo.findOrCreate({ where: { name: 'B' } });
+  await Bar.findOrCreate({ where: { name: 'B' } });
   expect(nonTransactionCb).not.to.have.been.called;
   expect(afterCommitCb).to.have.been.called;
 
   resetSpy();
   
   await sequelize.transaction(async (transaction) => {
-    await Foo.create({ name: 'C' }, { transaction });
+    await Bar.create({ name: 'C' }, { transaction });
   });
   expect(nonTransactionCb).not.to.have.been.called;
   expect(afterCommitCb).to.have.been.called;
@@ -78,7 +78,7 @@ export async function run() {
   
   await sequelize.transaction(async (transaction) => {
     transaction.afterCommit(() => internalAfterCommitCb());
-    await Foo.findOrCreate({ where: { name: 'D' }, transaction });
+    await Bar.findOrCreate({ where: { name: 'D' }, transaction });
   });
   expect(internalAfterCommitCb).to.have.been.called;
   expect(nonTransactionCb).not.to.have.been.called;
