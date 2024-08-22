@@ -1,4 +1,4 @@
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model, Transaction } from 'sequelize';
 import { createSequelize6Instance } from '../dev/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -40,11 +40,11 @@ export async function run() {
   const nonTransactionCb = sinon.spy();
 
   const resetSpy = () => {
-    afterCommitCb.reset();
-    nonTransactionCb.reset();
+    afterCommitCb.resetHistory();
+    nonTransactionCb.resetHistory();
   }
   
-  const afterSaveFooHook = (instance, { transaction }) => {
+  const afterSaveFooHook = (instance: Foo, { transaction: Transaction }) => {
     if (transaction) {
       transaction.afterCommit(() => afterCommitCb());
       return;
@@ -64,7 +64,7 @@ export async function run() {
 
   resetSpy();
   
-  await sequelize.transaction(async (transaction) => {
+  await sequelize.transaction(async (transaction: Transaction) => {
     await Foo.create({ name: 'C' }, { transaction });
   });
   expect(nonTransactionCb).not.to.have.been.called;
@@ -76,8 +76,8 @@ export async function run() {
   
   const internalAfterCommitCb = sinon.spy();
   
-  await sequelize.transaction(async (transaction) => {
-    transaction.internalAfterCommitCb(() => internalAfterCommitCb());
+  await sequelize.transaction(async (transaction: Transaction) => {
+    transaction.afterCommit(() => internalAfterCommitCb());
     await Foo.findOrCreate({ where: { name: 'C' } }, { transaction });
   });
   expect(internalAfterCommitCb).to.have.been.called;
