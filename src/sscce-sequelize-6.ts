@@ -44,7 +44,7 @@ export async function run() {
     nonTransactionCb.resetHistory();
   }
   
-  const afterSaveFooHook = (instance: Foo, options) => {
+  const afterSaveFooHook = (instance: Foo, options: any) => {
     if (options.transaction) {
       options.transaction.afterCommit(() => afterCommitCb());
       return;
