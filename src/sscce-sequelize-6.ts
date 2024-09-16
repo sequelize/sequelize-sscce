@@ -39,3 +39,4 @@ export async function run() {
   console.log(await Foo.create({ name: 'TS foo' }));
   expect(await Foo.count()).to.equal(1);
 }
+
