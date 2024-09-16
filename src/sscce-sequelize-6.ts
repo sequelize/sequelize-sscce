@@ -21,13 +21,13 @@ export async function run() {
     },
   });
 
-  class Foo extends Model {}
+  class Bar extends Model {}
 
-  Foo.init({
-    name: DataTypes.TEXT,
+  Bar.init({
+    name: DataTypes.STRING,
   }, {
     sequelize,
-    modelName: 'Foo',
+    modelName: 'Bar',
   });
 
   // You can use sinon and chai assertions directly in your SSCCE.
@@ -36,6 +36,53 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  const afterCommitCb = sinon.spy();
+  const nonTransactionCb = sinon.spy();
+
+  const resetSpy = () => {
+    afterCommitCb.resetHistory();
+    nonTransactionCb.resetHistory();
+  }
+  
+  const afterSaveFooHook = (instance: Bar, options: any) => {
+    if (options.transaction) {
+      options.transaction.afterCommit(() => afterCommitCb());
+      return;
+    }
+    nonTransactionCb();
+  }
+
+  Bar.addHook('afterSave', 'afterSaveFooHook', afterSaveFooHook);
+  
+  await Bar.create({ name: 'A' });
+  expect(nonTransactionCb).to.have.been.called;
+  expect(afterCommitCb).not.to.have.been.called;
+
+  resetSpy();
+
+  await Bar.findOrCreate({ where: { name: 'B' } });
+  expect(nonTransactionCb).not.to.have.been.called;
+  expect(afterCommitCb).to.have.been.called;
+
+  resetSpy();
+  
+  await sequelize.transaction(async (transaction) => {
+    await Bar.create({ name: 'C' }, { transaction });
+  });
+  expect(nonTransactionCb).not.to.have.been.called;
+  expect(afterCommitCb).to.have.been.called;
+
+  resetSpy();
+  
+  // This next case will fail
+  
+  const internalAfterCommitCb = sinon.spy();
+  
+  await sequelize.transaction(async (transaction) => {
+    transaction.afterCommit(() => internalAfterCommitCb());
+    await Bar.findOrCreate({ where: { name: 'D' }, transaction });
+  });
+  expect(internalAfterCommitCb).to.have.been.called;
+  expect(nonTransactionCb).not.to.have.been.called;
+  expect(afterCommitCb).to.have.been.called;
 }
