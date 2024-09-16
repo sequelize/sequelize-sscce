@@ -15,16 +15,16 @@ export async function run() {
   const sequelize = createSequelize6Instance({
     logQueryParameters: true,
     benchmark: true,
-    define: {
-      // For less clutter in the SSCCE
-      timestamps: false,
-    },
   });
 
   class Foo extends Model {}
 
   Foo.init({
-    name: DataTypes.TEXT,
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
   }, {
     sequelize,
     modelName: 'Foo',
@@ -36,6 +36,9 @@ export async function run() {
   await sequelize.sync({ force: true });
   expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
+  expect(Foo.bulkCreate(
+    [{ id: 'e8388762-1daa-11ef-b9f0-b7d47c40e7e3' }],
+    { updateOnDuplicate: ['createdAt'] }
+  )).to.not.be.rejected;
   expect(await Foo.count()).to.equal(1);
 }
