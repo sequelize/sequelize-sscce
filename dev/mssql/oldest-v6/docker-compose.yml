@@ -1,6 +1,7 @@
 services:
-  mssql-oldest:
-    container_name: sequelize-mssql-oldest
+  mssql-oldest-v6:
+    container_name: sequelize-mssql-oldest-v6
+    # SQL Server 2014 does not have an image
     image: mcr.microsoft.com/mssql/server:2017-latest
     environment:
       ACCEPT_EULA: Y
@@ -9,7 +10,7 @@ services:
     ports:
       - 22019:1433
     volumes:
-      - mssql-oldest:/var/opt/mssql
+      - mssql-oldest-v6:/var/opt/mssql
     healthcheck:
       test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "SA", "-P", "Password12!", "-l", "30", "-Q", "SELECT 1"]
       interval: 3s
@@ -18,8 +19,8 @@ services:
 
 networks:
   default:
-    name: sequelize-mssql-oldest-network
+    name: sequelize-mssql-oldest-v6-network
 
 volumes:
-  mssql-oldest:
-    name: sequelize-mssql-oldest-volume
+  mssql-oldest-v6:
+    name: sequelize-mssql-oldest-v6-volume
