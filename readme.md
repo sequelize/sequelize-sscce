@@ -52,9 +52,9 @@ You'll need to install the `pg` package and have a postgres database running.
 
 ```shell
 # Do this only once.
-npm install pg
+npm install pg @sequelize/postgres
 # or
-npm install pg-native
+npm install pg-native @sequelize/postgres
 
 # if you need to use DataTypes.HSTORE, you also need this dependency
 npm install pg-hstore
@@ -76,7 +76,7 @@ npm run stop:postgres
 
 ```shell
 # Do this only once.
-npm install mariadb
+npm install mariadb @sequelize/mariadb
 
 # Start the mariadb database using docker.
 # Requires docker. You can also run your own database if you prefer.
@@ -93,7 +93,7 @@ npm run stop:mariadb
 
 ```shell
 # Do this only once.
-npm install mysql2
+npm install mysql2 @sequelize/mysql
 
 # Start the mysql database using docker.
 # Requires docker. You can also run your own database if you prefer.
@@ -110,7 +110,7 @@ npm run stop:mysql
 
 ```shell
 # Do this only once.
-npm install tedious
+npm install tedious @sequelize/mssql
 
 # Start the mssql database using docker.
 # Requires docker. You can also run your own database if you prefer.

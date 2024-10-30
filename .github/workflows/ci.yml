@@ -23,7 +23,6 @@ jobs:
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: yarn
       - run: /bin/bash ./dev/prepare-ci.sh
       - name: Execute SSCCE
         run: yarn run _test
@@ -45,7 +44,6 @@ jobs:
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: yarn
       - run: /bin/bash ./dev/prepare-ci.sh
       - run: yarn start-postgres-${{ matrix.postgres-version }}
       - name: Execute SSCCE
@@ -66,7 +64,6 @@ jobs:
       - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: yarn
       - run: /bin/bash ./dev/prepare-ci.sh
       - run: yarn start-${{ matrix.dialect }}-${{ matrix.database-version }}
       - name: Execute SSCCE

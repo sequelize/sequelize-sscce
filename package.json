@@ -13,7 +13,7 @@
     "cross-env": "^7",
     "fs-jetpack": "^4",
     "sequelize": "^6",
-    "@sequelize/core": "alpha",
+    "@sequelize/core": "latest",
     "sinon": "^13",
     "sinon-chai": "^3"
   },

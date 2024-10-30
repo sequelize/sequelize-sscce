@@ -1,5 +1,5 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core';
-import { Attribute, NotNull } from '@sequelize/core/decorators-legacy';
+import { CreationOptional, DataTypes, DialectName, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core';
+import { Attribute, PrimaryKey } from '@sequelize/core/decorators-legacy';
 import { createSequelize7Instance } from '../dev/create-sequelize-instance';
 import { expect } from 'chai';
 import sinon from 'sinon';
@@ -23,21 +23,34 @@ export async function run() {
   });
 
   class Foo extends Model<InferAttributes<Foo>, InferCreationAttributes<Foo>> {
-    declare id: CreationOptional<number>;
-
-    @Attribute(DataTypes.TEXT)
-    @NotNull
+    @Attribute(DataTypes.STRING(100))
+    @PrimaryKey
     declare name: string;
+
+    @Attribute(DataTypes.STRING(100))
+    @PrimaryKey
+    declare rank: string;
+
+    @Attribute(DataTypes.STRING(100))
+    declare role: CreationOptional<string>;
   }
 
   sequelize.addModels([Foo]);
-
-  // You can use sinon and chai assertions directly in your SSCCE.
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
   await sequelize.sync({ force: true });
-  expect(spy).to.have.been.called;
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  // Inserting two entries with different name and rank succeeds
+  await expect(Foo.create({ name: "fish", rank: "novice" })).to.eventually.be.fulfilled;
+  await expect(Foo.create({ name: "fish", rank: "expert" })).to.eventually.be.fulfilled;
+
+  // Inserting two entries with same name and rank fails
+  await expect(Foo.create({ name: "cat", rank: "expert" })).to.eventually.be.fulfilled;
+  await expect(Foo.create({ name: "cat", rank: "expert" })).to.eventually.be.rejected;
+
+  // Altering an unrelated column should not change the above behaviour
+  await Foo.truncate();
+  await sequelize.queryInterface.changeColumn("Foos", "role", { type: DataTypes.TEXT });
+  await expect(Foo.create({ name: "bear", rank: "novice" })).to.eventually.be.fulfilled;
+  await expect(Foo.create({ name: "bear", rank: "expert" })).to.eventually.be.fulfilled;
+  await expect(Foo.create({ name: "dog", rank: "expert" })).to.eventually.be.fulfilled;
+  await expect(Foo.create({ name: "dog", rank: "expert" })).to.eventually.be.rejected;
 }
