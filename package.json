@@ -13,8 +13,8 @@
     "cross-env": "^7",
     "fs-jetpack": "^4",
     "sequelize": "^6",
-    "@sequelize/core": "alpha",
-    "sinon": "^13",
+    "@sequelize/core": "latest",
+    "sinon": "^10",
     "sinon-chai": "^3"
   },
   "scripts": {
@@ -69,6 +69,7 @@
     "typescript": "~4.5"
   },
   "resolutions": {
-    "chai-datetime/chai": "^4"
+    "chai-datetime/chai": "^4",
+    "nise": "5.0.1"
   }
 }

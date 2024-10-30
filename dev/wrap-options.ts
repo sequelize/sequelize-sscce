@@ -1,9 +1,9 @@
 import defaults from 'lodash/defaults.js';
-import { CiDbConfigs } from './ci-db-configs';
+import { CiDbConfigs, CiDbConfigsV7 } from './ci-db-configs';
 import { log } from './logging';
 import type { Dialect, Options } from 'sequelize';
 
-export function wrapOptions(options: Options = {}) {
+export function wrapOptions(options: Options = {}, v7 = false) {
   if (!process.env.DIALECT) {
     throw new Error('Dialect is not defined! Aborting.');
   }
@@ -14,7 +14,7 @@ export function wrapOptions(options: Options = {}) {
   // this fails in the CI due to mismatch between Sequelize 6 & 7. Should be resolved once we drop Sequelize 6.
   // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
   // @ts-ignore
-  const config = CiDbConfigs[dialect];
+  const config = v7 ? CiDbConfigsV7[dialect] : CiDbConfigs[dialect];
 
   options.dialect = dialect;
   if (isPostgresNative) {
@@ -25,9 +25,6 @@ export function wrapOptions(options: Options = {}) {
     logging: log,
     ...config,
   });
-
-  // @ts-expect-error
-  options.__isOptionsObject__ = true;
 
   return options;
 }
