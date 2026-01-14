@@ -5,7 +5,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 // if your issue is dialect specific, remove the dialects you don't need to test on.
-export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb', 'postgres', 'postgres-native']);
+export const testingOnDialects = new Set(['mysql');
 
 // You can delete this file if you don't want your SSCCE to be tested against Sequelize 7
 
