@@ -1,11 +1,9 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from '@sequelize/core';
-import { Attribute, NotNull } from '@sequelize/core/decorators-legacy';
+import { Attribute, AutoIncrement, NotNull, PrimaryKey, Table } from '@sequelize/core/decorators-legacy';
 import { createSequelize7Instance } from '../dev/create-sequelize-instance';
 import { expect } from 'chai';
-import sinon from 'sinon';
 
-// if your issue is dialect specific, remove the dialects you don't need to test on.
-export const testingOnDialects = new Set(['mssql', 'sqlite', 'mysql', 'mariadb', 'postgres', 'postgres-native']);
+export const testingOnDialects = new Set(['mssql']);
 
 // You can delete this file if you don't want your SSCCE to be tested against Sequelize 7
 
@@ -22,7 +20,11 @@ export async function run() {
     },
   });
 
+  @Table({ tableName: 'trigger_bulk_create_test', hasTrigger: true })
   class Foo extends Model<InferAttributes<Foo>, InferCreationAttributes<Foo>> {
+    @Attribute(DataTypes.INTEGER)
+    @PrimaryKey
+    @AutoIncrement
     declare id: CreationOptional<number>;
 
     @Attribute(DataTypes.TEXT)
@@ -31,13 +33,17 @@ export async function run() {
   }
 
   sequelize.addModels([Foo]);
-
-  // You can use sinon and chai assertions directly in your SSCCE.
-  const spy = sinon.spy();
-  sequelize.afterBulkSync(() => spy());
   await sequelize.sync({ force: true });
-  expect(spy).to.have.been.called;
+  await sequelize.query(`
+    CREATE TRIGGER [trigger_bulk_create_test_after_insert]
+    ON [trigger_bulk_create_test]
+    AFTER INSERT
+    AS
+    BEGIN
+      SET NOCOUNT ON;
+    END
+  `);
 
-  console.log(await Foo.create({ name: 'TS foo' }));
-  expect(await Foo.count()).to.equal(1);
+  const [foo] = await Foo.bulkCreate([{ name: 'trigger test' }]);
+  expect(foo.id).to.equal(1);
 }

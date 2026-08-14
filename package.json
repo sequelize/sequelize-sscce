@@ -6,6 +6,8 @@
   "type": "commonjs",
   "license": "MIT",
   "dependencies": {
+    "@sequelize/core": "7.0.0-alpha.48",
+    "@sequelize/mssql": "7.0.0-alpha.48",
     "chai": "^4",
     "chai-as-promised": "^7",
     "chai-datetime": "^1",
@@ -13,7 +15,6 @@
     "cross-env": "^7",
     "fs-jetpack": "^4",
     "sequelize": "^6",
-    "@sequelize/core": "alpha",
     "sinon": "^13",
     "sinon-chai": "^3"
   },
